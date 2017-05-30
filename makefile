@@ -1,10 +1,10 @@
 .PHONY: build clean start stop list package
 
 clean:
-	rm -force .\bower_components
-	rm -force .\node_modules
-	rm -force .\public
-	rm -force .\dist
+	rm -rf bower_components
+	rm -rf node_modules
+	rm -rf public
+	rm -rf dist
 
 build: clean
 	npm install

@@ -1,5 +1,5 @@
 {
-  "name": "react-todo",
+  "name": "react-llc",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -21,10 +21,5 @@
     "underscore": "^1.6.0",
     "brunch": "^1.7.18",
     "less-brunch": "^1.7.2"
-  },
-  "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-stylus": "^0.20.0",
-    "jasmine-react-helpers": "^0.2.0"
   }
 }
