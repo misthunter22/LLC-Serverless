@@ -1,19 +1,42 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Switch, Route } from 'react-router';
+
+import Home from './pages/Home';
+import Report from './pages/Report';
+import Admin from './pages/Admin';
+import Upload from './pages/Upload';
+
+import logo from './logo.png';
 import './App.css';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+        <main>
+            <Navbar>
+                <Navbar.Header>
+                    <Navbar.Brand>
+                        <a href="/">LLC</a>
+                    </Navbar.Brand>
+                    <Navbar.Toggle />
+                </Navbar.Header>
+                <Navbar.Collapse>
+                    <Nav>
+                        <NavItem eventKey={1} href="/">Home</NavItem>
+                        <NavItem eventKey={2} href="/report">Report</NavItem>
+                        <NavItem eventKey={3} href="/admin">Admin</NavItem>
+                        <NavItem eventKey={4} href="/upload">Upload</NavItem>
+                    </Nav>
+                </Navbar.Collapse>
+            </Navbar>
+            <Switch>
+                <Route exact path='/' component={Home}/>
+                <Route path='/report' component={Report}/>
+                <Route path='/admin' component={Admin}/>
+                <Route path='/upload' component={Upload}/>
+            </Switch>
+        </main>
     );
   }
 }
