@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Button, Nav, NavItem } from 'react-bootstrap';
+import { Navbar, Button } from 'react-bootstrap';
 import './App.css';
 
 class App extends Component {
@@ -20,66 +20,64 @@ class App extends Component {
 
     return (
       <div>
-		<Navbar fluid>
+		<Navbar>
 		  <Navbar.Header>
 			<Navbar.Brand>
 			  <a href="/">LLC</a>
 			</Navbar.Brand>
 			<Navbar.Toggle />
-			{
-			  !isAuthenticated() && (
+		  </Navbar.Header>
+		  <Navbar.Collapse>
+              <Button
+                bsStyle="primary"
+                className="btn-margin"
+                onClick={this.goTo.bind(this, 'home')}
+              >
+                Home
+              </Button>
+              <Button
+                bsStyle="primary"
+                className="btn-margin"
+                onClick={this.goTo.bind(this, 'report')}
+              >
+                Reports
+              </Button>
+			  <Button
+                bsStyle="primary"
+                className="btn-margin"
+                onClick={this.goTo.bind(this, 'admin')}
+              >
+                Admin
+              </Button>
+		      <Button
+                bsStyle="primary"
+                className="btn-margin"
+                onClick={this.goTo.bind(this, 'upload')}
+              >
+                Upload
+              </Button>
+			  {
+			    !isAuthenticated() && (
 				  <Button
 					bsStyle="primary"
-					className="btn-margin button-right"
+					className="btn-margin"
 					onClick={this.login.bind(this)}
 				  >
 					Log In
 				  </Button>
-				)
-			}
-			{
-			  isAuthenticated() && (
+			    )
+			  }
+			  {
+			   isAuthenticated() && (
 				  <Button
 					bsStyle="primary"
-					className="btn-margin button-right"
+					className="btn-margin"
 					onClick={this.logout.bind(this)}
 				  >
 					Log Out
 				  </Button>
 				)
-			}
-		  </Navbar.Header>
-		  <Navbar.Collapse>
-			<Nav>
-                <Button
-                    bsStyle="primary"
-                    className="btn-margin"
-                    onClick={this.goTo.bind(this, 'home')}
-                >
-                    Home
-                </Button>
-                <Button
-                    bsStyle="primary"
-                    className="btn-margin"
-                    onClick={this.goTo.bind(this, 'report')}
-                >
-                    Reports
-                </Button>
-				<Button
-                    bsStyle="primary"
-                    className="btn-margin"
-                    onClick={this.goTo.bind(this, 'admin')}
-                >
-                    Admin
-                </Button>
-				<Button
-                    bsStyle="primary"
-                    className="btn-margin"
-                    onClick={this.goTo.bind(this, 'upload')}
-                >
-                    Upload
-                </Button>
-			</Nav>
+			  }
 		  </Navbar.Collapse>
 		</Navbar>
 	  </div>

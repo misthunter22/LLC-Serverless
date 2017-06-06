@@ -5,30 +5,17 @@ class Home extends Component {
     this.props.auth.login();
   }
   render() {
-    const { isAuthenticated } = this.props.auth;
     return (
       <div className="container">
-        {
-          isAuthenticated() && (
-              <h4>
-                You are logged in! Home
-              </h4>
-            )
-        }
-        {
-          !isAuthenticated() && (
-              <h4>
-                You are not logged in! Please{' '}
-                <a
-                  style={{ cursor: 'pointer' }}
-                  onClick={this.login.bind(this)}
-                >
-                  Log In
-                </a>
-                {' '}to continue. Home
-              </h4>
-            )
-        }
+	    <div className="jumbotron">
+	      <h1>Lor Link Checker</h1>
+          <p className="lead">An Idaho Digital Learning Web Application.</p>
+          <p>
+		    <a href="http://idahodigitallearning.org" target="_blank" className="btn btn-primary btn-lg">
+			  Learn more about IDLA »
+			</a>
+		  </p>
+        </div>
       </div>
     );
   }
