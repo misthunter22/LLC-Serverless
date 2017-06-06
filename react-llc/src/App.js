@@ -1,42 +1,74 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
-import { Switch, Route } from 'react-router';
-
-import Home from './pages/Home';
-import Report from './pages/Report';
-import Admin from './pages/Admin';
-import Upload from './pages/Upload';
-
-import logo from './logo.png';
+import { Navbar, Button, Nav, NavItem } from 'react-bootstrap';
 import './App.css';
 
 class App extends Component {
+  goTo(route) {
+    this.props.history.replace(`/${route}`)
+  }
+
+  login() {
+    this.props.auth.login();
+  }
+
+  logout() {
+    this.props.auth.logout();
+  }
+
   render() {
+    const { isAuthenticated } = this.props.auth;
+
     return (
-        <main>
-            <Navbar>
-                <Navbar.Header>
-                    <Navbar.Brand>
-                        <a href="/">LLC</a>
-                    </Navbar.Brand>
-                    <Navbar.Toggle />
-                </Navbar.Header>
-                <Navbar.Collapse>
-                    <Nav>
-                        <NavItem eventKey={1} href="/">Home</NavItem>
-                        <NavItem eventKey={2} href="/report">Report</NavItem>
-                        <NavItem eventKey={3} href="/admin">Admin</NavItem>
-                        <NavItem eventKey={4} href="/upload">Upload</NavItem>
-                    </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-            <Switch>
-                <Route exact path='/' component={Home}/>
-                <Route path='/report' component={Report}/>
-                <Route path='/admin' component={Admin}/>
-                <Route path='/upload' component={Upload}/>
-            </Switch>
-        </main>
+      <div>
+		<Navbar fluid>
+		  <Navbar.Header>
+			<Navbar.Brand>
+			  <a href="#">LLC</a>
+			</Navbar.Brand>
+			<Navbar.Toggle />
+			{
+			  !isAuthenticated() && (
+				  <Button
+					bsStyle="primary"
+					className="btn-margin"
+					onClick={this.login.bind(this)}
+				  >
+					Log In
+				  </Button>
+				)
+			}
+			{
+			  isAuthenticated() && (
+				  <Button
+					bsStyle="primary"
+					className="btn-margin"
+					onClick={this.logout.bind(this)}
+				  >
+					Log Out
+				  </Button>
+				)
+			}
+		  </Navbar.Header>
+		  <Navbar.Collapse>
+			<Nav>
+                <Button
+                    bsStyle="primary"
+                    className="btn-margin"
+                    onClick={this.goTo.bind(this, 'home')}
+                >
+                    Home
+                </Button>
+                <Button
+                    bsStyle="primary"
+                    className="btn-margin"
+                    onClick={this.goTo.bind(this, 'home')}
+                >
+                    Home2
+                </Button>
+			</Nav>
+		  </Navbar.Collapse>
+		</Navbar>
+	  </div>
     );
   }
 }
