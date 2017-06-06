@@ -23,14 +23,14 @@ class App extends Component {
 		<Navbar fluid>
 		  <Navbar.Header>
 			<Navbar.Brand>
-			  <a href="#">LLC</a>
+			  <a href="/">LLC</a>
 			</Navbar.Brand>
 			<Navbar.Toggle />
 			{
 			  !isAuthenticated() && (
 				  <Button
 					bsStyle="primary"
-					className="btn-margin"
+					className="btn-margin button-right"
 					onClick={this.login.bind(this)}
 				  >
 					Log In
@@ -41,7 +41,7 @@ class App extends Component {
 			  isAuthenticated() && (
 				  <Button
 					bsStyle="primary"
-					className="btn-margin"
+					className="btn-margin button-right"
 					onClick={this.logout.bind(this)}
 				  >
 					Log Out
@@ -61,9 +61,23 @@ class App extends Component {
                 <Button
                     bsStyle="primary"
                     className="btn-margin"
-                    onClick={this.goTo.bind(this, 'home')}
+                    onClick={this.goTo.bind(this, 'report')}
                 >
-                    Home2
+                    Reports
+                </Button>
+				<Button
+                    bsStyle="primary"
+                    className="btn-margin"
+                    onClick={this.goTo.bind(this, 'admin')}
+                >
+                    Admin
+                </Button>
+				<Button
+                    bsStyle="primary"
+                    className="btn-margin"
+                    onClick={this.goTo.bind(this, 'upload')}
+                >
+                    Upload
                 </Button>
 			</Nav>
 		  </Navbar.Collapse>
