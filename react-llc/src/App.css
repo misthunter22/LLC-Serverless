@@ -1,3 +1,9 @@
 .btn-margin {
   margin: 7px 3px;
 }
+
+.float-nav {
+  position: fixed;
+  right: 0;
+  top: 0;
+}

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Navbar, Button } from 'react-bootstrap';
+import Content from './Home/Content';
+import NoAuth  from './Auth/NoAuth';
 import './App.css';
 
 class App extends Component {
@@ -17,6 +19,20 @@ class App extends Component {
 
   render() {
     const { isAuthenticated } = this.props.auth;
+	
+	let content = null;
+    if (isAuthenticated() && this.props.location.pathname === "/") {
+      content = 
+	    <div className="container">
+          <Content />
+		</div>;
+    } else if (!isAuthenticated()) {
+      content = 
+	    <div className="container">
+          <NoAuth />
+		</div>;
+    }
+	
     return (
       <div>
 		<Navbar>
@@ -55,30 +71,34 @@ class App extends Component {
               >
                 Upload
               </Button>
-			  {
-			    !isAuthenticated() && (
-				  <Button
-					bsStyle="primary"
-					className="btn-margin"
-					onClick={this.login.bind(this)}
-				  >
-					Log In
-				  </Button>
-			    )
-			  }
-			  {
-			   isAuthenticated() && (
-				  <Button
-					bsStyle="primary"
-					className="btn-margin"
-					onClick={this.logout.bind(this)}
-				  >
-					Log Out
-				  </Button>
-				)
-			  }
 		  </Navbar.Collapse>
 		</Navbar>
+		{
+          !isAuthenticated() && (
+            <Button
+			  bsStyle="primary"
+			  className="btn-margin"
+			  onClick={this.login.bind(this)}
+			>
+			  Log In
+		    </Button>
+	      )
+		}
+	    {
+		  isAuthenticated() && (
+		    <div className="float-nav">
+		      <span>Welcome, you! </span>
+		      <Button
+			    bsStyle="primary"
+				className="btn-margin"
+				onClick={this.logout.bind(this)}
+			  >
+			    Log Out
+			  </Button>
+			</div>
+		  )
+		}
+		{content}
 	  </div>
     );
   }

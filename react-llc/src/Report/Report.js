@@ -15,20 +15,6 @@ class Report extends Component {
               </h4>
             )
         }
-        {
-          !isAuthenticated() && (
-              <h4>
-                You are not logged in! Please{' '}
-                <a
-                  style={{ cursor: 'pointer' }}
-                  onClick={this.login.bind(this)}
-                >
-                  Log In
-                </a>
-                {' '}to continue. Report
-              </h4>
-            )
-        }
       </div>
     );
   }
