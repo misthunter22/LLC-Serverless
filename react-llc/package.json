@@ -2,11 +2,13 @@
   "name": "react-llc",
   "version": "0.1.0",
   "private": true,
-    "devDependencies": {
+  "devDependencies": {
     "react-scripts": "0.9.5"
   },
   "dependencies": {
+    "amazon-cognito-js": "^1.1.0",
     "auth0-js": "^8.7.0",
+    "aws-sdk": "^2.65.0",
     "bootstrap": "^3.3.7",
     "react": "^15.5.4",
     "react-bootstrap": "^0.31.0",
