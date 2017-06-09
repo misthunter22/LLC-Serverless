@@ -3,6 +3,7 @@ import NoAuth  from '../Auth/NoAuth';
 import Content from './Content';
 
 class Home extends Component {
+  
   render() {
 	const { isAuthenticated } = this.props.auth;
 	

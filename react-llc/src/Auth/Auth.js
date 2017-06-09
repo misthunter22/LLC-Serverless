@@ -2,6 +2,9 @@ import history from '../history';
 import auth0 from 'auth0-js';
 import { AUTH_CONFIG } from './auth0-variables';
 
+var AWS = require('aws-sdk');
+var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+
 export default class Auth {
   auth0 = new auth0.WebAuth({
     domain: AUTH_CONFIG.domain,
@@ -18,6 +21,12 @@ export default class Auth {
     this.logout = this.logout.bind(this);
     this.handleAuthentication = this.handleAuthentication.bind(this);
     this.isAuthenticated = this.isAuthenticated.bind(this);
+	
+	// Initialize the Amazon Cognito credentials provider
+	AWS.config.region = 'us-west-2'; // Region
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+	  IdentityPoolId: 'us-west-2:30e08014-2395-49e9-9c9e-976bbc53cfa8',
+	});
   }
 
   login() {

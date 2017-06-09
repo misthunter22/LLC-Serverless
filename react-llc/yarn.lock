@@ -64,6 +64,12 @@ alphanum-sort@^1.0.1, alphanum-sort@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/alphanum-sort/-/alphanum-sort-1.0.2.tgz#97a1119649b211ad33691d9f9f486a8ec9fbe0a3"
 
+amazon-cognito-identity-js@^1.18.0:
+  version "1.18.0"
+  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-1.18.0.tgz#15db42c64f038b7d009b3c35627fb5674f25ccd8"
+  dependencies:
+    aws-sdk "^2.6.0"
+
 amazon-cognito-js@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/amazon-cognito-js/-/amazon-cognito-js-1.1.0.tgz#f1b4398ef1f46f104526f38b10dc11a09d833a6b"
@@ -238,7 +244,7 @@ autoprefixer@6.7.2, autoprefixer@^6.3.1:
     postcss "^5.2.11"
     postcss-value-parser "^3.2.3"
 
-aws-sdk@^2.65.0:
+aws-sdk@^2.6.0, aws-sdk@^2.65.0:
   version "2.65.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.65.0.tgz#fb3ee1d565114f69a1a9bb2311b829b59c7c6e8f"
   dependencies:
