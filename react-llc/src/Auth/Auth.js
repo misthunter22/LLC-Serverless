@@ -21,12 +21,6 @@ export default class Auth {
     this.logout = this.logout.bind(this);
     this.handleAuthentication = this.handleAuthentication.bind(this);
     this.isAuthenticated = this.isAuthenticated.bind(this);
-	
-	// Initialize the Amazon Cognito credentials provider
-	AWS.config.region = 'us-west-2'; // Region
-	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	  IdentityPoolId: 'us-west-2:30e08014-2395-49e9-9c9e-976bbc53cfa8',
-	});
   }
 
   login() {
@@ -48,6 +42,15 @@ export default class Auth {
 
   setSession(authResult) {
     if (authResult && authResult.accessToken && authResult.idToken) {
+      // Initialize the Amazon Cognito credentials provider
+	  AWS.config.region = 'us-west-2'; // Region
+	  AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+	    IdentityPoolId: 'us-west-2:30e08014-2395-49e9-9c9e-976bbc53cfa8',
+	    Logins: {
+          'accounts.google.com': authResult.accessToken
+        }
+	  });		
+
       // Set the time that the access token will expire at
       let expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
       localStorage.setItem('access_token', authResult.accessToken);
