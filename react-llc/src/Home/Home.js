@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import NoAuth  from '../Auth/NoAuth';
 import Content from './Content';
 
 class Home extends Component {

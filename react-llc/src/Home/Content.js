@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Profile from '../Services/Profile';
 
 class Content extends Component {
   render() {
@@ -11,6 +12,7 @@ class Content extends Component {
 			Learn more about IDLA »
 	      </a>
 		</p>
+		<Profile />
       </div>
     );
   }

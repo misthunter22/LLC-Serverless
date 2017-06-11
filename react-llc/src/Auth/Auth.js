@@ -3,7 +3,6 @@ import auth0 from 'auth0-js';
 import { AUTH_CONFIG } from './auth0-variables';
 
 var AWS = require('aws-sdk');
-var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 
 export default class Auth {
   auth0 = new auth0.WebAuth({
@@ -41,16 +40,7 @@ export default class Auth {
   }
 
   setSession(authResult) {
-    if (authResult && authResult.accessToken && authResult.idToken) {
-      // Initialize the Amazon Cognito credentials provider
-	  AWS.config.region = 'us-west-2'; // Region
-	  AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	    IdentityPoolId: 'us-west-2:30e08014-2395-49e9-9c9e-976bbc53cfa8',
-	    Logins: {
-          'accounts.google.com': authResult.accessToken
-        }
-	  });		
-
+    if (authResult && authResult.accessToken && authResult.idToken) {		
       // Set the time that the access token will expire at
       let expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
       localStorage.setItem('access_token', authResult.accessToken);
