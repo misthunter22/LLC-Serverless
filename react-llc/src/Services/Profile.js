@@ -11,9 +11,9 @@ class Profile extends Component {
 	// Initialize the Amazon Cognito credentials provider
 	AWS.config.region = 'us-west-2'; // Region
 	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	  IdentityPoolId: 'us-west-2:30e08014-2395-49e9-9c9e-976bbc53cfa8',
+	  IdentityPoolId: 'us-west-2:b4c04701-3f71-4618-8a18-c9a72742dc7b',
 	  Logins: {
-        'accounts.google.com': localStorage.getItem('id_token')
+        'idla-auth.auth0.com': localStorage.getItem('id_token')
       }
 	});
 	
