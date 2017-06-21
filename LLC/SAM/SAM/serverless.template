@@ -58,76 +58,27 @@
         }
     },
 
-	"Db" : {
+	"DbLinks" : {
 		"Type" : "AWS::DynamoDB::Table",
 		"Properties" : {
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
             "AttributeType" : "S"   
-          },
-          {
-            "AttributeName" : "Source",
-            "AttributeType" : "S"
-          },
-          {
-            "AttributeName" : "Url",
-            "AttributeType" : "S"
-          },
-          {
-            "AttributeName" : "DateFirstFound",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "DateLastFound",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "AttemptCount",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "IsValid",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "DateLastChecked",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "AllTimeMinDownloadTime",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "AllTimeMaxDownloadTime",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "AllTimeStdDevDownloadTime",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "PastWeekMinDownloadTime",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "PastWeekMaxDownloadTime",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "PastWeekStdDevDownloadTime",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "DateStatsUpdated",
-            "AttributeType" : "N"
-          },
-		  {
-            "AttributeName" : "ReportNotBeforeDate",
-            "AttributeType" : "N"
           }
-        ]
-		}
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "5"
+		},
+		"TableName" : "LLC-Links"
+	  }
 	}
   },
 
