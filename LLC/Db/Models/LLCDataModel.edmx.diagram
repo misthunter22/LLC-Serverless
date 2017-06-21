@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="9605252dfe5d465baede95b48254a9af" Name="Diagram1">
+        <EntityTypeShape EntityType="LORLinkCheckerModel.C__MigrationHistory" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.AspNetRole" Width="1.5" PointX="5.75" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.AspNetUserClaim" Width="1.5" PointX="10.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.AspNetUserLogin" Width="1.5" PointX="10.25" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.AspNetUser" Width="1.5" PointX="8" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.LinkReport" Width="1.5" PointX="7.5" PointY="8" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.Link" Width="1.5" PointX="5.25" PointY="10.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.LinkStat" Width="1.5" PointX="7.5" PointY="11.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.Log" Width="1.5" PointX="12.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.PackageUploadFile" Width="1.5" PointX="9.75" PointY="15" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.PackageUpload" Width="1.5" PointX="7.5" PointY="18.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.S3Buckets" Width="1.5" PointX="0.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.S3Objects" Width="1.5" PointX="3" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.S3Objects_Links" Width="1.5" PointX="10.5" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.SchemaVersion" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.Setting" Width="1.5" PointX="12.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.Source" Width="1.5" PointX="3" PointY="12" IsExpanded="true" />
+        <EntityTypeShape EntityType="LORLinkCheckerModel.sysdiagram" Width="1.5" PointX="12.75" PointY="8.75" IsExpanded="true" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_LinkReportLink" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_Links_Sources" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_LinkStats_Links" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_ObjectLinks_Links" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_PackageUploadFileLink" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_PackageUploadPackageUploadFile" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_S3Objects_S3Buckets" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_Sources_S3Buckets" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.FK_ObjectLinks_LorObjects" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.AspNetUserRoles" ManuallyRouted="false" />
+        <AssociationConnector Association="LORLinkCheckerModel.PackageUploadLink" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -41,9 +41,20 @@
       <HintPath>..\packages\dbup.3.3.5\lib\net35\DbUp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -52,6 +63,76 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\AspNetRole.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUser.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUserClaim.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUserLogin.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\C__MigrationHistory.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Link.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LinkReport.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LinkStat.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LLCDataModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LLCDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LLCDataModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LLCDataModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LLCDataModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Log.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PackageUpload.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PackageUploadFile.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Program.cs" />
+    <Compile Include="Models\S3Buckets.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\S3Objects.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\S3Objects_Links.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SchemaVersion.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Setting.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Source.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
+      <DependentUpon>LLCDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,13 +140,32 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <EntityDeploy Include="Models\LLCDataModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>LLCDataModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Models\LLCDataModel.edmx.diagram">
+      <DependentUpon>LLCDataModel.edmx</DependentUpon>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
+    <Content Include="Models\LLCDataModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LLCDataModel.Context.cs</LastGenOutput>
+      <DependentUpon>LLCDataModel.edmx</DependentUpon>
+    </Content>
+    <Content Include="Models\LLCDataModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>LLCDataModel.edmx</DependentUpon>
+      <LastGenOutput>LLCDataModel.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Script0001 - Inital DBl.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

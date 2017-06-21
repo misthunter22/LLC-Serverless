@@ -1,0 +1,1276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="LORLinkCheckerModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__MigrationHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+            <PropertyRef Name="ContextKey" />
+          </Key>
+          <Property Name="MigrationId" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="ContextKey" Type="nvarchar" MaxLength="300" Nullable="false" />
+          <Property Name="Model" Type="varbinary(max)" Nullable="false" />
+          <Property Name="ProductVersion" Type="nvarchar" MaxLength="32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetRoles">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetUserClaims">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ClaimType" Type="nvarchar(max)" />
+          <Property Name="ClaimValue" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="AspNetUserLogins">
+          <Key>
+            <PropertyRef Name="LoginProvider" />
+            <PropertyRef Name="ProviderKey" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="LoginProvider" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ProviderKey" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetUserRoles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="RoleId" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="EmailConfirmed" Type="bit" Nullable="false" />
+          <Property Name="PasswordHash" Type="nvarchar(max)" />
+          <Property Name="SecurityStamp" Type="nvarchar(max)" />
+          <Property Name="PhoneNumber" Type="nvarchar(max)" />
+          <Property Name="PhoneNumberConfirmed" Type="bit" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="bit" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="datetime" />
+          <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LinkReports">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ContentSize" Type="bigint" />
+          <Property Name="Mean" Type="bigint" Nullable="false" />
+          <Property Name="StandardDeviation" Type="float" Nullable="false" />
+          <Property Name="SdMaximum" Type="int" Nullable="false" />
+          <Property Name="Link_LinkId" Type="int" Nullable="false" />
+          <Property Name="LinkStatId" Type="int" />
+        </EntityType>
+        <EntityType Name="Links">
+          <Key>
+            <PropertyRef Name="LinkId" />
+          </Key>
+          <Property Name="LinkId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SourceId" Type="int" />
+          <Property Name="LinkUrl" Type="varchar" MaxLength="2048" Nullable="false" />
+          <Property Name="DateFirstFound" Type="smalldatetime" Nullable="false" />
+          <Property Name="DateLastFound" Type="smalldatetime" Nullable="false" />
+          <Property Name="LinkCheckDisabledDate" Type="smalldatetime" />
+          <Property Name="LinkCheckDisabledUser" Type="varchar" MaxLength="256" />
+          <Property Name="AttemptCount" Type="int" Nullable="false" />
+          <Property Name="IsValid" Type="bit" />
+          <Property Name="DateLastChecked" Type="smalldatetime" />
+          <Property Name="AllTimeMinDownloadTime" Type="int" />
+          <Property Name="AllTimeMaxDownloadTime" Type="int" />
+          <Property Name="AllTimeStdDevDownloadTime" Type="decimal" Precision="14" Scale="4" />
+          <Property Name="PastWeekMinDownloadTime" Type="int" />
+          <Property Name="PastWeekMaxDownloadTime" Type="int" />
+          <Property Name="PastWeekStdDevDownloadTime" Type="decimal" Precision="14" Scale="4" />
+          <Property Name="DateStatsUpdated" Type="smalldatetime" />
+          <Property Name="ReportNotBeforeDate" Type="date" />
+        </EntityType>
+        <EntityType Name="LinkStats">
+          <Key>
+            <PropertyRef Name="LinkStatId" />
+          </Key>
+          <Property Name="LinkStatId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LinkId" Type="int" Nullable="false" />
+          <Property Name="ContentSize" Type="bigint" />
+          <Property Name="DownloadTime" Type="int" />
+          <Property Name="DateChecked" Type="datetime" Nullable="false" />
+          <Property Name="ErrorMessage" Type="varchar" MaxLength="512" />
+          <Property Name="StatusCode" Type="varchar" MaxLength="256" />
+          <Property Name="StatusDesc" Type="varchar" MaxLength="2048" />
+          <Property Name="ContentType" Type="varchar" MaxLength="256" />
+        </EntityType>
+        <EntityType Name="Logs">
+          <Key>
+            <PropertyRef Name="LogId" />
+          </Key>
+          <Property Name="LogId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DateCreated" Type="smalldatetime" Nullable="false" />
+          <Property Name="Source" Type="varchar" MaxLength="50" />
+          <Property Name="Title" Type="varchar" MaxLength="256" Nullable="false" />
+          <Property Name="Notes" Type="varchar" MaxLength="2048" />
+          <Property Name="IsError" Type="bit" Nullable="false" />
+          <Property Name="ExceptionDetails" Type="varchar" MaxLength="2048" />
+        </EntityType>
+        <EntityType Name="PackageUploadFiles">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CourseLocation" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Link_LinkId" Type="int" Nullable="false" />
+          <Property Name="Protocol" Type="varchar(max)" />
+          <Property Name="LinkName" Type="varchar(max)" />
+          <Property Name="ParentFolder" Type="varchar(max)" />
+          <Property Name="PackageUploadId" Type="int" />
+        </EntityType>
+        <EntityType Name="PackageUploadLink">
+          <Key>
+            <PropertyRef Name="PackageUploads_Id" />
+            <PropertyRef Name="Links_LinkId" />
+          </Key>
+          <Property Name="PackageUploads_Id" Type="int" Nullable="false" />
+          <Property Name="Links_LinkId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PackageUploads">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="UploadedBy" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DateUploaded" Type="datetime" Nullable="false" />
+          <Property Name="Key" Type="varchar(max)" />
+          <Property Name="PackageProcessed" Type="bit" />
+          <Property Name="FileName" Type="varchar(max)" />
+          <Property Name="ImsSchema" Type="varchar(max)" />
+          <Property Name="ImsSchemaVersion" Type="varchar(max)" />
+          <Property Name="ImsTitle" Type="varchar(max)" />
+          <Property Name="ImsDescription" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="S3Buckets">
+          <Key>
+            <PropertyRef Name="S3BucketId" />
+          </Key>
+          <Property Name="S3BucketId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="256" Nullable="false" />
+          <Property Name="AccessKey" Type="varchar" MaxLength="256" Nullable="false" />
+          <Property Name="SecretKey" Type="varchar" MaxLength="256" Nullable="false" />
+          <Property Name="Region" Type="varchar" MaxLength="256" />
+          <Property Name="SearchPrefix" Type="varchar" MaxLength="256" />
+          <Property Name="DateCreated" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="S3Objects">
+          <Key>
+            <PropertyRef Name="S3ObjectId" />
+          </Key>
+          <Property Name="S3ObjectId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="S3BucketId" Type="int" Nullable="false" />
+          <Property Name="Key" Type="varchar" MaxLength="1024" Nullable="false" />
+          <Property Name="ItemName" Type="varchar" MaxLength="256" Nullable="false" />
+          <Property Name="ETag" Type="varchar" MaxLength="256" />
+          <Property Name="IsFolder" Type="bit" Nullable="false" />
+          <Property Name="ContentLastModified" Type="datetime" />
+          <Property Name="DateFirstFound" Type="smalldatetime" Nullable="false" />
+          <Property Name="DateLastFound" Type="smalldatetime" Nullable="false" />
+          <Property Name="DateLinksLastExtracted" Type="smalldatetime" />
+          <Property Name="LinkCheckDisabledDate" Type="smalldatetime" />
+          <Property Name="LinkCheckDisabledUser" Type="varchar" MaxLength="256" />
+        </EntityType>
+        <EntityType Name="S3Objects_Links">
+          <Key>
+            <PropertyRef Name="S3ObjectLinkId" />
+          </Key>
+          <Property Name="S3ObjectLinkId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="S3ObjectId" Type="int" Nullable="false" />
+          <Property Name="LinkId" Type="int" Nullable="false" />
+          <Property Name="DateFirstFound" Type="smalldatetime" Nullable="false" />
+          <Property Name="DateLastFound" Type="smalldatetime" Nullable="false" />
+          <Property Name="DateRemoved" Type="smalldatetime" />
+        </EntityType>
+        <EntityType Name="SchemaVersions">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ScriptName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Applied" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Settings">
+          <Key>
+            <PropertyRef Name="SettingId" />
+          </Key>
+          <Property Name="SettingId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="256" Nullable="false" />
+          <Property Name="Value" Type="varchar" MaxLength="1024" />
+          <Property Name="Description" Type="varchar" MaxLength="1024" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+          <Property Name="DateModified" Type="datetime" />
+          <Property Name="ModifiedUser" Type="varchar" MaxLength="256" />
+        </EntityType>
+        <EntityType Name="Sources">
+          <Key>
+            <PropertyRef Name="SourceId" />
+          </Key>
+          <Property Name="SourceId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="256" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="1024" />
+          <Property Name="AllowLinkChecking" Type="bit" Nullable="false" />
+          <Property Name="AllowLinkExtractions" Type="bit" Nullable="false" />
+          <Property Name="S3BucketId" Type="int" />
+          <Property Name="DateCreated" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserClaims" Type="Self.AspNetUserClaims" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserClaims">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserLogins" Type="Self.AspNetUserLogins" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserLogins">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
+          <End Role="AspNetRoles" Type="Self.AspNetRoles" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserRoles" Type="Self.AspNetUserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetRoles">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserRoles" Type="Self.AspNetUserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserRoles">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LinkReportLink">
+          <End Role="Links" Type="Self.Links" Multiplicity="1" />
+          <End Role="LinkReports" Type="Self.LinkReports" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Links">
+              <PropertyRef Name="LinkId" />
+            </Principal>
+            <Dependent Role="LinkReports">
+              <PropertyRef Name="Link_LinkId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Links_Sources">
+          <End Role="Sources" Type="Self.Sources" Multiplicity="0..1" />
+          <End Role="Links" Type="Self.Links" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sources">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="Links">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LinkStats_Links">
+          <End Role="Links" Type="Self.Links" Multiplicity="1" />
+          <End Role="LinkStats" Type="Self.LinkStats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Links">
+              <PropertyRef Name="LinkId" />
+            </Principal>
+            <Dependent Role="LinkStats">
+              <PropertyRef Name="LinkId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ObjectLinks_Links">
+          <End Role="Links" Type="Self.Links" Multiplicity="1" />
+          <End Role="S3Objects_Links" Type="Self.S3Objects_Links" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Links">
+              <PropertyRef Name="LinkId" />
+            </Principal>
+            <Dependent Role="S3Objects_Links">
+              <PropertyRef Name="LinkId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ObjectLinks_LorObjects">
+          <End Role="S3Objects" Type="Self.S3Objects" Multiplicity="1" />
+          <End Role="S3Objects_Links" Type="Self.S3Objects_Links" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="S3Objects">
+              <PropertyRef Name="S3ObjectId" />
+            </Principal>
+            <Dependent Role="S3Objects_Links">
+              <PropertyRef Name="S3ObjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PackageUploadFileLink">
+          <End Role="Links" Type="Self.Links" Multiplicity="1" />
+          <End Role="PackageUploadFiles" Type="Self.PackageUploadFiles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Links">
+              <PropertyRef Name="LinkId" />
+            </Principal>
+            <Dependent Role="PackageUploadFiles">
+              <PropertyRef Name="Link_LinkId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PackageUploadLink_Link">
+          <End Role="Links" Type="Self.Links" Multiplicity="1" />
+          <End Role="PackageUploadLink" Type="Self.PackageUploadLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Links">
+              <PropertyRef Name="LinkId" />
+            </Principal>
+            <Dependent Role="PackageUploadLink">
+              <PropertyRef Name="Links_LinkId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PackageUploadLink_PackageUpload">
+          <End Role="PackageUploads" Type="Self.PackageUploads" Multiplicity="1" />
+          <End Role="PackageUploadLink" Type="Self.PackageUploadLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PackageUploads">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PackageUploadLink">
+              <PropertyRef Name="PackageUploads_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PackageUploadPackageUploadFile">
+          <End Role="PackageUploads" Type="Self.PackageUploads" Multiplicity="0..1" />
+          <End Role="PackageUploadFiles" Type="Self.PackageUploadFiles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PackageUploads">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PackageUploadFiles">
+              <PropertyRef Name="PackageUploadId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_S3Objects_S3Buckets">
+          <End Role="S3Buckets" Type="Self.S3Buckets" Multiplicity="1" />
+          <End Role="S3Objects" Type="Self.S3Objects" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="S3Buckets">
+              <PropertyRef Name="S3BucketId" />
+            </Principal>
+            <Dependent Role="S3Objects">
+              <PropertyRef Name="S3BucketId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Sources_S3Buckets">
+          <End Role="S3Buckets" Type="Self.S3Buckets" Multiplicity="0..1" />
+          <End Role="Sources" Type="Self.Sources" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="S3Buckets">
+              <PropertyRef Name="S3BucketId" />
+            </Principal>
+            <Dependent Role="Sources">
+              <PropertyRef Name="S3BucketId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="LORLinkCheckerModelStoreContainer">
+          <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaims" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LinkReports" EntityType="Self.LinkReports" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Links" EntityType="Self.Links" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LinkStats" EntityType="Self.LinkStats" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Logs" EntityType="Self.Logs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PackageUploadFiles" EntityType="Self.PackageUploadFiles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PackageUploadLink" EntityType="Self.PackageUploadLink" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PackageUploads" EntityType="Self.PackageUploads" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="S3Buckets" EntityType="Self.S3Buckets" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="S3Objects" EntityType="Self.S3Objects" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="S3Objects_Links" EntityType="Self.S3Objects_Links" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SchemaVersions" EntityType="Self.SchemaVersions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Settings" EntityType="Self.Settings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sources" EntityType="Self.Sources" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserLogins" EntitySet="AspNetUserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+            <End Role="AspNetUserRoles" EntitySet="AspNetUserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserRoles" EntitySet="AspNetUserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LinkReportLink" Association="Self.FK_LinkReportLink">
+            <End Role="Links" EntitySet="Links" />
+            <End Role="LinkReports" EntitySet="LinkReports" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Links_Sources" Association="Self.FK_Links_Sources">
+            <End Role="Sources" EntitySet="Sources" />
+            <End Role="Links" EntitySet="Links" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LinkStats_Links" Association="Self.FK_LinkStats_Links">
+            <End Role="Links" EntitySet="Links" />
+            <End Role="LinkStats" EntitySet="LinkStats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ObjectLinks_Links" Association="Self.FK_ObjectLinks_Links">
+            <End Role="Links" EntitySet="Links" />
+            <End Role="S3Objects_Links" EntitySet="S3Objects_Links" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ObjectLinks_LorObjects" Association="Self.FK_ObjectLinks_LorObjects">
+            <End Role="S3Objects" EntitySet="S3Objects" />
+            <End Role="S3Objects_Links" EntitySet="S3Objects_Links" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PackageUploadFileLink" Association="Self.FK_PackageUploadFileLink">
+            <End Role="Links" EntitySet="Links" />
+            <End Role="PackageUploadFiles" EntitySet="PackageUploadFiles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PackageUploadLink_Link" Association="Self.FK_PackageUploadLink_Link">
+            <End Role="Links" EntitySet="Links" />
+            <End Role="PackageUploadLink" EntitySet="PackageUploadLink" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PackageUploadLink_PackageUpload" Association="Self.FK_PackageUploadLink_PackageUpload">
+            <End Role="PackageUploads" EntitySet="PackageUploads" />
+            <End Role="PackageUploadLink" EntitySet="PackageUploadLink" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PackageUploadPackageUploadFile" Association="Self.FK_PackageUploadPackageUploadFile">
+            <End Role="PackageUploads" EntitySet="PackageUploads" />
+            <End Role="PackageUploadFiles" EntitySet="PackageUploadFiles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_S3Objects_S3Buckets" Association="Self.FK_S3Objects_S3Buckets">
+            <End Role="S3Buckets" EntitySet="S3Buckets" />
+            <End Role="S3Objects" EntitySet="S3Objects" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Sources_S3Buckets" Association="Self.FK_Sources_S3Buckets">
+            <End Role="S3Buckets" EntitySet="S3Buckets" />
+            <End Role="Sources" EntitySet="Sources" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="LORLinkCheckerModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="C__MigrationHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+            <PropertyRef Name="ContextKey" />
+          </Key>
+          <Property Name="MigrationId" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ContextKey" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Model" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="ProductVersion" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetRole">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetUsers" Relationship="Self.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
+        </EntityType>
+        <EntityType Name="AspNetUserClaim">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ClaimType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ClaimValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaims" ToRole="AspNetUsers" />
+        </EntityType>
+        <EntityType Name="AspNetUserLogin">
+          <Key>
+            <PropertyRef Name="LoginProvider" />
+            <PropertyRef Name="ProviderKey" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="LoginProvider" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProviderKey" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogins" ToRole="AspNetUsers" />
+        </EntityType>
+        <EntityType Name="AspNetUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
+          <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetUserClaims" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
+          <NavigationProperty Name="AspNetUserLogins" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
+          <NavigationProperty Name="AspNetRoles" Relationship="Self.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
+        </EntityType>
+        <EntityType Name="LinkReport">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ContentSize" Type="Int64" />
+          <Property Name="Mean" Type="Int64" Nullable="false" />
+          <Property Name="StandardDeviation" Type="Double" Nullable="false" />
+          <Property Name="SdMaximum" Type="Int32" Nullable="false" />
+          <Property Name="Link_LinkId" Type="Int32" Nullable="false" />
+          <Property Name="LinkStatId" Type="Int32" />
+          <NavigationProperty Name="Link" Relationship="Self.FK_LinkReportLink" FromRole="LinkReports" ToRole="Links" />
+        </EntityType>
+        <EntityType Name="Link">
+          <Key>
+            <PropertyRef Name="LinkId" />
+          </Key>
+          <Property Name="LinkId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SourceId" Type="Int32" />
+          <Property Name="LinkUrl" Type="String" MaxLength="2048" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateFirstFound" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="DateLastFound" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="LinkCheckDisabledDate" Type="DateTime" Precision="0" />
+          <Property Name="LinkCheckDisabledUser" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="AttemptCount" Type="Int32" Nullable="false" />
+          <Property Name="IsValid" Type="Boolean" />
+          <Property Name="DateLastChecked" Type="DateTime" Precision="0" />
+          <Property Name="AllTimeMinDownloadTime" Type="Int32" />
+          <Property Name="AllTimeMaxDownloadTime" Type="Int32" />
+          <Property Name="AllTimeStdDevDownloadTime" Type="Decimal" Precision="14" Scale="4" />
+          <Property Name="PastWeekMinDownloadTime" Type="Int32" />
+          <Property Name="PastWeekMaxDownloadTime" Type="Int32" />
+          <Property Name="PastWeekStdDevDownloadTime" Type="Decimal" Precision="14" Scale="4" />
+          <Property Name="DateStatsUpdated" Type="DateTime" Precision="0" />
+          <Property Name="ReportNotBeforeDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="LinkReports" Relationship="Self.FK_LinkReportLink" FromRole="Links" ToRole="LinkReports" />
+          <NavigationProperty Name="Source" Relationship="Self.FK_Links_Sources" FromRole="Links" ToRole="Sources" />
+          <NavigationProperty Name="LinkStats" Relationship="Self.FK_LinkStats_Links" FromRole="Links" ToRole="LinkStats" />
+          <NavigationProperty Name="S3Objects_Links" Relationship="Self.FK_ObjectLinks_Links" FromRole="Links" ToRole="S3Objects_Links" />
+          <NavigationProperty Name="PackageUploadFiles" Relationship="Self.FK_PackageUploadFileLink" FromRole="Links" ToRole="PackageUploadFiles" />
+          <NavigationProperty Name="PackageUploads" Relationship="Self.PackageUploadLink" FromRole="Links" ToRole="PackageUploads" />
+        </EntityType>
+        <EntityType Name="LinkStat">
+          <Key>
+            <PropertyRef Name="LinkStatId" />
+          </Key>
+          <Property Name="LinkStatId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LinkId" Type="Int32" Nullable="false" />
+          <Property Name="ContentSize" Type="Int64" />
+          <Property Name="DownloadTime" Type="Int32" />
+          <Property Name="DateChecked" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ErrorMessage" Type="String" MaxLength="512" FixedLength="false" Unicode="false" />
+          <Property Name="StatusCode" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="StatusDesc" Type="String" MaxLength="2048" FixedLength="false" Unicode="false" />
+          <Property Name="ContentType" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Link" Relationship="Self.FK_LinkStats_Links" FromRole="LinkStats" ToRole="Links" />
+        </EntityType>
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="LogId" />
+          </Key>
+          <Property Name="LogId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Source" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Title" Type="String" MaxLength="256" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Notes" Type="String" MaxLength="2048" FixedLength="false" Unicode="false" />
+          <Property Name="IsError" Type="Boolean" Nullable="false" />
+          <Property Name="ExceptionDetails" Type="String" MaxLength="2048" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="PackageUploadFile">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CourseLocation" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Link_LinkId" Type="Int32" Nullable="false" />
+          <Property Name="Protocol" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LinkName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ParentFolder" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PackageUploadId" Type="Int32" />
+          <NavigationProperty Name="Link" Relationship="Self.FK_PackageUploadFileLink" FromRole="PackageUploadFiles" ToRole="Links" />
+          <NavigationProperty Name="PackageUpload" Relationship="Self.FK_PackageUploadPackageUploadFile" FromRole="PackageUploadFiles" ToRole="PackageUploads" />
+        </EntityType>
+        <EntityType Name="PackageUpload">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UploadedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateUploaded" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Key" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PackageProcessed" Type="Boolean" />
+          <Property Name="FileName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ImsSchema" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ImsSchemaVersion" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ImsTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ImsDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PackageUploadFiles" Relationship="Self.FK_PackageUploadPackageUploadFile" FromRole="PackageUploads" ToRole="PackageUploadFiles" />
+          <NavigationProperty Name="Links" Relationship="Self.PackageUploadLink" FromRole="PackageUploads" ToRole="Links" />
+        </EntityType>
+        <EntityType Name="S3Buckets">
+          <Key>
+            <PropertyRef Name="S3BucketId" />
+          </Key>
+          <Property Name="S3BucketId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="AccessKey" Type="String" MaxLength="256" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SecretKey" Type="String" MaxLength="256" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Region" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="SearchPrefix" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="S3Objects" Relationship="Self.FK_S3Objects_S3Buckets" FromRole="S3Buckets" ToRole="S3Objects" />
+          <NavigationProperty Name="Sources" Relationship="Self.FK_Sources_S3Buckets" FromRole="S3Buckets" ToRole="Sources" />
+        </EntityType>
+        <EntityType Name="S3Objects">
+          <Key>
+            <PropertyRef Name="S3ObjectId" />
+          </Key>
+          <Property Name="S3ObjectId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="S3BucketId" Type="Int32" Nullable="false" />
+          <Property Name="Key" Type="String" MaxLength="1024" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ItemName" Type="String" MaxLength="256" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ETag" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="IsFolder" Type="Boolean" Nullable="false" />
+          <Property Name="ContentLastModified" Type="DateTime" Precision="3" />
+          <Property Name="DateFirstFound" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="DateLastFound" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="DateLinksLastExtracted" Type="DateTime" Precision="0" />
+          <Property Name="LinkCheckDisabledDate" Type="DateTime" Precision="0" />
+          <Property Name="LinkCheckDisabledUser" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="S3Buckets" Relationship="Self.FK_S3Objects_S3Buckets" FromRole="S3Objects" ToRole="S3Buckets" />
+          <NavigationProperty Name="S3Objects_Links" Relationship="Self.FK_ObjectLinks_LorObjects" FromRole="S3Objects" ToRole="S3Objects_Links" />
+        </EntityType>
+        <EntityType Name="S3Objects_Links">
+          <Key>
+            <PropertyRef Name="S3ObjectLinkId" />
+          </Key>
+          <Property Name="S3ObjectLinkId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="S3ObjectId" Type="Int32" Nullable="false" />
+          <Property Name="LinkId" Type="Int32" Nullable="false" />
+          <Property Name="DateFirstFound" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="DateLastFound" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="DateRemoved" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="Link" Relationship="Self.FK_ObjectLinks_Links" FromRole="S3Objects_Links" ToRole="Links" />
+          <NavigationProperty Name="S3Objects" Relationship="Self.FK_ObjectLinks_LorObjects" FromRole="S3Objects_Links" ToRole="S3Objects" />
+        </EntityType>
+        <EntityType Name="SchemaVersion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ScriptName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Applied" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Setting">
+          <Key>
+            <PropertyRef Name="SettingId" />
+          </Key>
+          <Property Name="SettingId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Value" Type="String" MaxLength="1024" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="1024" FixedLength="false" Unicode="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateModified" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedUser" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Source">
+          <Key>
+            <PropertyRef Name="SourceId" />
+          </Key>
+          <Property Name="SourceId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="1024" FixedLength="false" Unicode="false" />
+          <Property Name="AllowLinkChecking" Type="Boolean" Nullable="false" />
+          <Property Name="AllowLinkExtractions" Type="Boolean" Nullable="false" />
+          <Property Name="S3BucketId" Type="Int32" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="Links" Relationship="Self.FK_Links_Sources" FromRole="Sources" ToRole="Links" />
+          <NavigationProperty Name="S3Buckets" Relationship="Self.FK_Sources_S3Buckets" FromRole="Sources" ToRole="S3Buckets" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserClaims" Type="Self.AspNetUserClaim" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserClaims">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserLogins" Type="Self.AspNetUserLogin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserLogins">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LinkReportLink">
+          <End Role="Links" Type="Self.Link" Multiplicity="1" />
+          <End Role="LinkReports" Type="Self.LinkReport" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Links">
+              <PropertyRef Name="LinkId" />
+            </Principal>
+            <Dependent Role="LinkReports">
+              <PropertyRef Name="Link_LinkId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Links_Sources">
+          <End Role="Sources" Type="Self.Source" Multiplicity="0..1" />
+          <End Role="Links" Type="Self.Link" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sources">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="Links">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LinkStats_Links">
+          <End Role="Links" Type="Self.Link" Multiplicity="1" />
+          <End Role="LinkStats" Type="Self.LinkStat" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Links">
+              <PropertyRef Name="LinkId" />
+            </Principal>
+            <Dependent Role="LinkStats">
+              <PropertyRef Name="LinkId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ObjectLinks_Links">
+          <End Role="Links" Type="Self.Link" Multiplicity="1" />
+          <End Role="S3Objects_Links" Type="Self.S3Objects_Links" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Links">
+              <PropertyRef Name="LinkId" />
+            </Principal>
+            <Dependent Role="S3Objects_Links">
+              <PropertyRef Name="LinkId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PackageUploadFileLink">
+          <End Role="Links" Type="Self.Link" Multiplicity="1" />
+          <End Role="PackageUploadFiles" Type="Self.PackageUploadFile" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Links">
+              <PropertyRef Name="LinkId" />
+            </Principal>
+            <Dependent Role="PackageUploadFiles">
+              <PropertyRef Name="Link_LinkId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PackageUploadPackageUploadFile">
+          <End Role="PackageUploads" Type="Self.PackageUpload" Multiplicity="0..1" />
+          <End Role="PackageUploadFiles" Type="Self.PackageUploadFile" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PackageUploads">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PackageUploadFiles">
+              <PropertyRef Name="PackageUploadId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_S3Objects_S3Buckets">
+          <End Role="S3Buckets" Type="Self.S3Buckets" Multiplicity="1" />
+          <End Role="S3Objects" Type="Self.S3Objects" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="S3Buckets">
+              <PropertyRef Name="S3BucketId" />
+            </Principal>
+            <Dependent Role="S3Objects">
+              <PropertyRef Name="S3BucketId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Sources_S3Buckets">
+          <End Role="S3Buckets" Type="Self.S3Buckets" Multiplicity="0..1" />
+          <End Role="Sources" Type="Self.Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="S3Buckets">
+              <PropertyRef Name="S3BucketId" />
+            </Principal>
+            <Dependent Role="Sources">
+              <PropertyRef Name="S3BucketId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ObjectLinks_LorObjects">
+          <End Role="S3Objects" Type="Self.S3Objects" Multiplicity="1" />
+          <End Role="S3Objects_Links" Type="Self.S3Objects_Links" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="S3Objects">
+              <PropertyRef Name="S3ObjectId" />
+            </Principal>
+            <Dependent Role="S3Objects_Links">
+              <PropertyRef Name="S3ObjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="AspNetUserRoles">
+          <End Role="AspNetRoles" Type="Self.AspNetRole" Multiplicity="*" />
+          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="*" />
+        </Association>
+        <Association Name="PackageUploadLink">
+          <End Role="Links" Type="Self.Link" Multiplicity="*" />
+          <End Role="PackageUploads" Type="Self.PackageUpload" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__MigrationHistory" EntityType="Self.C__MigrationHistory" />
+          <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRole" />
+          <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaim" />
+          <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogin" />
+          <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUser" />
+          <EntitySet Name="LinkReports" EntityType="Self.LinkReport" />
+          <EntitySet Name="Links" EntityType="Self.Link" />
+          <EntitySet Name="LinkStats" EntityType="Self.LinkStat" />
+          <EntitySet Name="Logs" EntityType="Self.Log" />
+          <EntitySet Name="PackageUploadFiles" EntityType="Self.PackageUploadFile" />
+          <EntitySet Name="PackageUploads" EntityType="Self.PackageUpload" />
+          <EntitySet Name="S3Buckets" EntityType="Self.S3Buckets" />
+          <EntitySet Name="S3Objects" EntityType="Self.S3Objects" />
+          <EntitySet Name="S3Objects_Links" EntityType="Self.S3Objects_Links" />
+          <EntitySet Name="SchemaVersions" EntityType="Self.SchemaVersion" />
+          <EntitySet Name="Settings" EntityType="Self.Setting" />
+          <EntitySet Name="Sources" EntityType="Self.Source" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserLogins" EntitySet="AspNetUserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LinkReportLink" Association="Self.FK_LinkReportLink">
+            <End Role="Links" EntitySet="Links" />
+            <End Role="LinkReports" EntitySet="LinkReports" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Links_Sources" Association="Self.FK_Links_Sources">
+            <End Role="Sources" EntitySet="Sources" />
+            <End Role="Links" EntitySet="Links" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LinkStats_Links" Association="Self.FK_LinkStats_Links">
+            <End Role="Links" EntitySet="Links" />
+            <End Role="LinkStats" EntitySet="LinkStats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ObjectLinks_Links" Association="Self.FK_ObjectLinks_Links">
+            <End Role="Links" EntitySet="Links" />
+            <End Role="S3Objects_Links" EntitySet="S3Objects_Links" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PackageUploadFileLink" Association="Self.FK_PackageUploadFileLink">
+            <End Role="Links" EntitySet="Links" />
+            <End Role="PackageUploadFiles" EntitySet="PackageUploadFiles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PackageUploadPackageUploadFile" Association="Self.FK_PackageUploadPackageUploadFile">
+            <End Role="PackageUploads" EntitySet="PackageUploads" />
+            <End Role="PackageUploadFiles" EntitySet="PackageUploadFiles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_S3Objects_S3Buckets" Association="Self.FK_S3Objects_S3Buckets">
+            <End Role="S3Buckets" EntitySet="S3Buckets" />
+            <End Role="S3Objects" EntitySet="S3Objects" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Sources_S3Buckets" Association="Self.FK_Sources_S3Buckets">
+            <End Role="S3Buckets" EntitySet="S3Buckets" />
+            <End Role="Sources" EntitySet="Sources" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ObjectLinks_LorObjects" Association="Self.FK_ObjectLinks_LorObjects">
+            <End Role="S3Objects" EntitySet="S3Objects" />
+            <End Role="S3Objects_Links" EntitySet="S3Objects_Links" />
+          </AssociationSet>
+          <AssociationSet Name="AspNetUserRoles" Association="Self.AspNetUserRoles">
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+          </AssociationSet>
+          <AssociationSet Name="PackageUploadLink" Association="Self.PackageUploadLink">
+            <End Role="Links" EntitySet="Links" />
+            <End Role="PackageUploads" EntitySet="PackageUploads" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="LORLinkCheckerModelStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="C__MigrationHistory">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.C__MigrationHistory">
+              <MappingFragment StoreEntitySet="__MigrationHistory">
+                <ScalarProperty Name="MigrationId" ColumnName="MigrationId" />
+                <ScalarProperty Name="ContextKey" ColumnName="ContextKey" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="ProductVersion" ColumnName="ProductVersion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetRoles">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.AspNetRole">
+              <MappingFragment StoreEntitySet="AspNetRoles">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetUserClaims">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.AspNetUserClaim">
+              <MappingFragment StoreEntitySet="AspNetUserClaims">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
+                <ScalarProperty Name="ClaimValue" ColumnName="ClaimValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetUserLogins">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.AspNetUserLogin">
+              <MappingFragment StoreEntitySet="AspNetUserLogins">
+                <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
+                <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetUsers">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.AspNetUser">
+              <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LinkReports">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.LinkReport">
+              <MappingFragment StoreEntitySet="LinkReports">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ContentSize" ColumnName="ContentSize" />
+                <ScalarProperty Name="Mean" ColumnName="Mean" />
+                <ScalarProperty Name="StandardDeviation" ColumnName="StandardDeviation" />
+                <ScalarProperty Name="SdMaximum" ColumnName="SdMaximum" />
+                <ScalarProperty Name="Link_LinkId" ColumnName="Link_LinkId" />
+                <ScalarProperty Name="LinkStatId" ColumnName="LinkStatId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Links">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.Link">
+              <MappingFragment StoreEntitySet="Links">
+                <ScalarProperty Name="LinkId" ColumnName="LinkId" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="LinkUrl" ColumnName="LinkUrl" />
+                <ScalarProperty Name="DateFirstFound" ColumnName="DateFirstFound" />
+                <ScalarProperty Name="DateLastFound" ColumnName="DateLastFound" />
+                <ScalarProperty Name="LinkCheckDisabledDate" ColumnName="LinkCheckDisabledDate" />
+                <ScalarProperty Name="LinkCheckDisabledUser" ColumnName="LinkCheckDisabledUser" />
+                <ScalarProperty Name="AttemptCount" ColumnName="AttemptCount" />
+                <ScalarProperty Name="IsValid" ColumnName="IsValid" />
+                <ScalarProperty Name="DateLastChecked" ColumnName="DateLastChecked" />
+                <ScalarProperty Name="AllTimeMinDownloadTime" ColumnName="AllTimeMinDownloadTime" />
+                <ScalarProperty Name="AllTimeMaxDownloadTime" ColumnName="AllTimeMaxDownloadTime" />
+                <ScalarProperty Name="AllTimeStdDevDownloadTime" ColumnName="AllTimeStdDevDownloadTime" />
+                <ScalarProperty Name="PastWeekMinDownloadTime" ColumnName="PastWeekMinDownloadTime" />
+                <ScalarProperty Name="PastWeekMaxDownloadTime" ColumnName="PastWeekMaxDownloadTime" />
+                <ScalarProperty Name="PastWeekStdDevDownloadTime" ColumnName="PastWeekStdDevDownloadTime" />
+                <ScalarProperty Name="DateStatsUpdated" ColumnName="DateStatsUpdated" />
+                <ScalarProperty Name="ReportNotBeforeDate" ColumnName="ReportNotBeforeDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LinkStats">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.LinkStat">
+              <MappingFragment StoreEntitySet="LinkStats">
+                <ScalarProperty Name="LinkStatId" ColumnName="LinkStatId" />
+                <ScalarProperty Name="LinkId" ColumnName="LinkId" />
+                <ScalarProperty Name="ContentSize" ColumnName="ContentSize" />
+                <ScalarProperty Name="DownloadTime" ColumnName="DownloadTime" />
+                <ScalarProperty Name="DateChecked" ColumnName="DateChecked" />
+                <ScalarProperty Name="ErrorMessage" ColumnName="ErrorMessage" />
+                <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
+                <ScalarProperty Name="StatusDesc" ColumnName="StatusDesc" />
+                <ScalarProperty Name="ContentType" ColumnName="ContentType" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Logs">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.Log">
+              <MappingFragment StoreEntitySet="Logs">
+                <ScalarProperty Name="LogId" ColumnName="LogId" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="Source" ColumnName="Source" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="IsError" ColumnName="IsError" />
+                <ScalarProperty Name="ExceptionDetails" ColumnName="ExceptionDetails" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PackageUploadFiles">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.PackageUploadFile">
+              <MappingFragment StoreEntitySet="PackageUploadFiles">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CourseLocation" ColumnName="CourseLocation" />
+                <ScalarProperty Name="Link_LinkId" ColumnName="Link_LinkId" />
+                <ScalarProperty Name="Protocol" ColumnName="Protocol" />
+                <ScalarProperty Name="LinkName" ColumnName="LinkName" />
+                <ScalarProperty Name="ParentFolder" ColumnName="ParentFolder" />
+                <ScalarProperty Name="PackageUploadId" ColumnName="PackageUploadId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PackageUploads">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.PackageUpload">
+              <MappingFragment StoreEntitySet="PackageUploads">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="UploadedBy" ColumnName="UploadedBy" />
+                <ScalarProperty Name="DateUploaded" ColumnName="DateUploaded" />
+                <ScalarProperty Name="Key" ColumnName="Key" />
+                <ScalarProperty Name="PackageProcessed" ColumnName="PackageProcessed" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="ImsSchema" ColumnName="ImsSchema" />
+                <ScalarProperty Name="ImsSchemaVersion" ColumnName="ImsSchemaVersion" />
+                <ScalarProperty Name="ImsTitle" ColumnName="ImsTitle" />
+                <ScalarProperty Name="ImsDescription" ColumnName="ImsDescription" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="S3Buckets">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.S3Buckets">
+              <MappingFragment StoreEntitySet="S3Buckets">
+                <ScalarProperty Name="S3BucketId" ColumnName="S3BucketId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="AccessKey" ColumnName="AccessKey" />
+                <ScalarProperty Name="SecretKey" ColumnName="SecretKey" />
+                <ScalarProperty Name="Region" ColumnName="Region" />
+                <ScalarProperty Name="SearchPrefix" ColumnName="SearchPrefix" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="S3Objects">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.S3Objects">
+              <MappingFragment StoreEntitySet="S3Objects">
+                <ScalarProperty Name="S3ObjectId" ColumnName="S3ObjectId" />
+                <ScalarProperty Name="S3BucketId" ColumnName="S3BucketId" />
+                <ScalarProperty Name="Key" ColumnName="Key" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="ETag" ColumnName="ETag" />
+                <ScalarProperty Name="IsFolder" ColumnName="IsFolder" />
+                <ScalarProperty Name="ContentLastModified" ColumnName="ContentLastModified" />
+                <ScalarProperty Name="DateFirstFound" ColumnName="DateFirstFound" />
+                <ScalarProperty Name="DateLastFound" ColumnName="DateLastFound" />
+                <ScalarProperty Name="DateLinksLastExtracted" ColumnName="DateLinksLastExtracted" />
+                <ScalarProperty Name="LinkCheckDisabledDate" ColumnName="LinkCheckDisabledDate" />
+                <ScalarProperty Name="LinkCheckDisabledUser" ColumnName="LinkCheckDisabledUser" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="S3Objects_Links">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.S3Objects_Links">
+              <MappingFragment StoreEntitySet="S3Objects_Links">
+                <ScalarProperty Name="S3ObjectLinkId" ColumnName="S3ObjectLinkId" />
+                <ScalarProperty Name="S3ObjectId" ColumnName="S3ObjectId" />
+                <ScalarProperty Name="LinkId" ColumnName="LinkId" />
+                <ScalarProperty Name="DateFirstFound" ColumnName="DateFirstFound" />
+                <ScalarProperty Name="DateLastFound" ColumnName="DateLastFound" />
+                <ScalarProperty Name="DateRemoved" ColumnName="DateRemoved" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SchemaVersions">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.SchemaVersion">
+              <MappingFragment StoreEntitySet="SchemaVersions">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ScriptName" ColumnName="ScriptName" />
+                <ScalarProperty Name="Applied" ColumnName="Applied" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Settings">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.Setting">
+              <MappingFragment StoreEntitySet="Settings">
+                <ScalarProperty Name="SettingId" ColumnName="SettingId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="DateModified" ColumnName="DateModified" />
+                <ScalarProperty Name="ModifiedUser" ColumnName="ModifiedUser" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sources">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.Source">
+              <MappingFragment StoreEntitySet="Sources">
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="AllowLinkChecking" ColumnName="AllowLinkChecking" />
+                <ScalarProperty Name="AllowLinkExtractions" ColumnName="AllowLinkExtractions" />
+                <ScalarProperty Name="S3BucketId" ColumnName="S3BucketId" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="LORLinkCheckerModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="AspNetUserRoles" TypeName="LORLinkCheckerModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
+            <EndProperty Name="AspNetRoles">
+              <ScalarProperty Name="Id" ColumnName="RoleId" />
+            </EndProperty>
+            <EndProperty Name="AspNetUsers">
+              <ScalarProperty Name="Id" ColumnName="UserId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="PackageUploadLink" TypeName="LORLinkCheckerModel.PackageUploadLink" StoreEntitySet="PackageUploadLink">
+            <EndProperty Name="Links">
+              <ScalarProperty Name="LinkId" ColumnName="Links_LinkId" />
+            </EndProperty>
+            <EndProperty Name="PackageUploads">
+              <ScalarProperty Name="Id" ColumnName="PackageUploads_Id" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
