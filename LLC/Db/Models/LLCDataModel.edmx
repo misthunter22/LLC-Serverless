@@ -916,7 +916,7 @@
           <End Role="Links" Type="Self.Link" Multiplicity="*" />
           <End Role="PackageUploads" Type="Self.PackageUpload" Multiplicity="*" />
         </Association>
-        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="LORLinkCheckerEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="C__MigrationHistory" EntityType="Self.C__MigrationHistory" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRole" />
           <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaim" />
@@ -993,7 +993,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="LORLinkCheckerModelStoreContainer" CdmEntityContainer="Entities">
+        <EntityContainerMapping StorageEntityContainer="LORLinkCheckerModelStoreContainer" CdmEntityContainer="LORLinkCheckerEntities">
           <EntitySetMapping Name="C__MigrationHistory">
             <EntityTypeMapping TypeName="LORLinkCheckerModel.C__MigrationHistory">
               <MappingFragment StoreEntitySet="__MigrationHistory">

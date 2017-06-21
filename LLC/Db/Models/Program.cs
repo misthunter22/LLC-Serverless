@@ -8,7 +8,7 @@ namespace Db.Models
 {
     class Program
     {
-        static int Main(string[] args)
+        static int Main2(string[] args)
         {
             var connectionString =
                 args.FirstOrDefault()
