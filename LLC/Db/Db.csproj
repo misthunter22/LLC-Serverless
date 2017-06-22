@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\S3Helper.cs" />
     <Compile Include="Models\AspNetRole.cs">
       <DependentUpon>LLCDataModel.tt</DependentUpon>
     </Compile>

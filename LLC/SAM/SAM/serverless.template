@@ -13,7 +13,12 @@
         "Type" : "String",
         "Description" : "Name of S3 bucket that will be proxied. If left blank a new table will be created.",
         "MinLength" : "0"
-    }
+    },
+	"Environment" : {
+		"Type" : "String",
+        "Description" : "Name of the environment so multiple stacks can be deployed to an account. Must be unique across an account. Can leave blank as well!",
+        "MinLength" : "0"
+	}
   },
 
   "Conditions" : {
@@ -75,9 +80,119 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "5"
+          "WriteCapacityUnits" : "1"
 		},
-		"TableName" : "LLC-Links"
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-Links", { "Ref" : "Environment" } ] ] }
+	  }
+	},
+	"DbBuckets" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "S"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "1"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-Buckets", { "Ref" : "Environment" } ] ] }
+	  }
+	},
+	"DbObjects" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "S"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "1"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-Objects", { "Ref" : "Environment" } ] ] }
+	  }
+	},
+	"DbStats" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "S"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "1"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-Stats", { "Ref" : "Environment" } ] ] }
+	  }
+	},
+	"DbReports" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "S"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "1"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-Reports", { "Ref" : "Environment" } ] ] }
+	  }
+	},
+	"DbPackages" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "S"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "1"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-Packages", { "Ref" : "Environment" } ] ] }
 	  }
 	}
   },
