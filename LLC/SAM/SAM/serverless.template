@@ -194,6 +194,28 @@
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Packages", { "Ref" : "Environment" } ] ] }
 	  }
+	},
+	"DbSettings" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "S"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "1"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-Settings", { "Ref" : "Environment" } ] ] }
+	  }
 	}
   },
 
