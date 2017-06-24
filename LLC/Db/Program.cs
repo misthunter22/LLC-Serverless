@@ -53,6 +53,24 @@ namespace Db
 
                 // Process Settings
                 SettingsTable(client, db, env);
+
+                // Process Links
+                LinksTable(client, db, env);
+
+                // Process LinkStats
+                LinkStatsTable(client, db, env);
+
+                // Process Reports
+                ReportsTable(client, db, env);
+
+                // Process Packages
+                PackagesTable(client, db, env);
+
+                // Process Objects
+                ObjectsTable(client, db, env);
+
+                // Process ObjectLinks
+                ObjectLinksTable(client, db, env);
             }
 
             return 0;
@@ -60,6 +78,8 @@ namespace Db
 
         private static void BucketsTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
         {
+            Console.WriteLine("Processing Buckets...");
+
             // Grab LLC-Buckets table
             var table = Table.LoadTable(client, "LLC-Buckets" + env);
 
@@ -71,63 +91,272 @@ namespace Db
                 var sources = new List<Document>();
                 foreach (var s in b.Sources)
                 {
-                    var document = new Document(new Dictionary<string, DynamoDBEntry>()
-                    {
-                        { "Id", s.SourceId.ToString() },
-                        { "Name", s.Name },
-                        { "Description", s.Description },
-                        { "AllowLinkChecking", s.AllowLinkChecking.ToString() },
-                        { "AllowLinkExtractions", s.AllowLinkExtractions.ToString() },
-                        { "BucketId", s.S3BucketId.ToString() },
-                        { "DateCreated", s.DateCreated.ToString() }
-                    });
+                    var document = new Document();
+
+                    AddToDocument(document, "Id", s.SourceId.ToString());
+                    AddToDocument(document, "Name", s.Name);
+                    AddToDocument(document, "Description", s.Description);
+                    AddToDocument(document, "AllowLinkChecking", s.AllowLinkChecking);
+                    AddToDocument(document, "AllowLinkExtractions", s.AllowLinkExtractions);
+                    AddToDocument(document, "BucketId", s.S3BucketId);
+                    AddToDocument(document, "DateCreated", s.DateCreated);
 
                     sources.Add(document);
                 }
 
                 // Create the item and add it
-                var item = new Document(new Dictionary<string, DynamoDBEntry>()
-                {
-                    { "Id", b.S3BucketId.ToString() },
-                    { "Name", b.Name },
-                    { "AccessKey", b.AccessKey },
-                    { "SecretKey", b.SecretKey },
-                    { "Region", b.Region },
-                    { "SearchPrefix", b.SearchPrefix },
-                    { "DateCreated", b.DateCreated.ToString() }
-                });
+                var item = new Document();
 
+                AddToDocument(item, "Id", b.S3BucketId.ToString());
+                AddToDocument(item, "Name", b.Name);
+                AddToDocument(item, "AccessKey", b.AccessKey);
+                AddToDocument(item, "SecretKey", b.SecretKey);
+                AddToDocument(item, "Region", b.Region);
+                AddToDocument(item, "SearchPrefix", b.SearchPrefix);
+                AddToDocument(item, "DateCreated", b.DateCreated);
                 item.Add("Sources", sources);
+
                 table.PutItem(item);
             }
         }
 
         private static void SettingsTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
         {
+            Console.WriteLine("Processing Settings...");
+
             // Grab LLC-Buckets table
             var table = Table.LoadTable(client, "LLC-Settings" + env);
 
             foreach (var s in db.Settings)
             {
                 // Create the item and add it
-                var item = new Document(new Dictionary<string, DynamoDBEntry>()
-                {
-                    { "Id", s.SettingId.ToString() },
-                    { "DateCreated", s.DateCreated.ToString() },
-                    { "DateModified", s.DateModified.ToString() },
-                    { "ModifiedUser", s.ModifiedUser }
-                });
+                var item = new Document();
 
-                if (!string.IsNullOrEmpty(s.Name))
-                    item.Add("Name", s.Name);
-
-                if (!string.IsNullOrEmpty(s.Value))
-                    item.Add("Value", s.Value);
-
-                if (!string.IsNullOrEmpty(s.Description))
-                    item.Add("Description", s.Description);
+                AddToDocument(item, "Id", s.SettingId.ToString());
+                AddToDocument(item, "DateCreated", s.DateCreated);
+                AddToDocument(item, "DateModified", s.DateModified);
+                AddToDocument(item, "ModifiedUser", s.ModifiedUser);
+                AddToDocument(item, "Name", s.Name);
+                AddToDocument(item, "Value", s.Value);
+                AddToDocument(item, "Description", s.Description);
 
                 table.PutItem(item);
+            }
+        }
+
+        private static void LinksTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
+        {
+            Console.WriteLine("Processing Links...");
+
+            // Grab LLC-Buckets table
+            var table = Table.LoadTable(client, "LLC-Links" + env);
+
+            // Process each bucket
+            var links = db.Links;
+            foreach (var l in links)
+            {
+                // Create the item and add it
+                var item = new Document();
+
+                AddToDocument(item, "Id", l.LinkId.ToString());
+                AddToDocument(item, "Url", l.LinkUrl);
+                AddToDocument(item, "DateFirstFound", l.DateFirstFound);
+                AddToDocument(item, "DateLastFound", l.DateLastFound);
+                AddToDocument(item, "DisabledUser", l.LinkCheckDisabledUser);
+                AddToDocument(item, "AttemptCount", l.AttemptCount);
+                AddToDocument(item, "Source", l.SourceId);
+                AddToDocument(item, "DisabledDate", l.LinkCheckDisabledDate);
+                AddToDocument(item, "Valid", l.IsValid);
+                AddToDocument(item, "DateLastChecked", l.DateLastChecked);
+                AddToDocument(item, "AllTimeMinDownloadTime", l.AllTimeMinDownloadTime);
+                AddToDocument(item, "AllTimeMaxDownloadTime", l.AllTimeMaxDownloadTime);
+                AddToDocument(item, "AllTimeStdDevDownloadTime", l.AllTimeStdDevDownloadTime);
+                AddToDocument(item, "PastWeekMinDownloadTime", l.PastWeekMinDownloadTime);
+                AddToDocument(item, "PastWeekMaxDownloadTime", l.PastWeekMaxDownloadTime);
+                AddToDocument(item, "PastWeekStdDevDownloadTime", l.PastWeekStdDevDownloadTime);
+                AddToDocument(item, "DateUpdated", l.DateStatsUpdated);
+                AddToDocument(item, "ReportNotBeforeDate", l.ReportNotBeforeDate);
+
+                table.PutItem(item);
+            }
+        }
+
+        private static void LinkStatsTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
+        {
+            Console.WriteLine("Processing Stats...");
+
+            // Grab LLC-Buckets table
+            var table = Table.LoadTable(client, "LLC-Stats" + env);
+
+            // Process each bucket
+            var stats = db.LinkStats;
+            foreach (var s in stats)
+            {
+                // Create the item and add it
+                var item = new Document();
+
+                AddToDocument(item, "Id", s.LinkStatId.ToString());
+                AddToDocument(item, "Link", s.LinkId);
+                AddToDocument(item, "DateChecked", s.DateChecked);
+                AddToDocument(item, "Error", s.ErrorMessage);
+                AddToDocument(item, "StatusCode", s.StatusCode);
+                AddToDocument(item, "StatusDescription", s.StatusDesc);
+                AddToDocument(item, "ContentType", s.ContentType);
+                AddToDocument(item, "ContentSize", s.ContentSize);
+                AddToDocument(item, "DownloadTime", s.DownloadTime);
+
+                table.PutItem(item);
+            }
+        }
+
+        private static void ReportsTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
+        {
+            Console.WriteLine("Processing Reports...");
+
+            // Grab LLC-Buckets table
+            var table = Table.LoadTable(client, "LLC-Reports" + env);
+
+            // Process each bucket
+            var reports = db.LinkReports;
+            foreach (var r in reports)
+            {
+                // Create the item and add it
+                var item = new Document();
+
+                AddToDocument(item, "Id", r.Id.ToString());
+                AddToDocument(item, "Mean", r.Mean);
+                AddToDocument(item, "StandardDeviation", r.StandardDeviation);
+                AddToDocument(item, "SdMaximum", r.SdMaximum);
+                AddToDocument(item, "Link", r.Link_LinkId);
+                AddToDocument(item, "ContentSize", r.ContentSize);
+                AddToDocument(item, "Stat", r.LinkStatId);
+
+                table.PutItem(item);
+            }
+        }
+
+        private static void PackagesTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
+        {
+            Console.WriteLine("Processing Packages...");
+
+            // Grab LLC-Buckets table
+            var table = Table.LoadTable(client, "LLC-Packages" + env);
+
+            // Process each bucket
+            var packages = db.PackageUploads;
+            foreach (var p in packages)
+            {
+                // Gather up the sources
+                var files = new List<Document>();
+                foreach (var f in p.PackageUploadFiles)
+                {
+                    var document = new Document();
+
+                    AddToDocument(document, "Id", f.Id.ToString());
+                    AddToDocument(document, "CourseLocation", f.CourseLocation);
+                    AddToDocument(document, "Link", f.Link_LinkId);
+                    AddToDocument(document, "Protocol", f.Protocol);
+                    AddToDocument(document, "LinkName", f.LinkName);
+                    AddToDocument(document, "ParentFolder", f.ParentFolder);
+
+                    files.Add(document);
+                }
+
+                // Create the item and add it
+                var item = new Document();
+
+                AddToDocument(item, "Id", p.Id.ToString());
+                AddToDocument(item, "Name", p.Name);
+                AddToDocument(item, "Description", p.Description);
+                AddToDocument(item, "UploadedBy", p.UploadedBy);
+                AddToDocument(item, "DateUploaded", p.DateUploaded);
+                AddToDocument(item, "Key", p.Key);
+                AddToDocument(item, "FileName", p.FileName);
+                AddToDocument(item, "ImsSchema", p.ImsSchema);
+                AddToDocument(item, "ImsSchemaVersion", p.ImsSchemaVersion);
+                AddToDocument(item, "ImsTitle", p.ImsTitle);
+                AddToDocument(item, "ImsDescription", p.ImsDescription);
+                AddToDocument(item, "Processed", p.PackageProcessed);
+                item.Add("Files", files);
+
+                table.PutItem(item);
+            }
+        }
+
+        private static void ObjectsTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
+        {
+            Console.WriteLine("Processing Objects...");
+
+            // Grab LLC-Buckets table
+            var table = Table.LoadTable(client, "LLC-Objects" + env);
+
+            // Process each bucket
+            var objects = db.S3Objects;
+            foreach (var o in objects)
+            {
+                // Create the item and add it
+                var item = new Document();
+
+                AddToDocument(item, "Id", o.S3ObjectId.ToString());
+                AddToDocument(item, "Bucket", o.S3BucketId);
+                AddToDocument(item, "Key", o.Key);
+                AddToDocument(item, "ItemName", o.ItemName);
+                AddToDocument(item, "ETag", o.ETag);
+                AddToDocument(item, "IsFolder", o.IsFolder);
+                AddToDocument(item, "DateFirstFound", o.ContentLastModified);
+                AddToDocument(item, "DateLastFound", o.DateLastFound);
+                AddToDocument(item, "DisabledUser", o.LinkCheckDisabledUser);
+                AddToDocument(item, "ContentLastModified", o.ContentLastModified);
+                AddToDocument(item, "DateLinksLastExtracted", o.DateLinksLastExtracted);
+                AddToDocument(item, "DisabledDate", o.LinkCheckDisabledDate);
+
+                table.PutItem(item);
+            }
+        }
+
+        private static void ObjectLinksTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
+        {
+            Console.WriteLine("Processing Object Links...");
+
+            // Grab LLC-Buckets table
+            var table = Table.LoadTable(client, "LLC-ObjectLinks" + env);
+
+            // Process each bucket
+            var objects = db.S3Objects_Links;
+            foreach (var o in objects)
+            {
+                // Create the item and add it
+                var item = new Document();
+
+                AddToDocument(item, "Id", o.S3ObjectLinkId.ToString());
+                AddToDocument(item, "Object", o.S3ObjectId);
+                AddToDocument(item, "Link", o.LinkId);
+                AddToDocument(item, "DateFirstFound", o.DateFirstFound);
+                AddToDocument(item, "DateLastFound", o.DateLastFound);
+                AddToDocument(item, "DateRemoved", o.DateRemoved);
+
+                table.PutItem(item);
+            }
+        }
+
+        private static void AddToDocument(Document item, string key, object value)
+        {
+            if (value != null)
+            {
+                if (value is int || value is int?)
+                    item.Add(key, (int)value);
+
+                else if (value is decimal || value is decimal?)
+                    item.Add(key, (decimal)value);
+
+                else if (value is long || value is long?)
+                    item.Add(key, (long)value);
+
+                else if (value is double || value is double?)
+                    item.Add(key, (double)value);
+
+                else
+                    item.Add(key, value.ToString());
             }
         }
     }

@@ -80,7 +80,7 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "1"
+          "WriteCapacityUnits" : "10"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Links", { "Ref" : "Environment" } ] ] }
 	  }
@@ -102,7 +102,7 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "1"
+          "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Buckets", { "Ref" : "Environment" } ] ] }
 	  }
@@ -124,7 +124,7 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "1"
+          "WriteCapacityUnits" : "10"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Objects", { "Ref" : "Environment" } ] ] }
 	  }
@@ -146,7 +146,7 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "1"
+          "WriteCapacityUnits" : "10"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Stats", { "Ref" : "Environment" } ] ] }
 	  }
@@ -168,7 +168,7 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "1"
+          "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Reports", { "Ref" : "Environment" } ] ] }
 	  }
@@ -190,7 +190,7 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "1"
+          "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Packages", { "Ref" : "Environment" } ] ] }
 	  }
@@ -212,9 +212,31 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "1"
+          "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Settings", { "Ref" : "Environment" } ] ] }
+	  }
+	},
+	"DbObjectLinks" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "S"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "10"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-ObjectLinks", { "Ref" : "Environment" } ] ] }
 	  }
 	}
   },
