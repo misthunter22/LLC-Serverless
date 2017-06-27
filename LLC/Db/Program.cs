@@ -6,6 +6,7 @@ using Db.Extensions;
 using Db.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Db
 {
@@ -82,6 +83,7 @@ namespace Db
 
             // Grab LLC-Buckets table
             var table = Table.LoadTable(client, "LLC-Buckets" + env);
+            var batch = table.CreateBatchWrite();
 
             // Process each bucket
             var buckets = db.S3Buckets;
@@ -98,7 +100,7 @@ namespace Db
                     AddToDocument(document, "Description", s.Description);
                     AddToDocument(document, "AllowLinkChecking", s.AllowLinkChecking);
                     AddToDocument(document, "AllowLinkExtractions", s.AllowLinkExtractions);
-                    AddToDocument(document, "BucketId", s.S3BucketId);
+                    AddToDocument(document, "Bucket", s.S3BucketId);
                     AddToDocument(document, "DateCreated", s.DateCreated);
 
                     sources.Add(document);
@@ -116,8 +118,10 @@ namespace Db
                 AddToDocument(item, "DateCreated", b.DateCreated);
                 item.Add("Sources", sources);
 
-                table.PutItem(item);
+                batch.AddDocumentToPut(item);
             }
+
+            batch.Execute();
         }
 
         private static void SettingsTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
@@ -126,6 +130,7 @@ namespace Db
 
             // Grab LLC-Buckets table
             var table = Table.LoadTable(client, "LLC-Settings" + env);
+            var batch = table.CreateBatchWrite();
 
             foreach (var s in db.Settings)
             {
@@ -140,8 +145,10 @@ namespace Db
                 AddToDocument(item, "Value", s.Value);
                 AddToDocument(item, "Description", s.Description);
 
-                table.PutItem(item);
+                batch.AddDocumentToPut(item);
             }
+
+            batch.Execute();
         }
 
         private static void LinksTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
@@ -150,6 +157,7 @@ namespace Db
 
             // Grab LLC-Buckets table
             var table = Table.LoadTable(client, "LLC-Links" + env);
+            var batch = table.CreateBatchWrite();
 
             // Process each bucket
             var links = db.Links;
@@ -177,8 +185,10 @@ namespace Db
                 AddToDocument(item, "DateUpdated", l.DateStatsUpdated);
                 AddToDocument(item, "ReportNotBeforeDate", l.ReportNotBeforeDate);
 
-                table.PutItem(item);
+                batch.AddDocumentToPut(item);
             }
+
+            batch.Execute();
         }
 
         private static void LinkStatsTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
@@ -187,6 +197,7 @@ namespace Db
 
             // Grab LLC-Buckets table
             var table = Table.LoadTable(client, "LLC-Stats" + env);
+            var batch = table.CreateBatchWrite();
 
             // Process each bucket
             var stats = db.LinkStats;
@@ -205,8 +216,10 @@ namespace Db
                 AddToDocument(item, "ContentSize", s.ContentSize);
                 AddToDocument(item, "DownloadTime", s.DownloadTime);
 
-                table.PutItem(item);
+                batch.AddDocumentToPut(item);
             }
+
+            batch.Execute();
         }
 
         private static void ReportsTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
@@ -215,6 +228,7 @@ namespace Db
 
             // Grab LLC-Buckets table
             var table = Table.LoadTable(client, "LLC-Reports" + env);
+            var batch = table.CreateBatchWrite();
 
             // Process each bucket
             var reports = db.LinkReports;
@@ -231,8 +245,10 @@ namespace Db
                 AddToDocument(item, "ContentSize", r.ContentSize);
                 AddToDocument(item, "Stat", r.LinkStatId);
 
-                table.PutItem(item);
+                batch.AddDocumentToPut(item);
             }
+
+            batch.Execute();
         }
 
         private static void PackagesTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
@@ -241,6 +257,7 @@ namespace Db
 
             // Grab LLC-Buckets table
             var table = Table.LoadTable(client, "LLC-Packages" + env);
+            var batch = table.CreateBatchWrite();
 
             // Process each bucket
             var packages = db.PackageUploads;
@@ -279,8 +296,10 @@ namespace Db
                 AddToDocument(item, "Processed", p.PackageProcessed);
                 item.Add("Files", files);
 
-                table.PutItem(item);
+                batch.AddDocumentToPut(item);
             }
+
+            batch.Execute();
         }
 
         private static void ObjectsTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
@@ -289,6 +308,7 @@ namespace Db
 
             // Grab LLC-Buckets table
             var table = Table.LoadTable(client, "LLC-Objects" + env);
+            var batch = table.CreateBatchWrite();
 
             // Process each bucket
             var objects = db.S3Objects;
@@ -303,15 +323,17 @@ namespace Db
                 AddToDocument(item, "ItemName", o.ItemName);
                 AddToDocument(item, "ETag", o.ETag);
                 AddToDocument(item, "IsFolder", o.IsFolder);
-                AddToDocument(item, "DateFirstFound", o.ContentLastModified);
+                AddToDocument(item, "DateFirstFound", o.DateFirstFound);
                 AddToDocument(item, "DateLastFound", o.DateLastFound);
                 AddToDocument(item, "DisabledUser", o.LinkCheckDisabledUser);
                 AddToDocument(item, "ContentLastModified", o.ContentLastModified);
                 AddToDocument(item, "DateLinksLastExtracted", o.DateLinksLastExtracted);
                 AddToDocument(item, "DisabledDate", o.LinkCheckDisabledDate);
 
-                table.PutItem(item);
+                batch.AddDocumentToPut(item);
             }
+
+            batch.Execute();
         }
 
         private static void ObjectLinksTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)
@@ -320,6 +342,7 @@ namespace Db
 
             // Grab LLC-Buckets table
             var table = Table.LoadTable(client, "LLC-ObjectLinks" + env);
+            var batch = table.CreateBatchWrite();
 
             // Process each bucket
             var objects = db.S3Objects_Links;
@@ -335,8 +358,10 @@ namespace Db
                 AddToDocument(item, "DateLastFound", o.DateLastFound);
                 AddToDocument(item, "DateRemoved", o.DateRemoved);
 
-                table.PutItem(item);
+                batch.AddDocumentToPut(item);
             }
+
+            batch.Execute();
         }
 
         private static void AddToDocument(Document item, string key, object value)

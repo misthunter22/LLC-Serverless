@@ -69,7 +69,7 @@
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
-            "AttributeType" : "S"   
+            "AttributeType" : "N"   
           }
         ],
 		"KeySchema" : [
@@ -80,7 +80,7 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "10"
+          "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Links", { "Ref" : "Environment" } ] ] }
 	  }
@@ -91,7 +91,7 @@
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
-            "AttributeType" : "S"   
+            "AttributeType" : "N"   
           }
         ],
 		"KeySchema" : [
@@ -113,7 +113,7 @@
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
-            "AttributeType" : "S"   
+            "AttributeType" : "N"   
           }
         ],
 		"KeySchema" : [
@@ -124,7 +124,7 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "10"
+          "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Objects", { "Ref" : "Environment" } ] ] }
 	  }
@@ -135,7 +135,7 @@
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
-            "AttributeType" : "S"   
+            "AttributeType" : "N"   
           }
         ],
 		"KeySchema" : [
@@ -146,7 +146,7 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "10"
+          "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Stats", { "Ref" : "Environment" } ] ] }
 	  }
@@ -157,7 +157,7 @@
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
-            "AttributeType" : "S"   
+            "AttributeType" : "N"   
           }
         ],
 		"KeySchema" : [
@@ -179,7 +179,7 @@
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
-            "AttributeType" : "S"   
+            "AttributeType" : "N"   
           }
         ],
 		"KeySchema" : [
@@ -195,13 +195,57 @@
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Packages", { "Ref" : "Environment" } ] ] }
 	  }
 	},
+	"DbPackageFiles" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "N"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "3"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-PackageFiles", { "Ref" : "Environment" } ] ] }
+	  }
+	},
+	"DbPackageLinks" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "N"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "3"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-PackageLinks", { "Ref" : "Environment" } ] ] }
+	  }
+	},
 	"DbSettings" : {
 		"Type" : "AWS::DynamoDB::Table",
 		"Properties" : {
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
-            "AttributeType" : "S"   
+            "AttributeType" : "N"   
           }
         ],
 		"KeySchema" : [
@@ -217,13 +261,13 @@
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Settings", { "Ref" : "Environment" } ] ] }
 	  }
 	},
-	"DbObjectLinks" : {
+	"DbSources" : {
 		"Type" : "AWS::DynamoDB::Table",
 		"Properties" : {
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
-            "AttributeType" : "S"   
+            "AttributeType" : "N"   
           }
         ],
 		"KeySchema" : [
@@ -234,7 +278,29 @@
 		],
 		"ProvisionedThroughput" : {
 		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "10"
+          "WriteCapacityUnits" : "3"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-Sources", { "Ref" : "Environment" } ] ] }
+	  }
+	},
+	"DbObjectLinks" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "N"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-ObjectLinks", { "Ref" : "Environment" } ] ] }
 	  }
