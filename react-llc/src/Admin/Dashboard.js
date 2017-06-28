@@ -4,7 +4,7 @@ import axios from 'axios';
 var AWS    = require('aws-sdk');
 var Client = require('aws-api-gateway-client').default;
 
-class Profile extends Component {
+class Dashboard extends Component {
   
   render() {
 	  
@@ -35,7 +35,7 @@ class Profile extends Component {
       var params = {
       };
 	  
-      var pathTemplate = '/Prod/api/values'
+      var pathTemplate = '/Prod/api/admin'
       var method = 'GET';
       var additionalParams = {
       };
@@ -55,4 +55,4 @@ class Profile extends Component {
   }
 }
 
-export default Profile;
+export default Dashboard;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Dashboard from './Dashboard';
 
 class Admin extends Component {
   login() {
@@ -10,9 +11,7 @@ class Admin extends Component {
       <div className="container">
         {
           isAuthenticated() && (
-              <h4>
-                You are logged in! Admin
-              </h4>
+              <Dashboard />
             )
         }
         

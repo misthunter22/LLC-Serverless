@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Profile from '../Services/Profile';
 
 class Content extends Component {
   render() {
