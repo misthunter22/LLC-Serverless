@@ -25,7 +25,7 @@ class Profile extends Component {
       var sessionToken = AWS.config.credentials.sessionToken;
 	  
 	  var apigClient = Client.newClient({
-		invokeUrl: 'https://2tfrodw03g.execute-api.us-west-2.amazonaws.com',
+		invokeUrl: 'https://fkpj4ljuxh.execute-api.us-west-2.amazonaws.com',
 	    accessKey: accessKeyId,
         secretKey: secretAccessKey,	
         sessionToken: sessionToken,
