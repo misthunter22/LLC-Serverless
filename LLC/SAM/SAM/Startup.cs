@@ -31,6 +31,14 @@ namespace SAM
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
 
             // Pull in any SDK configuration from Configuration object
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
@@ -45,6 +53,7 @@ namespace SAM
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddLambdaLogger(Configuration.GetLambdaLoggerOptions());
+            app.UseCors("CorsPolicy");
             app.UseMvc();
         }
     }

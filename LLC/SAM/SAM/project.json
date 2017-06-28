@@ -30,7 +30,8 @@
       "version": "1.5.0"
     },
     "AWSSDK.CognitoIdentityProvider": "3.3.3.1",
-    "AWSSDK.CognitoIdentity": "3.3.2.10"
+    "AWSSDK.CognitoIdentity": "3.3.2.10",
+    "AWSSDK.DynamoDBv2": "3.3.4.13"
   },
 
   "tools": {
