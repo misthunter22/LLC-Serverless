@@ -4,9 +4,7 @@
     <list default="true" id="b8fa298d-6013-4a1e-b6f3-23f51dc10a4a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../LLC/SAM/SAM/Controllers/AdminController.cs" afterPath="$PROJECT_DIR$/../LLC/SAM/SAM/Controllers/AdminController.cs" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../LLC/SAM/SAM/Models/Admin/DashboardModel.cs" afterPath="$PROJECT_DIR$/../LLC/SAM/SAM/Models/Admin/DashboardModel.cs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Admin/Dashboard.js" afterPath="$PROJECT_DIR$/src/Admin/Dashboard.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Auth/Auth.js" afterPath="$PROJECT_DIR$/src/Auth/Auth.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -55,21 +53,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ServicesBase.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ServicesBase.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Services/ServicesBase.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="6" column="2" lean-forward="true" selection-start-line="6" selection-start-column="2" selection-end-line="6" selection-end-column="2" />
+            <state relative-caret-position="360">
+              <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Dashboard.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Dashboard.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Admin/Dashboard.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="640">
-              <caret line="16" column="25" lean-forward="false" selection-start-line="16" selection-start-column="25" selection-end-line="16" selection-end-column="25" />
+            <state relative-caret-position="502">
+              <caret line="67" column="80" lean-forward="false" selection-start-line="67" selection-start-column="80" selection-end-line="67" selection-end-column="80" />
               <folding>
                 <element signature="e#0#41#0" expanded="true" />
               </folding>
@@ -367,12 +365,12 @@
       <updated>1496174699348</updated>
       <workItem from="1496174701739" duration="9279000" />
       <workItem from="1496713374705" duration="1656000" />
-      <workItem from="1500236667209" duration="6599000" />
+      <workItem from="1500236667209" duration="8087000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="17622000" />
+    <option name="totallyTimeSpent" value="19110000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-16" y="-16" width="3232" height="1732" extended-state="6" />
@@ -655,21 +653,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Admin/Dashboard.js">
+    <entry file="file://$PROJECT_DIR$/src/Services/ServicesBase.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="640">
-          <caret line="16" column="25" lean-forward="false" selection-start-line="16" selection-start-column="25" selection-end-line="16" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#41#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="360">
+          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Services/ServicesBase.js">
+    <entry file="file://$PROJECT_DIR$/src/Admin/Dashboard.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="6" column="2" lean-forward="true" selection-start-line="6" selection-start-column="2" selection-end-line="6" selection-end-column="2" />
-          <folding />
+        <state relative-caret-position="502">
+          <caret line="67" column="80" lean-forward="false" selection-start-line="67" selection-start-column="80" selection-end-line="67" selection-end-column="80" />
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

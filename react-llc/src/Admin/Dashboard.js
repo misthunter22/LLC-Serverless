@@ -35,28 +35,37 @@ class Dashboard extends Component {
                 region: AwsConstants.region
             });
 
-            var params = {
-            };
+            var pathTemplates = [
+                'object',
+                'links',
+                'invalid',
+                'html',
+                'extracted',
+                'checked'
+            ];
 
-            var pathTemplate = '/Prod/api/admin/invalid'
-            var method = 'GET';
-            var additionalParams = {
-            };
+            pathTemplates.forEach(function(element) {
+                var method = 'GET';
+                var pathTemplate = '/Prod/api/admin/' + element;
 
-            var body = {
-            };
+                var params = {};
+                var additionalParams = {};
+                var body = {};
 
-            apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-                .then(function(result){
-                    that.setState({ invalid: result.data.data });
-                }).catch(function(result){
+                apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
+                    .then(function(result){
+                        var obj = {};
+                        obj[element] = result.data.data;
+                        that.setState(obj);
+                    }).catch(function(result){
                     console.log(result);
                 });
+            });
         });
     }
   
     render() {
-        return <div>{this.state.invalid}</div>;
+        return <div>{this.state.object},{this.state.links},{this.state.invalid},{this.state.html}</div>;
     }
 }
 
