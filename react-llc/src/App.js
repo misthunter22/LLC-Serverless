@@ -5,6 +5,15 @@ import NoAuth  from './Auth/NoAuth';
 import './App.css';
 
 class App extends Component {
+
+  constructor(props) {
+    super(props);
+
+    var year = new Date().getFullYear();
+    document.getElementsByTagName('footer')[0]
+        .innerHTML = '<p>&copy; ' + year + ' - Idaho Digital Learning</p>';
+  }
+
   goTo(route) {
     this.props.history.replace(`/${route}`)
   }
@@ -19,20 +28,20 @@ class App extends Component {
 
   render() {
     const { isAuthenticated } = this.props.auth;
-	
+
 	let content = null;
     if (isAuthenticated() && this.props.location.pathname === "/") {
-      content = 
+      content =
 	    <div className="container body-content">
           <Content />
 		</div>;
     } else if (!isAuthenticated()) {
-      content = 
+      content =
 	    <div className="container body-content">
           <NoAuth />
 		</div>;
     }
-	
+
     return (
       <div>
 		<Navbar fixedTop="true">

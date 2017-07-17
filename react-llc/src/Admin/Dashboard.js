@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button } from 'react-bootstrap';
 import servicesBase, {AwsConstants} from '../Services/ServicesBase';
 
 var AWS    = require('aws-sdk');
@@ -9,12 +10,12 @@ class Dashboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            object   : '',
-            links    : '',
-            invalid  : '',
-            html     : '',
+            object: '',
+            links: '',
+            invalid: '',
+            html: '',
             extracted: '',
-            checked  : ''
+            checked: ''
         };
     }
 
@@ -65,7 +66,41 @@ class Dashboard extends Component {
     }
   
     render() {
-        return <div>{this.state.object},{this.state.links},{this.state.invalid},{this.state.html}</div>;
+        return <div>
+            <h2 className="bottom-20">Administrative Dashboard</h2>
+            <div className="col-md-5 bottom-margin-10">
+                <Button
+                    className="btn btn-lg btn-default btn-mt"
+                    //onClick={this.goTo.bind(this, 'sources')}
+                    >
+                    Sources
+                </Button>
+                <Button
+                    className="btn btn-lg btn-default btn-mt"
+                    //onClick={this.goTo.bind(this, 'settings')}
+                    >
+                    Settings
+                </Button>
+                <Button
+                    className="btn btn-lg btn-default btn-mt"
+                    //onClick={this.goTo.bind(this, 'logs')}
+                    >
+                    Logs
+                </Button>
+                <Button
+                    className="btn btn-lg btn-default btn-mt"
+                    //onClick={this.goTo.bind(this, 'users')}
+                    >
+                    Users
+                </Button>
+                <Button
+                    className="btn btn-lg btn-default btn-mt"
+                    //onClick={this.goTo.bind(this, 'roles')}
+                    >
+                    Roles
+                </Button>
+            </div>
+        </div>;
     }
 }
 
