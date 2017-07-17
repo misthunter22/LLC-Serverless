@@ -23,19 +23,19 @@ class App extends Component {
 	let content = null;
     if (isAuthenticated() && this.props.location.pathname === "/") {
       content = 
-	    <div className="container">
+	    <div className="container body-content">
           <Content />
 		</div>;
     } else if (!isAuthenticated()) {
       content = 
-	    <div className="container">
+	    <div className="container body-content">
           <NoAuth />
 		</div>;
     }
 	
     return (
       <div>
-		<Navbar>
+		<Navbar fixedTop="true">
 		  <Navbar.Header>
 			<Navbar.Brand>
 			  <a href="/">LLC</a>

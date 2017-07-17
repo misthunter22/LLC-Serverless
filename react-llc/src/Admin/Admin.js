@@ -8,7 +8,7 @@ class Admin extends Component {
   render() {
     const { isAuthenticated } = this.props.auth;
     return (
-      <div className="container">
+      <div className="container body-content">
         {
           isAuthenticated() && (
               <Dashboard />
