@@ -7,6 +7,10 @@ Parameters:
     Type: String
     Description: Name of the bucket where the screenshots will be stored, this must
       be unique
+  ScreenshotSourceBucketName:
+    AllowedPattern: "[A-Za-z0-9-]+"
+    Type: String
+    Description: Name of the bucket where the sources are stored at
 Resources:
   IamRoleLambdaExecution:
     Type: AWS::IAM::Role
@@ -33,7 +37,7 @@ Resources:
           - logs:CreateLogGroup
           - logs:CreateLogStream
           - logs:PutLogEvents
-          Resource: arn:aws:logs:us-east-1:*:*
+          Resource: arn:aws:logs:us-west-2:*:*
         - Effect: Allow
           Action:
           - s3:ListBucket
@@ -55,8 +59,9 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        S3Bucket: serverless-screenshots-service
-        S3Key: 2016-09-23T12:50:03/lambda-screenshots.zip
+        S3Bucket: 
+            Ref: ScreenshotSourceBucketName
+        S3Key: lambda-screenshots.zip
       FunctionName: lambda-screenshots-takeScreenshot
       Handler: handler.take_screenshot
       MemorySize: 1500
@@ -70,8 +75,9 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        S3Bucket: serverless-screenshots-service
-        S3Key: 2016-09-23T12:50:03/lambda-screenshots.zip
+        S3Bucket: 
+            Ref: ScreenshotSourceBucketName
+        S3Key: lambda-screenshots.zip
       FunctionName: lambda-screenshots-listScreenshots
       Handler: handler.list_screenshots
       MemorySize: 1024
@@ -81,42 +87,11 @@ Resources:
         - Arn
       Runtime: nodejs4.3
       Timeout: 15
-  CreateThumbnailsLambdaFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      Code:
-        S3Bucket: serverless-screenshots-service
-        S3Key: 2016-09-23T12:50:03/lambda-screenshots.zip
-      FunctionName: lambda-screenshots-createThumbnails
-      Handler: handler.create_thumbnails
-      MemorySize: 1500
-      Role:
-        Fn::GetAtt:
-        - IamRoleLambdaExecution
-        - Arn
-      Runtime: nodejs4.3
-      Timeout: 59
   S3BucketScreenshots:
     Type: AWS::S3::Bucket
     Properties:
       BucketName:
         Ref: ScreenshotBucketName
-      NotificationConfiguration:
-        LambdaConfigurations:
-        - Event: s3:ObjectCreated:*
-          Function:
-            Fn::GetAtt:
-            - CreateThumbnailsLambdaFunction
-            - Arn
-  CreateThumbnailsLambdaPermissionS3:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName:
-        Fn::GetAtt:
-        - CreateThumbnailsLambdaFunction
-        - Arn
-      Action: lambda:InvokeFunction
-      Principal: s3.amazonaws.com
   ApiGatewayRestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -391,7 +366,7 @@ Resources:
           - - https://
             - Fn::GetAtt: CloudFrontEndpoint.DomainName
             - "/"
-        screenshotTimeout: 3000
+        screenshotTimeout: 30000
 Outputs:
   TakeScreenshotLambdaFunctionArn:
     Description: Lambda function info
@@ -405,12 +380,6 @@ Outputs:
       Fn::GetAtt:
       - ListScreenshotsLambdaFunction
       - Arn
-  CreateThumbnailsLambdaFunctionArn:
-    Description: Lambda function info
-    Value:
-      Fn::GetAtt:
-      - CreateThumbnailsLambdaFunction
-      - Arn
   ServiceEndpoint:
     Description: URL of the service endpoint
     Value:
@@ -418,7 +387,7 @@ Outputs:
       - ''
       - - https://
         - Ref: ApiGatewayRestApi
-        - ".execute-api.us-east-1.amazonaws.com/dev"
+        - ".execute-api.us-west-2.amazonaws.com/dev"
   ScreenshotBucket:
     Description: Screenshot bucket name
     Value:

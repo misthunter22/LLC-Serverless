@@ -2,7 +2,7 @@ service: lambda-screenshots
 
 custom:
   # change this, so it's unique for your setup
-  bucket_name: ${opt:stage,self:provider.stage}-${env:USER}-screenshots
+  bucket_name: lor-screenshots
 
   stageVariables:
     bucketName: ${self:custom.bucket_name}
@@ -12,13 +12,13 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs4.3
+  runtime: nodejs6.10
   stage: dev
-  region: us-east-1
+  region: us-west-2
 
   # We need to lockdown the apigateway, so we can control who can use the api
-  apiKeys:
-    - app-api-key
+  #apiKeys:
+  #  - app-api-key
 
   # We need to give the lambda functions access to list and write to our bucket, it needs:
   # - to be able to 'list' the bucket
@@ -36,7 +36,7 @@ provider:
 functions:
   takeScreenshot:
     handler: handler.take_screenshot
-    timeout: 15
+    timeout: 25
     events:
       - http:
           path: screenshots
@@ -52,12 +52,14 @@ functions:
               #   bar: true
               querystrings:
                 url: true
+                linkId: true
+                statId: true
               # paths:
               #   bar: false
 
   listScreenshots:
     handler: handler.list_screenshots
-    timeout: 15
+    timeout: 25
     events:
       - http:
           path: screenshots
@@ -67,13 +69,6 @@ functions:
             parameters:
               querystrings:
                 url: true
-
-  createThumbnails:
-    handler: handler.create_thumbnails
-    events:
-      - s3:
-          bucket: ${self:custom.bucket_name}
-          event: s3:ObjectCreated:*
 
 resources:
   Outputs:
