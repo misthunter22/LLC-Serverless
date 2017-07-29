@@ -69,33 +69,3 @@ module.exports.take_screenshot = (event, context, cb) => {
 	});
   })
 };
-
-
-// gives a list of urls for the given snapshotted url
-module.exports.list_screenshots = (event, context, cb) => {
-  console.info('Received event', event);
-  const targetUrl    = event.query.linkId;
-  const targetBucket = event.stageVariables.bucketName;
-  const targetPath   = `${targetUrl}/`;
-
-  const s3 = new AWS.S3();
-  s3.listObjects({
-    Bucket: targetBucket,
-    Prefix: targetPath,
-    EncodingType: 'url',
-  }, (err, data) => {
-    if (err) {
-      cb(err);
-    } else {
-      const urls = {};
-      // for each key, get the image width and add it to the output object
-      data.Contents.forEach((content) => {
-        const parts = content.Key.split('/');
-        const size  = parts.pop().split('.')[0];
-        urls[size]  = `${event.stageVariables.endpoint}${content.Key}`;
-      });
-      cb(null, urls);
-    }
-    return;
-  });
-};

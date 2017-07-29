@@ -13,12 +13,12 @@ custom:
 provider:
   name: aws
   runtime: nodejs6.10
-  stage: dev
+  memorySize: 512
   region: us-west-2
 
   # We need to lockdown the apigateway, so we can control who can use the api
-  #apiKeys:
-  #  - app-api-key
+  apiKeys:
+    - app-api-key
 
   # We need to give the lambda functions access to list and write to our bucket, it needs:
   # - to be able to 'list' the bucket
@@ -56,19 +56,6 @@ functions:
                 statId: true
               # paths:
               #   bar: false
-
-  listScreenshots:
-    handler: handler.list_screenshots
-    timeout: 25
-    events:
-      - http:
-          path: screenshots
-          method: get
-          private: true
-          request:
-            parameters:
-              querystrings:
-                url: true
 
 resources:
   Outputs:
