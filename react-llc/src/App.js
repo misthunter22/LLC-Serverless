@@ -80,33 +80,33 @@ class App extends Component {
               >
                 Upload
               </Button>
-		  </Navbar.Collapse>
-		</Navbar>
-		{
+			  		{
           !isAuthenticated() && (
             <Button
 			  bsStyle="primary"
-			  className="btn-margin"
+			  className="btn-margin float-nav"
 			  onClick={this.login.bind(this)}
 			>
 			  Log In
 		    </Button>
 	      )
-		}
-	    {
-		  isAuthenticated() && (
-		    <div className="float-nav">
-		      <span>Welcome, you! </span>
-		      <Button
-			    bsStyle="primary"
-				className="btn-margin"
-				onClick={this.logout.bind(this)}
-			  >
-			    Log Out
-			  </Button>
-			</div>
-		  )
-		}
+		  }
+	      {
+		    isAuthenticated() && (
+		      <div className="float-nav">
+		        <span>Welcome, you! </span>
+		        <Button
+			      bsStyle="primary"
+				  className="btn-margin"
+				  onClick={this.logout.bind(this)}
+			    >
+			      Log Out
+			    </Button>
+			  </div>
+		    )
+		  }
+		  </Navbar.Collapse>
+		</Navbar>
 		{content}
 	  </div>
     );

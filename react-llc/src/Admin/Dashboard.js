@@ -9,14 +9,9 @@ class Dashboard extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            object: '',
-            links: '',
-            invalid: '',
-            html: '',
-            extracted: '',
-            checked: ''
-        };
+		this.state = {
+		  sources: []
+		}
     }
 
     componentDidMount() {
@@ -35,72 +30,85 @@ class Dashboard extends Component {
                 sessionToken: sessionToken,
                 region: AwsConstants.region
             });
-
-            var pathTemplates = [
-                'object',
-                'links',
-                'invalid',
-                'html',
-                'extracted',
-                'checked'
-            ];
-
-            pathTemplates.forEach(function(element) {
-                var method = 'GET';
-                var pathTemplate = '/Prod/api/admin/' + element;
-
-                var params = {};
-                var additionalParams = {};
-                var body = {};
-
-                apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-                    .then(function(result){
-                        var obj = {};
-                        obj[element] = result.data.data;
-                        that.setState(obj);
-                    }).catch(function(result){
-                    console.log(result);
-                });
-            });
+			
+			var pathTemplate     = '/Prod/api/sources';
+			var params           = {};
+			var additionalParams = {};
+			var body             = {};
+			var method           = 'GET';
+			
+			apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
+				.then(function(result) {
+					for (var i = 0; i < result.data.result.length; i++) {
+					  var s    = result.data.result[i];
+					  var path = '/Prod/api/dashboard/' + s.source;
+					  apigClient.invokeApi(params, path, method, additionalParams, body)
+						.then(function(result) {
+						  var obj  = {};
+						  var data = result.data;
+						  obj['source'] = data.source;
+						  obj['title']  = s.title;
+						  for (var j = 0; j < data.data.length; j++) {
+							var dj      = data.data[j];
+					        obj[dj.key] = dj.data;
+						  }
+						  
+						  that.setState((prevState, props) => ({
+						    sources: prevState.sources.concat([obj])
+						  }));
+						});
+					}
+				}).catch(function(result){
+				console.log(result);
+			});
         });
     }
   
     render() {
-        return <div>
-            <h2 className="bottom-20">Administrative Dashboard</h2>
-            <div className="col-md-5 bottom-margin-10">
-                <Button
-                    className="btn btn-lg btn-default btn-mt"
-                    //onClick={this.goTo.bind(this, 'sources')}
-                    >
-                    Sources
-                </Button>
-                <Button
-                    className="btn btn-lg btn-default btn-mt"
-                    //onClick={this.goTo.bind(this, 'settings')}
-                    >
-                    Settings
-                </Button>
-                <Button
-                    className="btn btn-lg btn-default btn-mt"
-                    //onClick={this.goTo.bind(this, 'logs')}
-                    >
-                    Logs
-                </Button>
-                <Button
-                    className="btn btn-lg btn-default btn-mt"
-                    //onClick={this.goTo.bind(this, 'users')}
-                    >
-                    Users
-                </Button>
-                <Button
-                    className="btn btn-lg btn-default btn-mt"
-                    //onClick={this.goTo.bind(this, 'roles')}
-                    >
-                    Roles
-                </Button>
-            </div>
-        </div>;
+	  let sources = [];
+	  if (this.state.sources.length > 0) {
+	    for (var i = 0; i < this.state.sources.length; i++) {
+		  var source = this.state.sources[i];
+		  sources.push(<div key={source.source}>{source.title}</div>);  
+	    }
+	  }
+	  
+      return <div>
+        <h2 className="bottom-20">Administrative Dashboard</h2>
+        <div className="col-md-5 bottom-margin-10">
+		  <Button
+			className="btn btn-lg btn-default btn-mt"
+			//onClick={this.goTo.bind(this, 'sources')}
+			>
+			Sources
+		  </Button>
+		  <Button
+			className="btn btn-lg btn-default btn-mt"
+			//onClick={this.goTo.bind(this, 'settings')}
+			>
+			Settings
+	  	  </Button>
+		  <Button
+			className="btn btn-lg btn-default btn-mt"
+			//onClick={this.goTo.bind(this, 'logs')}
+			>
+			Logs
+		  </Button>
+		  <Button
+			className="btn btn-lg btn-default btn-mt"
+			//onClick={this.goTo.bind(this, 'users')}
+			>
+			Users
+		  </Button>
+		  <Button
+			className="btn btn-lg btn-default btn-mt"
+			//onClick={this.goTo.bind(this, 'roles')}
+			>
+			Roles
+		  </Button>
+	    </div>
+		{sources}
+      </div>;
     }
 }
 

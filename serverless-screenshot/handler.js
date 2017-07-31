@@ -22,6 +22,18 @@ module.exports.take_screenshot = (event, context, cb) => {
     cb(`422, please provide a valid url, not: ${targetUrl}`);
     return false;
   }
+  
+  // Check link ID
+  if (!linkId) {
+	cb(`422, please provide a valid link ID, not: ${linkId}`);
+    return false;  
+  }
+  
+  // Check stat ID
+  if (!statId) {
+	cb(`422, please provide a valid stat ID, not: ${statId}`);
+    return false;  
+  }
 
   const targetBucket   = event.stageVariables.bucketName;
   const targetFilename = `${linkId}/${statId}.png`;
