@@ -38,7 +38,7 @@ class App extends Component {
     } else if (!isAuthenticated()) {
       content =
 	    <div className="container body-content">
-          <NoAuth />
+          <NoAuth {...this.props} />
 		</div>;
     }
 

@@ -20,7 +20,7 @@ namespace SAM.Controllers
                 var dash = new DashboardModel { Source = id, Data = new List<DashboardData>() };
 
                 var task1 = Task.Factory.StartNew(() => 
-                    dash.Data.Add(new DashboardData { Key = "object", Data = TableCount(client, "LLC-Objects") })); // Needs updated based on source ID
+                    dash.Data.Add(new DashboardData { Key = "objects", Data = TableCount(client, "LLC-Objects") })); // Needs updated based on source ID
                 var task2 = Task.Factory.StartNew(() => 
                     dash.Data.Add(new DashboardData { Key = "links", Data = TableCount(client, "LLC-Links") }));    // Needs updated based on source ID
                 var task3 = Task.Factory.StartNew(() => 

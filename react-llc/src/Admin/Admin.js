@@ -11,7 +11,7 @@ class Admin extends Component {
       <div className="container body-content">
         {
           isAuthenticated() && (
-              <Dashboard />
+              <Dashboard {...this.props} />
             )
         }
         

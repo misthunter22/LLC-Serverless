@@ -4,6 +4,7 @@ class NoAuth extends Component {
   login() {
     this.props.auth.login();
   }
+  
   render() {
     return (
       <h4>
