@@ -16,6 +16,10 @@ body {
     padding-bottom: 20px;
 }
 
+.border-bottom-silver {
+	border-bottom: solid 1px silver;
+}
+
 div.dash-div {
 	border: solid 1px Black; 
 	padding-bottom: 25px; 

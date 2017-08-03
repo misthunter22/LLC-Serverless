@@ -1,25 +1,45 @@
 import React, { Component } from 'react';
-import NoAuth  from '../Auth/NoAuth';
+import servicesBase from '../Services/ServicesBase';
 
 class Sources extends Component {
+	
+  constructor(props) {
+    super(props);
+	this.state = {
+      sources: []
+	}
+  }
+  
+  componentDidMount() {
+    this.sources(true);
+  }
   
   render() {
     const { isAuthenticated } = this.props.auth;
-	let content = null;
-	if (!isAuthenticated()) {
-      content =
-        <NoAuth {...this.props} />;
-    }
-	else {
-	  content = 
-        <h3>Sources</h3>;
-	}
-    return (
-	  <div className="container body-content">
-	    {content}
-	  </div>
-    );
+    return (isAuthenticated() && (
+		    <div className="container body-content">
+              <h2 className="bottom-20">Sources</h2>
+              <p>
+                A Tag CreateSource
+              </p>
+              <table class="table">
+                <tr className="border-bottom-silver">
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Allow Link Checking</th>
+                  <th>Allow Link Extractions</th>
+                  <th>Object Source Name</th>
+                  <th></th>
+                  <th>Date Created</th>
+                  <th></th>
+                </tr>
+              </table>
+
+              <div className="bottom-20">
+                A Tag Back to Dashboard
+              </div>
+            </div>));
   }
 }
 
-export default Sources;
+export default servicesBase(Sources);

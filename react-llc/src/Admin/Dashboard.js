@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { Button } from 'react-bootstrap';
-import servicesBase, {AwsConstants} from '../Services/ServicesBase';
-
-var AWS    = require('aws-sdk');
-var Client = require('aws-api-gateway-client').default;
+import servicesBase from '../Services/ServicesBase';
 
 class Dashboard extends Component {
 
@@ -19,53 +16,7 @@ class Dashboard extends Component {
     }
 
     componentDidMount() {
-	  var that = this;
-	  AWS.config.credentials.get(function(){
-
-		// Credentials will be available when this function is called.
-		var accessKeyId = AWS.config.credentials.accessKeyId;
-		var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		var sessionToken = AWS.config.credentials.sessionToken;
-
-		var apigClient = Client.newClient({
-		  invokeUrl: AwsConstants.invokeUrl,
-		  accessKey: accessKeyId,
-		  secretKey: secretAccessKey,
-		  sessionToken: sessionToken,
-		  region: AwsConstants.region
-		});
-		
-		var pathTemplate     = '/Prod/api/sources';
-		var params           = {};
-		var additionalParams = {};
-		var body             = {};
-		var method           = 'GET';
-		
-		apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		  .then(function(result) {
-			for (var i = 0; i < result.data.result.length; i++) {
-			  var s    = result.data.result[i];
-			  var path = '/Prod/api/dashboard/' + s.source;
-			  apigClient.invokeApi(params, path, method, additionalParams, body)
-			    .then(function(result) {
-				  var obj  = {};
-				  var data = result.data;
-				  obj['source'] = data.source;
-				  obj['title']  = s.title;
-				  for (var j = 0; j < data.data.length; j++) {
-				    var dj      = data.data[j];
-					obj[dj.key] = dj.data;
-				  }
-					  
-				  that.setState((prevState, props) => ({
-				    sources: prevState.sources.concat([obj])
-				  }));
-			  });
-			}
-		  }).catch(function(result){
-		  console.log(result);
-	    });
-	  });
+	  this.sources();
     }
   
     render() {

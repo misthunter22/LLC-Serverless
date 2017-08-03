@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Amazon;
 using SAM.Models.Admin;
+using System;
 
 namespace SAM.Controllers
 {
@@ -20,28 +21,42 @@ namespace SAM.Controllers
             return count.ToString();
         }
 
-        protected async Task<List<DashboardModel>> Sources(AmazonDynamoDBClient client, string tableName)
+        protected async Task<List<SourceModel>> Sources(AmazonDynamoDBClient client, string tableName)
         {
             var sources = await client.ScanAsync(new ScanRequest
             {
                 TableName = tableName
             });
 
-            var array = new List<DashboardModel>();
+            var array = new List<SourceModel>();
             foreach (var d in sources.Items)
             {
                 int i = int.Parse(d["Id"].N);
-                if (i > 0)
+                array.Add(new SourceModel
                 {
-                    array.Add(new DashboardModel
-                    {
-                        Source = i.ToString(),
-                        Title = d["Name"].S
-                    });
-                }
+                    AllowLinkChecking    = d.ContainsKey("AllowLinkChecking")    ? d["AllowLinkChecking"].BOOL         : (bool?)null,
+                    AllowLinkExtractions = d.ContainsKey("AllowLinkExtractions") ? d["AllowLinkExtractions"].BOOL      : (bool?)null,
+                    DateCreated          = d.ContainsKey("DateCreated")          ? ParseDate(d["DateCreated"].S)       : null,
+                    DateLastChecked      = d.ContainsKey("DateLastChecked")      ? ParseDate(d["DateLastChecked"].S)   : null,
+                    DateLastExtracted    = d.ContainsKey("DateLastExtracted")    ? ParseDate(d["DateLastExtracted"].S) : null,
+                    Description          = d.ContainsKey("Description")          ? d["Description"].S                  : null,
+                    HtmlFileCount        = d.ContainsKey("HtmlFileCount")        ? ParseInt(d["HtmlFileCount"].N)      : -1,
+                    InvalidLinkCount     = d.ContainsKey("InvalidLinkCount")     ? ParseInt(d["InvalidLinkCount"].N)   : -1,
+                    LinkCount            = d.ContainsKey("LinkCount")            ? ParseInt(d["LinkCount"].N)          : -1,
+                    S3BucketId           = d.ContainsKey("S3BucketId")           ? ParseInt(d["S3BucketId"].N)         : -1,
+                    S3ObjectCount        = d.ContainsKey("S3ObjectCount")        ? ParseInt(d["S3ObjectCount"].N)      : -1,
+                    Source               = i,
+                    Title                = d.ContainsKey("Name") ? d["Name"].S : null,
+                });
             }
 
             return array;
+        }
+
+        protected async Task<SourceModel> Source(AmazonDynamoDBClient client, string tableName, string id)
+        {
+            var sources = await Sources(client, tableName);
+            return sources.FirstOrDefault(x => x.Source.Equals(id));
         }
 
         protected async Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b)
@@ -90,6 +105,24 @@ namespace SAM.Controllers
             });
 
             return rows.Count.ToString();
+        }
+
+        protected DateTime? ParseDate(string date)
+        {
+            DateTime ret = DateTime.MinValue;
+            if (DateTime.TryParse(date, out ret))
+            {
+                return ret;
+            }
+
+            return null;
+        }
+
+        protected int ParseInt(string i)
+        {
+            int ret = -1;
+            int.TryParse(i, out ret);
+            return ret;
         }
     }
 }
