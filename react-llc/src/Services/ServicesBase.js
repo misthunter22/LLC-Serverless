@@ -23,6 +23,12 @@ export default function servicesBase(Component) {
         }
       });
     }
+	
+	applySource(that, obj) {
+	  that.setState((prevState, props) => ({
+	    sources: prevState.sources.concat([obj])
+	  }));
+	}
 		
 	sources(includeZero = false) {
 	  var that = this;
@@ -62,9 +68,7 @@ export default function servicesBase(Component) {
 				obj['invalid']   = s.invalidLinkCount;
 				obj['checked']   = s.dateLastChecked;
 				  
-				that.setState((prevState, props) => ({
-				  sources: prevState.sources.concat([obj])
-				}));
+				that.applySource(that, obj);
 			  }
 			}
 		  }).catch(function(result){

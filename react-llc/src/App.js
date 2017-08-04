@@ -44,7 +44,7 @@ class App extends Component {
 
     return (
       <div>
-		<Navbar fixedTop="true">
+		<Navbar fixedTop={true}>
 		  <Navbar.Header>
 			<Navbar.Brand>
 			  <a href="/">LLC</a>

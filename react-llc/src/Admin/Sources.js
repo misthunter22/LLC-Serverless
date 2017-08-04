@@ -22,17 +22,19 @@ class Sources extends Component {
               <p>
                 A Tag CreateSource
               </p>
-              <table class="table">
-                <tr className="border-bottom-silver">
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Allow Link Checking</th>
-                  <th>Allow Link Extractions</th>
-                  <th>Object Source Name</th>
-                  <th></th>
-                  <th>Date Created</th>
-                  <th></th>
-                </tr>
+              <table className="table">
+			    <tbody>
+                  <tr className="border-bottom-silver">
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Allow Link Checking</th>
+                    <th>Allow Link Extractions</th>
+                    <th>Object Source Name</th>
+                    <th></th>
+                    <th>Date Created</th>
+                    <th></th>
+                  </tr>
+				</tbody>
               </table>
 
               <div className="bottom-20">
