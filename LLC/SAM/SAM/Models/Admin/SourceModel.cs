@@ -20,6 +20,8 @@ namespace SAM.Models.Admin
 
         public DateTime? DateLastExtracted { get; set; }
 
+        public string S3ObjectName { get; set; }
+
         public int S3BucketId { get; set; }
 
         public int S3ObjectCount { get; set; }

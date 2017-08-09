@@ -24,10 +24,12 @@ export default function servicesBase(Component) {
       });
     }
 	
-	applySource(that, obj) {
-	  that.setState((prevState, props) => ({
-	    sources: prevState.sources.concat([obj])
-	  }));
+	applySource(that, a) {
+	  var array = that.state.sources; 
+	  for (var i = 0; i < a.length; i++) {
+	    array.push(a[i]);
+	  }
+      that.setState({sources:array})
 	}
 		
 	sources(includeZero = false) {
@@ -55,22 +57,29 @@ export default function servicesBase(Component) {
 		
 		apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
 		  .then(function(result) {
-		  	for (var i = 0; i < result.data.result.length; i++) {
-			  var s = result.data.result[i];
+			var push = [];
+		  	for (var i = 0; i < result.data.length; i++) {
+			  var s = result.data[i];
 			  if (includeZero || s.source > 0) {
 				var obj  = {};
-				obj['source']    = s.source;
-				obj['title']     = s.title;
-				obj['objects']   = s.s3ObjectCount;
-				obj['html']      = s.htmlFileCount;
-				obj['links']     = s.linkCount;
-				obj['extracted'] = s.dateLastExtracted;
-				obj['invalid']   = s.invalidLinkCount;
-				obj['checked']   = s.dateLastChecked;
+				obj['source']       = s.source;
+				obj['title']        = s.title;
+				obj['objects']      = s.s3ObjectCount;
+				obj['html']         = s.htmlFileCount;
+				obj['links']        = s.linkCount;
+				obj['extracted']    = s.dateLastExtracted;
+				obj['invalid']      = s.invalidLinkCount;
+				obj['checked']      = s.dateLastChecked;
+				obj['s3name']       = s.s3ObjectName;
+				obj['allowlink']    = s.allowLinkChecking;
+				obj['allowextract'] = s.allowLinkExtractions; 
+				obj['created']      = s.dateCreated;
 				  
-				that.applySource(that, obj);
+				push.push(obj);
 			  }
 			}
+			
+			that.applySource(that, push);
 		  }).catch(function(result){
 		  console.log(result);
 	    });

@@ -14,7 +14,7 @@ namespace SAM.Controllers
         {
             using (var client = new AmazonDynamoDBClient(Region))
             {
-                var sources = Sources(client, "LLC-Sources");
+                var sources = Sources(client, "LLC-Sources", "LLC-Buckets");
                 return Json(sources);
             }
         }

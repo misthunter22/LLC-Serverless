@@ -21,41 +21,44 @@ namespace SAM.Controllers
             return count.ToString();
         }
 
-        protected async Task<List<SourceModel>> Sources(AmazonDynamoDBClient client, string tableName)
+        protected List<SourceModel> Sources(AmazonDynamoDBClient client, string tableName, string bucketTableName)
         {
-            var sources = await client.ScanAsync(new ScanRequest
+            var sources = client.ScanAsync(new ScanRequest
             {
                 TableName = tableName
-            });
+            }).Result;
 
             var array = new List<SourceModel>();
             foreach (var d in sources.Items)
             {
                 int i = int.Parse(d["Id"].N);
-                array.Add(new SourceModel
+                var m = new SourceModel
                 {
-                    AllowLinkChecking    = d.ContainsKey("AllowLinkChecking")    ? d["AllowLinkChecking"].BOOL         : (bool?)null,
-                    AllowLinkExtractions = d.ContainsKey("AllowLinkExtractions") ? d["AllowLinkExtractions"].BOOL      : (bool?)null,
-                    DateCreated          = d.ContainsKey("DateCreated")          ? ParseDate(d["DateCreated"].S)       : null,
-                    DateLastChecked      = d.ContainsKey("DateLastChecked")      ? ParseDate(d["DateLastChecked"].S)   : null,
-                    DateLastExtracted    = d.ContainsKey("DateLastExtracted")    ? ParseDate(d["DateLastExtracted"].S) : null,
-                    Description          = d.ContainsKey("Description")          ? d["Description"].S                  : null,
-                    HtmlFileCount        = d.ContainsKey("HtmlFileCount")        ? ParseInt(d["HtmlFileCount"].N)      : -1,
-                    InvalidLinkCount     = d.ContainsKey("InvalidLinkCount")     ? ParseInt(d["InvalidLinkCount"].N)   : -1,
-                    LinkCount            = d.ContainsKey("LinkCount")            ? ParseInt(d["LinkCount"].N)          : -1,
-                    S3BucketId           = d.ContainsKey("S3BucketId")           ? ParseInt(d["S3BucketId"].N)         : -1,
-                    S3ObjectCount        = d.ContainsKey("S3ObjectCount")        ? ParseInt(d["S3ObjectCount"].N)      : -1,
-                    Source               = i,
-                    Title                = d.ContainsKey("Name") ? d["Name"].S : null,
-                });
+                    AllowLinkChecking = d.ContainsKey("AllowLinkChecking") ? d["AllowLinkChecking"].BOOL : false,
+                    AllowLinkExtractions = d.ContainsKey("AllowLinkExtractions") ? d["AllowLinkExtractions"].BOOL : false,
+                    DateCreated = d.ContainsKey("DateCreated") ? ParseDate(d["DateCreated"].S) : null,
+                    DateLastChecked = d.ContainsKey("DateLastChecked") ? ParseDate(d["DateLastChecked"].S) : null,
+                    DateLastExtracted = d.ContainsKey("DateLastExtracted") ? ParseDate(d["DateLastExtracted"].S) : null,
+                    Description = d.ContainsKey("Description") ? d["Description"].S : null,
+                    HtmlFileCount = d.ContainsKey("HtmlFileCount") ? ParseInt(d["HtmlFileCount"].N) : -1,
+                    InvalidLinkCount = d.ContainsKey("InvalidLinkCount") ? ParseInt(d["InvalidLinkCount"].N) : -1,
+                    LinkCount = d.ContainsKey("LinkCount") ? ParseInt(d["LinkCount"].N) : -1,
+                    S3BucketId = d.ContainsKey("S3BucketId") ? ParseInt(d["S3BucketId"].N) : -1,
+                    S3ObjectCount = d.ContainsKey("S3ObjectCount") ? ParseInt(d["S3ObjectCount"].N) : -1,
+                    Source = i,
+                    Title = d.ContainsKey("Name") ? d["Name"].S : null,
+                };
+
+                m.S3ObjectName = QueryDataInt(client, bucketTableName, m.S3BucketId.ToString(), "Name").Result;
+                array.Add(m);
             }
 
-            return array;
+            return array.OrderBy(x => x.Source).ToList();
         }
 
-        protected async Task<SourceModel> Source(AmazonDynamoDBClient client, string tableName, string id)
+        protected SourceModel Source(AmazonDynamoDBClient client, string tableName, string bucketTableName, string id)
         {
-            var sources = await Sources(client, tableName);
+            var sources = Sources(client, tableName, bucketTableName);
             return sources.FirstOrDefault(x => x.Source.Equals(id));
         }
 
