@@ -122,3 +122,7 @@ table.dataTable.display tbody tr.odd.selected {
     -webkit-hyphens: auto;
     hyphens: auto;
 }
+
+.errors {
+	color: red;
+}
