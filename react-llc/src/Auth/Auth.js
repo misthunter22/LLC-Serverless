@@ -2,6 +2,8 @@ import history from '../history';
 import auth0 from 'auth0-js';
 import { AUTH_CONFIG } from './auth0-variables';
 
+var jwt_decode = require('jwt-decode');
+
 export default class Auth {
   auth0 = new auth0.WebAuth({
     domain: AUTH_CONFIG.domain,
@@ -22,6 +24,12 @@ export default class Auth {
 
   login() {
     this.auth0.authorize();
+  }
+  
+  idTokenData(field) {
+	var token   = localStorage.getItem('id_token');
+	var decoded = jwt_decode(token);
+	return decoded[field];
   }
 
   handleAuthentication() {

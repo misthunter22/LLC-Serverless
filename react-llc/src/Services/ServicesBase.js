@@ -1,5 +1,9 @@
+import React            from 'react';
+import { PacmanLoader } from 'react-spinners';
+
 var AWS    = require('aws-sdk');
 var Client = require('aws-api-gateway-client').default;
+const $    = require('jquery');
 
 export const AwsConstants = {
     region: 'us-west-2',
@@ -23,6 +27,22 @@ export default function servicesBase(Component) {
         }
       });
     }
+	
+	spinnerMarkup() {
+	  let spinner = 
+	    <div id="loading_spinner" style={{'marginLeft': '50%'}}>
+	      <PacmanLoader
+	        color={'#0ce3ac'} 
+		  />
+	    </div>;
+		
+	  return spinner;
+	}
+	
+	turnOffSpinner(that) {
+	  that.setState({loading: false});
+	  $('#loading_spinner').hide();
+	}
 	
 	applySource(that, a) {
 	  var array = that.state.sources; 

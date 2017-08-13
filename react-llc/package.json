@@ -16,6 +16,7 @@
     "datatables.net": "^1.10.15",
     "datatables.net-bs": "^1.10.15",
     "googleapis": "^19.0.0",
+    "jwt-decode": "^2.2.0",
     "react": "^15.5.4",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.5.4",
@@ -23,6 +24,7 @@
     "react-redux-form": "^1.14.0",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
+    "react-spinners": "^0.0.30",
     "redux": "^3.7.2"
   },
   "scripts": {

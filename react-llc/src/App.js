@@ -41,6 +41,8 @@ class App extends Component {
           <NoAuth {...this.props} />
 		</div>;
     }
+	
+	let userName = this.props.auth.idTokenData('name');
 
     return (
       <div>
@@ -94,7 +96,7 @@ class App extends Component {
 	      {
 		    isAuthenticated() && (
 		      <div className="float-nav">
-		        <span>Welcome, you! </span>
+		        <span>Welcome, {userName}! </span>
 		        <Button
 			      bsStyle="primary"
 				  className="btn-margin"
