@@ -8,7 +8,7 @@ import Sources      from './Admin/Sources/Sources';
 import CreateSource from './Admin/Sources/CreateSource';
 import EditSource   from './Admin/Sources/EditSource';
 import DeleteSource from './Admin/Sources/DeleteSource';
-import Settings     from './Admin/Settings';
+import Settings     from './Admin/Settings/Settings';
 import Logs         from './Admin/Logs';
 import Users        from './Admin/Users';
 import Roles        from './Admin/Roles';

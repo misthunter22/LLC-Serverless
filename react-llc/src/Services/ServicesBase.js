@@ -31,6 +31,14 @@ export default function servicesBase(Component) {
 	  }
       that.setState({sources:array})
 	}
+	
+	applySetting(that, a) {
+	  var array = that.state.settings; 
+	  for (var i = 0; i < a.length; i++) {
+	    array.push(a[i]);
+	  }
+      that.setState({settings:array})
+	}
 		
 	sources(includeZero = false) {
 	  var that = this;
@@ -80,6 +88,53 @@ export default function servicesBase(Component) {
 			}
 			
 			that.applySource(that, push);
+		  }).catch(function(result){
+		  console.log(result);
+	    });
+	  });
+	}
+	
+	settings() {
+	  var that = this;
+	  AWS.config.credentials.get(function(){
+
+		// Credentials will be available when this function is called.
+		var accessKeyId = AWS.config.credentials.accessKeyId;
+		var secretAccessKey = AWS.config.credentials.secretAccessKey;
+		var sessionToken = AWS.config.credentials.sessionToken;
+
+		var apigClient = Client.newClient({
+		  invokeUrl: AwsConstants.invokeUrl,
+		  accessKey: accessKeyId,
+		  secretKey: secretAccessKey,
+		  sessionToken: sessionToken,
+		  region: AwsConstants.region
+		});
+		
+		var pathTemplate     = '/Prod/api/settings';
+		var params           = {};
+		var additionalParams = {};
+		var body             = {};
+		var method           = 'GET';
+		
+		apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
+		  .then(function(result) {
+			var push = [];
+		  	for (var i = 0; i < result.data.length; i++) {
+			  var s = result.data[i];
+			  var obj  = {};
+			  obj['id']          = s.id;
+			  obj['created']     = s.dateCreated;
+			  obj['modified']    = s.dateModified;
+			  obj['description'] = s.description;
+			  obj['user']        = s.modifiedUser;
+			  obj['name']        = s.name;
+			  obj['value']       = s.value;
+				  
+			  push.push(obj);
+			}
+			
+			that.applySetting(that, push);
 		  }).catch(function(result){
 		  console.log(result);
 	    });

@@ -6,15 +6,15 @@ namespace SAM.Controllers
 {
     [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
-    public class SourcesController : DynamoDbController
+    public class SettingsController : DynamoDbController
     {
-        // GET api/sources
+        // GET api/settings
         [HttpGet]
         public JsonResult Get()
         {
             using (var client = new AmazonDynamoDBClient(Region))
             {
-                var results = Sources(client, "LLC-Sources", "LLC-Buckets");
+                var results = Settings(client, "LLC-Settings");
                 return Json(results);
             }
         }

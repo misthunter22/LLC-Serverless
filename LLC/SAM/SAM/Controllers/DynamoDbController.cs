@@ -23,30 +23,30 @@ namespace SAM.Controllers
 
         protected List<SourceModel> Sources(AmazonDynamoDBClient client, string tableName, string bucketTableName)
         {
-            var sources = client.ScanAsync(new ScanRequest
+            var results = client.ScanAsync(new ScanRequest
             {
                 TableName = tableName
             }).Result;
 
             var array = new List<SourceModel>();
-            foreach (var d in sources.Items)
+            foreach (var d in results.Items)
             {
                 int i = int.Parse(d["Id"].N);
                 var m = new SourceModel
                 {
-                    AllowLinkChecking = d.ContainsKey("AllowLinkChecking") ? d["AllowLinkChecking"].BOOL : false,
+                    AllowLinkChecking    = d.ContainsKey("AllowLinkChecking") ? d["AllowLinkChecking"].BOOL : false,
                     AllowLinkExtractions = d.ContainsKey("AllowLinkExtractions") ? d["AllowLinkExtractions"].BOOL : false,
-                    DateCreated = d.ContainsKey("DateCreated") ? ParseDate(d["DateCreated"].S) : null,
-                    DateLastChecked = d.ContainsKey("DateLastChecked") ? ParseDate(d["DateLastChecked"].S) : null,
-                    DateLastExtracted = d.ContainsKey("DateLastExtracted") ? ParseDate(d["DateLastExtracted"].S) : null,
-                    Description = d.ContainsKey("Description") ? d["Description"].S : null,
-                    HtmlFileCount = d.ContainsKey("HtmlFileCount") ? ParseInt(d["HtmlFileCount"].N) : -1,
-                    InvalidLinkCount = d.ContainsKey("InvalidLinkCount") ? ParseInt(d["InvalidLinkCount"].N) : -1,
-                    LinkCount = d.ContainsKey("LinkCount") ? ParseInt(d["LinkCount"].N) : -1,
-                    S3BucketId = d.ContainsKey("S3BucketId") ? ParseInt(d["S3BucketId"].N) : -1,
-                    S3ObjectCount = d.ContainsKey("S3ObjectCount") ? ParseInt(d["S3ObjectCount"].N) : -1,
-                    Source = i,
-                    Title = d.ContainsKey("Name") ? d["Name"].S : null,
+                    DateCreated          = d.ContainsKey("DateCreated") ? ParseDate(d["DateCreated"].S) : null,
+                    DateLastChecked      = d.ContainsKey("DateLastChecked") ? ParseDate(d["DateLastChecked"].S) : null,
+                    DateLastExtracted    = d.ContainsKey("DateLastExtracted") ? ParseDate(d["DateLastExtracted"].S) : null,
+                    Description          = d.ContainsKey("Description") ? d["Description"].S : null,
+                    HtmlFileCount        = d.ContainsKey("HtmlFileCount") ? ParseInt(d["HtmlFileCount"].N) : -1,
+                    InvalidLinkCount     = d.ContainsKey("InvalidLinkCount") ? ParseInt(d["InvalidLinkCount"].N) : -1,
+                    LinkCount            = d.ContainsKey("LinkCount") ? ParseInt(d["LinkCount"].N) : -1,
+                    S3BucketId           = d.ContainsKey("S3BucketId") ? ParseInt(d["S3BucketId"].N) : -1,
+                    S3ObjectCount        = d.ContainsKey("S3ObjectCount") ? ParseInt(d["S3ObjectCount"].N) : -1,
+                    Source               = i,
+                    Title                = d.ContainsKey("Name") ? d["Name"].S : null,
                 };
 
                 m.S3ObjectName = QueryDataInt(client, bucketTableName, m.S3BucketId.ToString(), "Name").Result;
@@ -56,10 +56,38 @@ namespace SAM.Controllers
             return array.OrderBy(x => x.Source).ToList();
         }
 
+        protected List<SettingModel> Settings(AmazonDynamoDBClient client, string tableName)
+        {
+            var results = client.ScanAsync(new ScanRequest
+            {
+                TableName = tableName
+            }).Result;
+
+            var array = new List<SettingModel>();
+            foreach (var d in results.Items)
+            {
+                int i = int.Parse(d["Id"].N);
+                var m = new SettingModel
+                {
+                    DateCreated  = d.ContainsKey("DateCreated") ? ParseDate(d["DateCreated"].S) : null,
+                    DateModified = d.ContainsKey("DateModified") ? ParseDate(d["DateModified"].S) : null,
+                    Description  = d.ContainsKey("Description") ? d["Description"].S : null,
+                    Id           = i,
+                    ModifiedUser = d.ContainsKey("ModifiedUser") ? d["ModifiedUser"].S : null,
+                    Name         = d.ContainsKey("Name") ? d["Name"].S : null,
+                    Value        = d.ContainsKey("Value") ? d["Value"].S : null
+                };
+
+                array.Add(m);
+            }
+
+            return array.OrderBy(x => x.Name).ToList();
+        }
+
         protected SourceModel Source(AmazonDynamoDBClient client, string tableName, string bucketTableName, string id)
         {
-            var sources = Sources(client, tableName, bucketTableName);
-            return sources.FirstOrDefault(x => x.Source.Equals(id));
+            var results = Sources(client, tableName, bucketTableName);
+            return results.FirstOrDefault(x => x.Source.Equals(id));
         }
 
         protected async Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b)
@@ -70,7 +98,7 @@ namespace SAM.Controllers
                     { ":val",  new AttributeValue { BOOL = b } }
                 },
                 FilterExpression = $"{column} = :val",
-                TableName = tableName
+                TableName        = tableName
             });
 
             return rows.Count.ToString();
@@ -80,8 +108,8 @@ namespace SAM.Controllers
         {
             var resp = await client.QueryAsync(new QueryRequest
             {
-                TableName = tableName,
-                KeyConditionExpression = "Id = :v_Id",
+                TableName                 = tableName,
+                KeyConditionExpression    = "Id = :v_Id",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
                     {":v_Id", new AttributeValue { N =  key }}}
             });
@@ -104,7 +132,7 @@ namespace SAM.Controllers
                     { ":val",  new AttributeValue(s) }
                 },
                 FilterExpression = $"contains({column}, :val)",
-                TableName = tableName
+                TableName        = tableName
             });
 
             return rows.Count.ToString();
