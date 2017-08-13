@@ -8,7 +8,21 @@ class Roles extends Component {
       <div className="container body-content">
         {
           isAuthenticated() && (
-              <h3>Roles</h3>
+              <div>
+			    <h3>Roles</h3>
+				<p>User management is handled through <a href="https://auth0.com/" target="_blank">Auth0</a>. 
+				   Groups, roles and permissions are applied when the user authenticates against the datastores 
+				   defined in <a href="https://auth0.com/" target="_blank">Auth0</a>, which then passes any permissions
+				   tokens through.
+				</p>
+				<p>
+				  The current roles that exist in the application are:
+				  <ul>
+				    <li>Admin</li>
+					<li>ReportUser</li>
+				  </ul>
+				</p>
+			  </div>
             )
         }
         
