@@ -9,7 +9,7 @@ using System;
 
 namespace SAM.DI
 {
-    public class DynamoDbImpl : IDynamoDb
+    public class ILLCDataImpl : ILLCData
     {
         protected RegionEndpoint _region = RegionEndpoint.USWest2;
 
@@ -60,6 +60,12 @@ namespace SAM.DI
             return array.OrderBy(x => x.Source).ToList();
         }
 
+        public SourceModel Source(AmazonDynamoDBClient client, string tableName, string bucketTableName, string id)
+        {
+            var results = Sources(client, tableName, bucketTableName);
+            return results.FirstOrDefault(x => x.Source.Equals(id));
+        }
+
         public List<SettingModel> Settings(AmazonDynamoDBClient client, string tableName)
         {
             var results = client.ScanAsync(new ScanRequest
@@ -88,10 +94,9 @@ namespace SAM.DI
             return array.OrderBy(x => x.Name).ToList();
         }
 
-        public SourceModel Source(AmazonDynamoDBClient client, string tableName, string bucketTableName, string id)
+        public List<SettingModel> InvalidLinks(AmazonDynamoDBClient client, string tableName)
         {
-            var results = Sources(client, tableName, bucketTableName);
-            return results.FirstOrDefault(x => x.Source.Equals(id));
+            throw new NotImplementedException();
         }
 
         public async Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b)

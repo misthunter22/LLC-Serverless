@@ -9,9 +9,9 @@ namespace SAM.Controllers
     [Route("api/[controller]")]
     public class DashboardController : Controller
     {
-        private IDynamoDb _service;
+        private ILLCData _service;
 
-        public DashboardController(IDynamoDb service)
+        public DashboardController(ILLCData service)
         {
             _service = service;
         }

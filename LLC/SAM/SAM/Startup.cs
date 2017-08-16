@@ -45,7 +45,7 @@ namespace SAM
             services.AddAWSService<Amazon.CognitoIdentity.IAmazonCognitoIdentity>();
             services.AddAWSService<Amazon.CognitoIdentityProvider.IAmazonCognitoIdentityProvider>();
 
-            services.AddTransient<IDynamoDb, DynamoDbImpl>();
+            services.AddTransient<ILLCData, ILLCDataImpl>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

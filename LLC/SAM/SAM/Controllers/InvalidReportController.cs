@@ -9,9 +9,9 @@ namespace SAM.Controllers
     [Route("api/[controller]")]
     public class InvalidReportController : Controller
     {
-        private IDynamoDb _service;
+        private ILLCData _service;
 
-        public InvalidReportController(IDynamoDb service)
+        public InvalidReportController(ILLCData service)
         {
             _service = service;
         }

@@ -9,9 +9,9 @@ namespace SAM.Controllers
     [Route("api/[controller]")]
     public class SettingsController : Controller
     {
-        private IDynamoDb _service;
+        private ILLCData _service;
 
-        public SettingsController(IDynamoDb service)
+        public SettingsController(ILLCData service)
         {
             _service = service;
         }

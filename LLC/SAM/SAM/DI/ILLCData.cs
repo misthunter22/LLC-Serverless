@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SAM.DI
 {
-    public interface IDynamoDb
+    public interface ILLCData
     {
         RegionEndpoint Region();
 
@@ -14,9 +14,11 @@ namespace SAM.DI
 
         List<SourceModel> Sources(AmazonDynamoDBClient client, string tableName, string bucketTableName);
 
+        SourceModel Source(AmazonDynamoDBClient client, string tableName, string bucketTableName, string id);
+
         List<SettingModel> Settings(AmazonDynamoDBClient client, string tableName);
 
-        SourceModel Source(AmazonDynamoDBClient client, string tableName, string bucketTableName, string id);
+        List<SettingModel> InvalidLinks(AmazonDynamoDBClient client, string tableName);
 
         Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b);
 
