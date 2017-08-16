@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SAM.DI;
 
 namespace SAM
 {
@@ -47,6 +44,8 @@ namespace SAM
             services.AddAWSService<Amazon.S3.IAmazonS3>();
             services.AddAWSService<Amazon.CognitoIdentity.IAmazonCognitoIdentity>();
             services.AddAWSService<Amazon.CognitoIdentityProvider.IAmazonCognitoIdentityProvider>();
+
+            services.AddTransient<IDynamoDb, DynamoDbImpl>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

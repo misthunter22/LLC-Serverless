@@ -3,6 +3,8 @@ import React        from 'react';
 import App          from './App';
 import Home         from './Home/Home';
 import Report       from './Report/Report';
+import InvalidLinks from './Report/InvalidLinks';
+import WarningLinks from './Report/WarningLinks';
 import Admin        from './Admin/Admin';
 import Sources      from './Admin/Sources/Sources';
 import CreateSource from './Admin/Sources/CreateSource';
@@ -32,6 +34,8 @@ export const makeMainRoutes = () => {
           <Route       path="/"                               render={(props) => <App          auth={auth} {...props} />} />
           <Route exact path="/home"                           render={(props) => <Home         auth={auth} {...props} />} />
 		  <Route exact path="/report"                         render={(props) => <Report       auth={auth} {...props} />} />
+		  <Route exact path="/report/invalidlinks"            render={(props) => <InvalidLinks auth={auth} {...props} />} />
+		  <Route exact path="/report/warninglinks"            render={(props) => <WarningLinks auth={auth} {...props} />} />
 		  <Route exact path="/admin"                          render={(props) => <Admin        auth={auth} {...props} />} />
 		  <Route exact path="/admin/sources"                  render={(props) => <Sources      auth={auth} {...props} />} />
 		  <Route exact path="/admin/sources/createsource"     render={(props) => <CreateSource auth={auth} {...props} />} />
