@@ -6,6 +6,7 @@ using System.Linq;
 using Amazon;
 using SAM.Models.Admin;
 using System;
+using SAM.Models.Reports;
 
 namespace SAM.DI
 {
@@ -94,7 +95,7 @@ namespace SAM.DI
             return array.OrderBy(x => x.Name).ToList();
         }
 
-        public List<SettingModel> InvalidLinks(AmazonDynamoDBClient client, string tableName)
+        public List<InvalidLinksModel> InvalidLinks(AmazonDynamoDBClient client, string tableName)
         {
             throw new NotImplementedException();
         }

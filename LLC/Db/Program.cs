@@ -1,12 +1,12 @@
 ﻿using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
 using Db.Extensions;
 using Db.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Db
 {
@@ -17,7 +17,7 @@ namespace Db
             if (args.Length < 3)
             {
                 Console.WriteLine("Usage <bucket name> <access key> <secret key> [<environment>]");
-                return 1;
+                return -1;
             }
 
             // Assume the arguments are in the correct order
@@ -34,21 +34,188 @@ namespace Db
                 env = args[3];
             }
 
-            // First, create all of the folders in the bucket
-            // that do not use DynamoDB
             using (var client = S3Helper.S3Client(aKey, sKey))
             {
                 S3Helper.CreateBucket(client, bucket, "Packages");
-                S3Helper.CreateBucket(client, bucket, "Screenshots");
-            }
 
-            // Now, move the data into S3/DynamoDB
-            using (var db = new LORLinkCheckerEntities())
-            {
                 // Grab AWS Credentials
                 var credentials = new BasicAWSCredentials(aKey, sKey);
-                var client = new AmazonDynamoDBClient(credentials, RegionEndpoint.USWest2);
+                using (var dynamo = new AmazonDynamoDBClient(credentials, RegionEndpoint.USWest2))
+                {
+                    ConfigureTableMeta(dynamo, env);
+                    AddLabelToInvalidReports(dynamo, env);
+                }
 
+                return 0;
+            }
+        }
+
+        private static void ConfigureTableMeta(AmazonDynamoDBClient client, string env)
+        {
+            var tableName = "LLC-Meta" + env;
+            var table     = Table.LoadTable(client, tableName);
+            var batch     = table.CreateBatchWrite();
+            var keys      = new string[]
+            {
+                "Buckets",
+                "Links",
+                "ObjectLinks",
+                "Objects",
+                "PackageFiles",
+                "PackageLinks",
+                "Packages",
+                "Reports",
+                "Settings",
+                "Sources",
+                "Stats"
+            };
+
+            var results = client.ScanAsync(new ScanRequest
+            {
+                TableName = tableName
+            }).Result;
+
+            // Only run this portion if the table is empty
+            if (results.Count == 0)
+            {
+                foreach (var t in keys)
+                {
+                    var document = new Document();
+                    AddToDocument(document, "Id", t);
+                    AddToDocument(document, "Key", 0);
+                    batch.AddDocumentToPut(document);
+                }
+
+                batch.Execute();
+            }
+        }
+
+        private static void AddLabelToInvalidReports(AmazonDynamoDBClient client, string env)
+        {
+            var tableName = "LLC-Reports" + env;
+            var table     = Table.LoadTable(client, tableName);
+            var batch     = table.CreateBatchWrite();
+            var key       = GetTableNextKeyIndex(client, env, "Reports");
+
+            var results = client.ScanAsync(new ScanRequest
+            {
+                TableName = tableName
+            }).Result;
+
+            // Process the existing items without a Type
+            foreach (var r in results.Items)
+            {
+                if (!r.ContainsKey("ReportType"))
+                {
+                    r["ReportType"] = new AttributeValue { S = "Warning" };
+                    r.Remove("Type");
+                    client.PutItem(new PutItemRequest
+                    {
+                        Item = r,
+                        TableName = tableName
+                    });
+                }
+                else
+                {
+                    // Temporary, remove me!!
+                    if (r["ReportType"].S == "Invalid")
+                    {
+                        var k = new Dictionary<string, AttributeValue>();
+                        k["Id"] = new AttributeValue { N = r["Id"].N };
+
+                        client.DeleteItem(new DeleteItemRequest
+                        {
+                            TableName = tableName,
+                            Key = k
+                        });
+                    }
+                }
+            }
+
+            // Only process Invalid items from the other table
+            // If there are NO items of Type "Invalid"
+            var rows = client.ScanAsync(new ScanRequest
+            {
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    { ":val",  new AttributeValue { S = "Invalid" } }
+                },
+                FilterExpression = $"ReportType = :val",
+                TableName = tableName
+            }).Result;
+
+            // Continue, since this is the first time
+            if (rows.Count == 0)
+            {
+                Console.WriteLine("zero, proceeding...");
+                var last = new Dictionary<string, AttributeValue>();
+                last["Id"] = new AttributeValue { N = "0" };
+
+                while (last.ContainsKey("Id"))
+                {
+                    var invalid = client.ScanAsync(new ScanRequest
+                    {
+                        TableName = "LLC-Links" + env,
+                        ExclusiveStartKey = last["Id"].N == "0" ? null : last
+                    }).Result;
+
+                    foreach (var i in invalid.Items)
+                    {
+                        if (!(i.ContainsKey("Valid") && i["Valid"].BOOL))
+                        {
+                            var document = new Document();
+                            AddToDocument(document, "Id", ++key);
+                            AddToDocument(document, "Link", i["Id"].N);
+                            AddToDocument(document, "ReportType", "Invalid");
+                            batch.AddDocumentToPut(document);
+                        }
+                    }
+
+                    last = invalid.LastEvaluatedKey;
+                }
+
+                batch.Execute();
+                SetTableNextKeyIndex(client, env, "Reports", key.ToString());
+            }
+        }
+
+        private static int GetTableNextKeyIndex(AmazonDynamoDBClient client, string env, string key)
+        {
+            var tableName = "LLC-Meta" + env;
+            var resp = client.QueryAsync(new QueryRequest
+            {
+                TableName = tableName,
+                KeyConditionExpression = "Id = :v_Id",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    {":v_Id", new AttributeValue { S =  key }}}
+            }).Result;
+
+            return int.Parse(resp.Items[0]["Key"].N);
+        }
+
+        private static void SetTableNextKeyIndex(AmazonDynamoDBClient client, string env, string key, string value)
+        {
+            var tableName = "LLC-Meta" + env;
+            var item      = new Dictionary<string, AttributeValue>();
+            item["Id"]    = new AttributeValue { S = key };
+            item["Key"]   = new AttributeValue { N = value };
+
+            client.PutItem(new PutItemRequest
+            {
+                TableName = tableName,
+                Item = item
+            });
+        }
+
+        /// <summary>
+        /// This is the old process for migrating data. It worked,
+        /// but was WAYYYY to slow!! This probably won't be used,
+        /// but it is worth keeping just in case it's neeeded.
+        /// </summary>
+        /// <param name="args">The program args</param>
+        private static void CopyDbProcess(AmazonDynamoDBClient client, string env)
+        {
+            using (var db = new LORLinkCheckerEntities())
+            {
                 // Process Buckets
                 BucketsTable(client, db, env);
 
@@ -73,8 +240,6 @@ namespace Db
                 // Process ObjectLinks
                 ObjectLinksTable(client, db, env);
             }
-
-            return 0;
         }
 
         private static void BucketsTable(AmazonDynamoDBClient client, LORLinkCheckerEntities db, string env)

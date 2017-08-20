@@ -1,6 +1,7 @@
 ﻿using Amazon;
 using Amazon.DynamoDBv2;
 using SAM.Models.Admin;
+using SAM.Models.Reports;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -18,7 +19,7 @@ namespace SAM.DI
 
         List<SettingModel> Settings(AmazonDynamoDBClient client, string tableName);
 
-        List<SettingModel> InvalidLinks(AmazonDynamoDBClient client, string tableName);
+        List<InvalidLinksModel> InvalidLinks(AmazonDynamoDBClient client, string tableName);
 
         Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b);
 

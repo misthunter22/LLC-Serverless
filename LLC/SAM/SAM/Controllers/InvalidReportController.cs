@@ -16,7 +16,7 @@ namespace SAM.Controllers
             _service = service;
         }
 
-        // GET api/sources
+        // GET api/invalidreport
         [HttpGet]
         public JsonResult Get()
         {
