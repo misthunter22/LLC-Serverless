@@ -10,27 +10,31 @@ const columns = [
 	data: 'id'
   },
   {
-	title: 'Name',
-	data: 'name'
+	title: 'Source',
+	data: 'source'
   },
   {
-	title: 'Value',
-	data: 'value'
+	title: 'Link Url',
+	data: 'url'
   },
   {
-	title: '',
+	title: 'DateLastChecked',
+	data: 'dateLastChecked'
+  },
+  {
+	title: 'Date Last Found',
+	data: 'dateLastFound'
+  },
+  {
+	title: 'Attempt Count',
+	data: 'attemptCount'
+  },
+  {
+	title: 'Bucket Locations',
 	data: 'id'
   },
   {
-	title: 'Date Modified',
-	data: 'modified'
-  },
-  {
-	title: 'Modified By',
-	data: 'user'
-  },
-  {
-	title: '',
+	title: 'Reset Link',
 	data: 'id'
   }
 ];
@@ -40,45 +44,47 @@ class InvalidLinks extends Component {
   constructor(props) {
     super(props);
 	this.state = {
-      settings: [],
+	  invalidLinks: [],
       loading: true
 	}
   }
   
   componentDidMount() {
-    this.settings();
+	var that = this;
 	$(this.refs.main).DataTable({
       dom: '<"data-table-wrapper"t>',
-      data: this.state.settings,
       columns,
-      ordering: false,
-      columnDefs: [
-      {
-        "render": function (data, type, row) {
-	      return '<span class="badge">' + data + '</span>';
-        },
-        "targets": 0
-      },
-      {
-        "render": function (data, type, row) {
-          return '<a href="/admin/settings/editsetting/' + data +'" title="Edit this setting.">' +
-                   '<i class="glyphicon glyphicon-pencil"></i>' +
-                     '<span class="sr-only">Edit</span>' +
-                 '</a>';
-          },
-          "targets": 3
-      },
-      {
-	    "render": function (data, type, row) {
-	      return '<span onclick="return confirm(\'Are you sure you wish to delete this setting? There is no undo.\')">' +
-				   '<a href="/admin/settings/deletesetting/' + data + '" title="Remove this setting.">' +
-				     '<i class="glyphicon glyphicon-remove" style="color: red;"></i>' +
-				     '<span class="sr-only">Remove</span>' +
-				   '</a>' +
-			     '</span>';
-	    },
-	    "targets": 6
-      }
+      ordering: true,
+	  processing: true,
+      serverSide: true,
+	  info: true,
+	  stateSave: true,
+	  bAutoWidth: false,
+	  ajax: function(data, callback, settings) {
+	    that.invalidLinks().then(function(res) {
+		  callback(res);
+		});
+	  },
+	  columnDefs: [
+	  {
+		"render": function (data, type, row) {
+			var url = data.replace("http://", "").replace("https://", "").split("/")[0];
+			return '<a href="'+data+'" target="_blank">'+url+'</a>';
+		},
+		"targets": 2
+	  },
+	  {
+		"render": function (data, type, row) {
+			return '<a href="/Report/BucketLocations/' + data + '" title="' + data + '" target="_blank" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
+		},
+		"targets": 6
+	  },
+	  {
+		"render": function (data, type, row) {
+			return '<a href="/Report/ResetLink/' + data + '" title="' + data + '" class="btn btn-info glyphicon glyphicon-trash" onclick="return confirm(\'Are you sure? A link reset cannot be un-done\');"></a>';
+		},
+		"targets": 7
+	  }
 	  ]
     });
   }
@@ -91,13 +97,13 @@ class InvalidLinks extends Component {
   }
   
   shouldComponentUpdate() {
-	if (this.state.settings.length > 0) {
+	if (this.state.invalidLinks.length >= 0) {
 	  const table = $('.data-table-wrapper')
                       .find('table')
                       .DataTable();
 					
       table.clear();
-      table.rows.add(this.state.settings);
+      table.rows.add(this.state.invalidLinks);
 	  table.columns.adjust();
       table.draw();
 	  
@@ -114,7 +120,7 @@ class InvalidLinks extends Component {
 		    <div className="container body-content">
               <h2 className="bottom-20">Invalid Links</h2>
 			  {spinner}
-			  <table className="table" ref="main" />
+			  <table width="100%" className="table table-striped table-bordered" ref="main" cellSpacing="0" />
               <div className="bottom-20">
                 <a href="/report">Back to Dashboard</a>
               </div>

@@ -22,7 +22,7 @@ namespace SAM.Controllers
         {
             using (var client = new AmazonDynamoDBClient(_service.Region()))
             {
-                var results = _service.Sources(client, "LLC-Sources", "LLC-Buckets");
+                var results = _service.InvalidLinks(client, "LLC-Reports");
                 return Json(results);
             }
         }

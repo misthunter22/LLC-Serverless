@@ -97,7 +97,28 @@ namespace SAM.DI
 
         public List<InvalidLinksModel> InvalidLinks(AmazonDynamoDBClient client, string tableName)
         {
-            throw new NotImplementedException();
+            var rows = client.ScanAsync(new ScanRequest
+            {
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    { ":val",  new AttributeValue { S = "Invalid" } }
+                },
+                FilterExpression = "ReportType = :val",
+                TableName = tableName
+            }).Result;
+
+            Console.WriteLine($"Invalid Report Item Count: {rows.Items.Count}");
+
+            return rows.Items.Select(x => new InvalidLinksModel
+            {
+                AttemptCount    = x.ContainsKey("AttemptCount")    ? ParseInt(x["AttemptCount"].N)     : -1,
+                DateLastChecked = x.ContainsKey("DateLastChecked") ? ParseDate(x["DateLastChecked"].N) : null,
+                DateLastFound   = x.ContainsKey("DateLastFound")   ? ParseDate(x["DateLastFound"].N)   : null,
+                Id              = ParseInt(x["Id"].N),
+                Link            = ParseInt(x["Link"].N),
+                Source          = x["Source"].S,
+                Url             = x["Url"].S
+            })
+            .ToList();
         }
 
         public async Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b)

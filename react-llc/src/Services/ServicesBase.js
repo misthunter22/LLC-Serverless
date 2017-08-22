@@ -59,6 +59,10 @@ export default function servicesBase(Component) {
 	  }
       that.setState({settings:array})
 	}
+	
+	applyInvalidLinks(that, a) {
+      that.setState({invalidLinks:a})
+	}
 		
 	sources(includeZero = false) {
 	  var that = this;
@@ -157,6 +161,42 @@ export default function servicesBase(Component) {
 			that.applySetting(that, push);
 		  }).catch(function(result){
 		  console.log(result);
+	    });
+	  });
+	}
+	
+	invalidLinks() {
+	  var that = this;
+	  return new Promise(function (fulfill, reject) {
+	    AWS.config.credentials.get(function(){
+
+		  // Credentials will be available when this function is called.
+		  var accessKeyId = AWS.config.credentials.accessKeyId;
+		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
+		  var sessionToken = AWS.config.credentials.sessionToken;
+
+		  var apigClient = Client.newClient({
+		    invokeUrl: AwsConstants.invokeUrl,
+		    accessKey: accessKeyId,
+		    secretKey: secretAccessKey,
+		    sessionToken: sessionToken,
+		    region: AwsConstants.region
+		  });
+		
+		  var pathTemplate     = '/Prod/api/invalidReport';
+		  var params           = {};
+		  var additionalParams = {};
+		  var body             = {};
+		  var method           = 'GET';
+		
+		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
+		    .then(function(result) {
+			  that.applyInvalidLinks(that, result);
+			  fulfill(result);
+		    }).catch(function(result){
+		    console.log(result);
+			reject(result);
+	      });
 	    });
 	  });
 	}

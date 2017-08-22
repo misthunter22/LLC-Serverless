@@ -166,6 +166,13 @@ namespace Db
                             AddToDocument(document, "Id", ++key);
                             AddToDocument(document, "Link", i["Id"].N);
                             AddToDocument(document, "ReportType", "Invalid");
+                            AddToDocument(document, "Source", "IDLA S-LOR on AWS");
+                            AddToDocument(document, "Url", i["Url"].S);
+                            if (i.ContainsKey("DateLastChecked"))
+                                AddToDocument(document, "DateLastChecked", i["DateLastChecked"].S);
+                            if (i.ContainsKey("DateLastFound"))
+                                AddToDocument(document, "DateLastFound", i["DateLastFound"].S);
+                            AddToDocument(document, "AttemptCount", i["AttemptCount"].N);
                             batch.AddDocumentToPut(document);
                         }
                     }
