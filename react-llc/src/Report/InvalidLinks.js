@@ -52,38 +52,45 @@ class InvalidLinks extends Component {
   componentDidMount() {
 	var that = this;
 	$(this.refs.main).DataTable({
-      dom: '<"data-table-wrapper"t>',
+      //dom: '<"data-table-wrapper"t>',
       columns,
       ordering: true,
 	  processing: true,
       serverSide: true,
-	  info: true,
 	  stateSave: true,
-	  bAutoWidth: false,
+	  autoWidth: false,
+	  lengthChange: true,
+      filter: true,
+      info: true,
 	  ajax: function(data, callback, settings) {
-	    that.invalidLinks().then(function(res) {
-		  callback(res);
+	    that.invalidLinks(data).then(function(r) {
+		  var h = {};
+		  h.draw = data.draw;  
+          h.data = r.data.data;
+          h.recordsTotal = r.data.recordsTotal;
+          h.recordsFiltered = r.data.recordsFiltered;
+		  callback(h);
 		});
 	  },
 	  columnDefs: [
 	  {
-		"render": function (data, type, row) {
+		render: function (data, type, row) {
 			var url = data.replace("http://", "").replace("https://", "").split("/")[0];
 			return '<a href="'+data+'" target="_blank">'+url+'</a>';
 		},
-		"targets": 2
+		targets: 2
 	  },
 	  {
-		"render": function (data, type, row) {
+		render: function (data, type, row) {
 			return '<a href="/Report/BucketLocations/' + data + '" title="' + data + '" target="_blank" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
 		},
-		"targets": 6
+		targets: 6
 	  },
 	  {
-		"render": function (data, type, row) {
+		render: function (data, type, row) {
 			return '<a href="/Report/ResetLink/' + data + '" title="' + data + '" class="btn btn-info glyphicon glyphicon-trash" onclick="return confirm(\'Are you sure? A link reset cannot be un-done\');"></a>';
 		},
-		"targets": 7
+		targets: 7
 	  }
 	  ]
     });
@@ -102,8 +109,8 @@ class InvalidLinks extends Component {
                       .find('table')
                       .DataTable();
 					
-      table.clear();
-      table.rows.add(this.state.invalidLinks);
+      //table.clear();
+      //table.rows.add(this.state.invalidLinks);
 	  table.columns.adjust();
       table.draw();
 	  

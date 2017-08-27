@@ -165,7 +165,7 @@ export default function servicesBase(Component) {
 	  });
 	}
 	
-	invalidLinks() {
+	invalidLinks(settings) {
 	  var that = this;
 	  return new Promise(function (fulfill, reject) {
 	    AWS.config.credentials.get(function(){
@@ -184,14 +184,18 @@ export default function servicesBase(Component) {
 		  });
 		
 		  var pathTemplate     = '/Prod/api/invalidReport';
-		  var params           = {};
+		  var body             = {
+			  draw:   settings.draw, 
+			  start:  settings.start, 
+			  length: settings.length
+	      };
 		  var additionalParams = {};
-		  var body             = {};
-		  var method           = 'GET';
+		  var params           = {};
+		  var method           = 'POST';
 		
 		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
 		    .then(function(result) {
-			  that.applyInvalidLinks(that, result);
+			  that.applyInvalidLinks(that, result.data);
 			  fulfill(result);
 		    }).catch(function(result){
 		    console.log(result);
