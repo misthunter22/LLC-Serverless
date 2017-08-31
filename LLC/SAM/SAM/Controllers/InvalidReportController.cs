@@ -28,10 +28,24 @@ namespace SAM.Controllers
             {
                 var results = _service.InvalidLinks(client, "LLC-Reports");
                 List<InvalidLinksModel> filter;
+
+                // Do the sorting first
                 if (m.direction == "asc")
                     filter = results.AsQueryable().OrderBy(m.columnName + " ascending").ToList();
                 else
                     filter = results.AsQueryable().OrderBy(m.columnName + " descending").ToList();
+
+                // Look for any that match the string
+                if (!string.IsNullOrEmpty(m.search))
+                {
+                    filter = filter.Where(x => x.AttemptCount.ToString().Contains(m.search) ||
+                                                (x.DateLastChecked == null ? false : x.DateLastChecked.ToString().Contains(m.search)) ||
+                                                (x.DateLastFound == null ? false : x.DateLastFound.ToString().Contains(m.search)) ||
+                                                x.Id.ToString().Contains(m.search) ||
+                                                x.Link.ToString().Contains(m.search) ||
+                                                (x.Source == null ? false : x.Source.Contains(m.search)) ||
+                                                (x.Url == null ? false : x.Url.Contains(m.search))).ToList();
+                }
 
                 filter = filter.Skip(m.start).Take(m.length).ToList();
 
@@ -40,7 +54,7 @@ namespace SAM.Controllers
                     data = filter,
                     draw = m.draw,
                     recordsFiltered = results.Count,
-                    recordsTotal = m.length
+                    recordsTotal = filter.Count < m.length ? filter.Count : m.length
                 };
 
                 return Json(model);
