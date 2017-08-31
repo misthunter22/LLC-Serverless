@@ -31,11 +31,13 @@ const columns = [
   },
   {
 	title: 'Bucket Locations',
-	data: 'id'
+	data: 'id',
+	sortable: false
   },
   {
 	title: 'Reset Link',
-	data: 'id'
+	data: 'id',
+	sortable: false
   }
 ];
 

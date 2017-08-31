@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2;
 using SAM.DI;
 using System.Linq;
 using SAM.Models.Reports;
+using System.Collections.Generic;
 
 namespace SAM.Controllers
 {
@@ -25,7 +26,18 @@ namespace SAM.Controllers
             using (var client = new AmazonDynamoDBClient(_service.Region()))
             {
                 var results = _service.InvalidLinks(client, "LLC-Reports");
-                var filter  = results.Skip(m.start).Take(m.length).ToList();
+                List<InvalidLinksModel> filter;
+                if (m.direction == "asc")
+                {
+                    filter = results.OrderBy(x => x.ElementAt(m.columnName, m.column)).ToList();
+                    filter = filter.Skip(m.start).Take(m.length).ToList();
+                }
+                else
+                {
+                    filter = results.OrderByDescending(x => x.ElementAt(m.columnName, m.column)).ToList();
+                    filter = filter.Skip(m.start).Take(m.length).ToList();
+                }
+                
                 var model   = new DataTableModel<InvalidLinksModel>
                 {
                     data = filter,

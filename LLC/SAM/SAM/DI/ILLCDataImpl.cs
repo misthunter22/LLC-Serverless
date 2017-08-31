@@ -97,28 +97,41 @@ namespace SAM.DI
 
         public List<InvalidLinksModel> InvalidLinks(AmazonDynamoDBClient client, string tableName)
         {
-            var rows = client.ScanAsync(new ScanRequest
+            var count  = 0;
+            var ret    = new List<InvalidLinksModel>();
+            var last   = new Dictionary<string, AttributeValue>();
+            last["Id"] = new AttributeValue { N = "0" };
+
+            while (last.ContainsKey("Id"))
             {
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                var rows = client.ScanAsync(new ScanRequest
+                {
+                    ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
                     { ":val",  new AttributeValue { S = "Invalid" } }
                 },
-                FilterExpression = "ReportType = :val",
-                TableName = tableName
-            }).Result;
+                    FilterExpression = "ReportType = :val",
+                    TableName = tableName,
+                    ExclusiveStartKey = last["Id"].N == "0" ? null : last
+                }).Result;
 
-            Console.WriteLine($"Invalid Report Item Count: {rows.Items.Count}");
+                count += rows.Count;
+                last = rows.LastEvaluatedKey;
 
-            return rows.Items.Select(x => new InvalidLinksModel
-            {
-                AttemptCount    = x.ContainsKey("AttemptCount")    ? ParseInt(x["AttemptCount"].N)     : -1,
-                DateLastChecked = x.ContainsKey("DateLastChecked") ? ParseDate(x["DateLastChecked"].N) : null,
-                DateLastFound   = x.ContainsKey("DateLastFound")   ? ParseDate(x["DateLastFound"].N)   : null,
-                Id              = ParseInt(x["Id"].N),
-                Link            = ParseInt(x["Link"].N),
-                Source          = x["Source"].S,
-                Url             = x["Url"].S
-            })
-            .ToList();
+                ret.AddRange(rows.Items.Select(x => new InvalidLinksModel
+                {
+                    AttemptCount = x.ContainsKey("AttemptCount") ? ParseInt(x["AttemptCount"].S) : -1,
+                    DateLastChecked = x.ContainsKey("DateLastChecked") ? ParseDate(x["DateLastChecked"].S) : null,
+                    DateLastFound = x.ContainsKey("DateLastFound") ? ParseDate(x["DateLastFound"].S) : null,
+                    Id = ParseInt(x["Id"].N),
+                    Link = ParseInt(x["Link"].N),
+                    Source = x["Source"].S,
+                    Url = x["Url"].S
+                })
+                .ToList());         
+            }
+
+            Console.WriteLine($"Invalid Report Item Count: {ret.Count}");
+            return ret;
         }
 
         public async Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b)

@@ -185,9 +185,13 @@ export default function servicesBase(Component) {
 		
 		  var pathTemplate     = '/Prod/api/invalidReport';
 		  var body             = {
-			  draw:   settings.draw, 
-			  start:  settings.start, 
-			  length: settings.length
+			  draw:       settings.draw, 
+			  start:      settings.start, 
+			  length:     settings.length,
+			  column:     settings.order[0].column,
+			  columnName: settings.columns[settings.order[0].column].data,
+			  direction:  settings.order[0].dir,
+			  search:     settings.search.value
 	      };
 		  var additionalParams = {};
 		  var params           = {};
