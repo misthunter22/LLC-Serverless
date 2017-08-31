@@ -52,8 +52,8 @@ class InvalidLinks extends Component {
   componentDidMount() {
 	var that = this;
 	$(this.refs.main).DataTable({
-      //dom: '<"data-table-wrapper"t>',
       columns,
+	  dom: 'lfrtip',
       ordering: true,
 	  processing: true,
       serverSide: true,
@@ -109,8 +109,6 @@ class InvalidLinks extends Component {
                       .find('table')
                       .DataTable();
 					
-      //table.clear();
-      //table.rows.add(this.state.invalidLinks);
 	  table.columns.adjust();
       table.draw();
 	  
@@ -127,7 +125,8 @@ class InvalidLinks extends Component {
 		    <div className="container body-content">
               <h2 className="bottom-20">Invalid Links</h2>
 			  {spinner}
-			  <table width="100%" className="table table-striped table-bordered" ref="main" cellSpacing="0" />
+			  <table width="100%" className="table table-striped table-bordered" ref="main" cellSpacing="0">
+			  </table>
               <div className="bottom-20">
                 <a href="/report">Back to Dashboard</a>
               </div>

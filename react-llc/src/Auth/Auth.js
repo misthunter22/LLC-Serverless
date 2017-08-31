@@ -28,8 +28,12 @@ export default class Auth {
   
   idTokenData(field) {
 	var token   = localStorage.getItem('id_token');
-	var decoded = jwt_decode(token);
-	return decoded[field];
+	if (token) {
+	  var decoded = jwt_decode(token);
+	  return decoded[field];
+	}
+	
+	return null;
   }
 
   handleAuthentication() {
