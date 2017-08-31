@@ -2,9 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using Amazon.DynamoDBv2;
 using SAM.DI;
-using System.Linq;
+using System.Linq.Dynamic.Core;
 using SAM.Models.Reports;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SAM.Controllers
 {
@@ -28,16 +29,12 @@ namespace SAM.Controllers
                 var results = _service.InvalidLinks(client, "LLC-Reports");
                 List<InvalidLinksModel> filter;
                 if (m.direction == "asc")
-                {
-                    filter = results.OrderBy(x => x.ElementAt(m.columnName, m.column)).ToList();
-                    filter = filter.Skip(m.start).Take(m.length).ToList();
-                }
+                    filter = results.AsQueryable().OrderBy(m.columnName + " ascending").ToList();
                 else
-                {
-                    filter = results.OrderByDescending(x => x.ElementAt(m.columnName, m.column)).ToList();
-                    filter = filter.Skip(m.start).Take(m.length).ToList();
-                }
-                
+                    filter = results.AsQueryable().OrderBy(m.columnName + " descending").ToList();
+
+                filter = filter.Skip(m.start).Take(m.length).ToList();
+
                 var model   = new DataTableModel<InvalidLinksModel>
                 {
                     data = filter,
