@@ -123,7 +123,7 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "5",
+		  "ReadCapacityUnits" : "50",
           "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Objects", { "Ref" : "Environment" } ] ] }
@@ -167,7 +167,7 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "5",
+		  "ReadCapacityUnits" : "50",
           "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Reports", { "Ref" : "Environment" } ] ] }

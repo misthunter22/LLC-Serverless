@@ -7,6 +7,7 @@ using Amazon;
 using SAM.Models.Admin;
 using System;
 using SAM.Models.Reports;
+using SAM.Models;
 
 namespace SAM.DI
 {
@@ -131,6 +132,76 @@ namespace SAM.DI
             }
 
             Console.WriteLine($"Invalid Report Item Count: {ret.Count}");
+            return ret;
+        }
+
+        public List<BucketLocationsModel> BucketLocations(AmazonDynamoDBClient client, string id, string objectLinksTable, string objectsTable, string bucketsTable)
+        {
+            var buckets  = Buckets(client, bucketsTable);
+            var ret      = new List<string>();
+            var last     = new Dictionary<string, AttributeValue>();
+            last["Link"] = new AttributeValue { N = "0" };
+
+            while (last.ContainsKey("Link"))
+            {
+                var rows = client.ScanAsync(new ScanRequest
+                {
+                    ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    { ":val",  new AttributeValue { N = id } }
+                },
+                    FilterExpression = "Link = :val",
+                    TableName = objectLinksTable,
+                    ExclusiveStartKey = last["Link"].N == "0" ? null : last
+                }).Result;
+
+                last = rows.LastEvaluatedKey;
+
+                ret.AddRange(rows.Items.Select(x => x.ContainsKey("Object") ? x["Object"].N : "").ToList());
+            }
+
+            var resp = new List<BucketLocationsModel>();
+            foreach (var o in ret) {
+                var obj = client.QueryAsync(new QueryRequest
+                {
+                    TableName = objectsTable,
+                    KeyConditionExpression = "Id = :v_Id",
+                    ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    {":v_Id", new AttributeValue { N =  o }}}
+                });
+
+                var item = obj.Result.Items.FirstOrDefault();
+                resp.Add(new BucketLocationsModel
+                {
+                    data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == ParseInt(item["Bucket"].N)).Name, item["Key"].S)
+                });
+            }
+
+            return resp;
+        }
+
+        public List<BucketsModel> Buckets(AmazonDynamoDBClient client, string tableName)
+        {
+            var ret = new List<BucketsModel>();
+            var last = new Dictionary<string, AttributeValue>();
+            last["Id"] = new AttributeValue { N = "0" };
+
+            while (last.ContainsKey("Id"))
+            {
+                var rows = client.ScanAsync(new ScanRequest
+                {
+                    TableName = tableName,
+                    ExclusiveStartKey = last["Id"].N == "0" ? null : last
+                }).Result;
+
+                last = rows.LastEvaluatedKey;
+                ret.AddRange(rows.Items.Select(x => new BucketsModel
+                {
+                    Id = ParseInt(x["Id"].N),
+                    Name = x["Name"].S
+                })
+                .ToList());
+            }
+
             return ret;
         }
 

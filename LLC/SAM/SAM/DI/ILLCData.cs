@@ -1,5 +1,6 @@
 ﻿using Amazon;
 using Amazon.DynamoDBv2;
+using SAM.Models;
 using SAM.Models.Admin;
 using SAM.Models.Reports;
 using System.Collections.Generic;
@@ -20,6 +21,10 @@ namespace SAM.DI
         List<SettingModel> Settings(AmazonDynamoDBClient client, string tableName);
 
         List<InvalidLinksModel> InvalidLinks(AmazonDynamoDBClient client, string tableName);
+
+        List<BucketLocationsModel> BucketLocations(AmazonDynamoDBClient client, string id, string objectLinksTable, string objectsTable, string bucketsTable);
+
+        List<BucketsModel> Buckets(AmazonDynamoDBClient client, string tableName);
 
         Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b);
 

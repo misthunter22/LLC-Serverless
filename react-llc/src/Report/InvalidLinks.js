@@ -63,7 +63,7 @@ class InvalidLinks extends Component {
       columns,
 	  dom: 'lfrtip',
       ordering: true,
-	  processing: true,
+	  processing: false,
       serverSide: true,
 	  stateSave: true,
 	  autoWidth: false,
@@ -71,7 +71,9 @@ class InvalidLinks extends Component {
       filter: true,
       info: true,
 	  ajax: function(data, callback, settings) {
+		that.changeSpinner(that, true);
 	    that.invalidLinks(data).then(function(r) {
+		  that.changeSpinner(that, false);
 		  var h = {};
 		  h.draw = data.draw;  
           h.data = r.data.data;
@@ -90,7 +92,7 @@ class InvalidLinks extends Component {
 	  },
 	  {
 		render: function (data, type, row) {
-			return '<a data-src="/Report/BucketLocations/' + data + '" title="' + data + '" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
+			return '<a data-src="' + data + '" title="' + data + '" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
 		},
 		targets: 6
 	  },
@@ -126,8 +128,6 @@ class InvalidLinks extends Component {
 					
 	  table.columns.adjust();
       table.draw();
-	  
-	  this.turnOffSpinner(this);
 	}
 	
 	return false;

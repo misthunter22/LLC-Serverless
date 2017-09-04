@@ -8,7 +8,8 @@ const $    = require('jquery');
 export const AwsConstants = {
     region: 'us-west-2',
     invokeUrl: 'https://fkpj4ljuxh.execute-api.us-west-2.amazonaws.com',
-    identityPoolId: 'us-west-2:b4c04701-3f71-4618-8a18-c9a72742dc7b'
+    identityPoolId: 'us-west-2:b4c04701-3f71-4618-8a18-c9a72742dc7b',
+	environment: '/Prod'
 };
 
 export default function servicesBase(Component) {
@@ -39,9 +40,12 @@ export default function servicesBase(Component) {
 	  return spinner;
 	}
 	
-	turnOffSpinner(that) {
-	  that.setState({loading: false});
-	  $('#loading_spinner').hide();
+	changeSpinner(that, state) {
+	  that.setState({loading: state});
+	  if (state)
+		$('#loading_spinner').show();
+	  else
+		$('#loading_spinner').hide();
 	}
 	
 	applySource(that, a) {
@@ -81,7 +85,7 @@ export default function servicesBase(Component) {
 		  region: AwsConstants.region
 		});
 		
-		var pathTemplate     = '/Prod/api/sources';
+		var pathTemplate     = AwsConstants.environment + '/api/sources';
 		var params           = {};
 		var additionalParams = {};
 		var body             = {};
@@ -135,7 +139,7 @@ export default function servicesBase(Component) {
 		  region: AwsConstants.region
 		});
 		
-		var pathTemplate     = '/Prod/api/settings';
+		var pathTemplate     = AwsConstants.environment + '/api/settings';
 		var params           = {};
 		var additionalParams = {};
 		var body             = {};
@@ -183,7 +187,7 @@ export default function servicesBase(Component) {
 		    region: AwsConstants.region
 		  });
 		
-		  var pathTemplate     = '/Prod/api/invalidReport';
+		  var pathTemplate     = AwsConstants.environment + '/api/invalidReport';
 		  var body             = {
 			  draw:       settings.draw, 
 			  start:      settings.start, 
@@ -209,11 +213,49 @@ export default function servicesBase(Component) {
 	  });
 	}
 	
-	configureScrenshotLinks() {
+    bucketLocations(data) {
+	  return new Promise(function (fulfill, reject) {
+	    AWS.config.credentials.get(function(){
 
-	// Match to Bootstraps data-toggle for the modal
-	// and attach an onclick event handler
-	$('a.btn-info,a.label').off().on('click', function (e) {
+		  // Credentials will be available when this function is called.
+		  var accessKeyId = AWS.config.credentials.accessKeyId;
+		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
+		  var sessionToken = AWS.config.credentials.sessionToken;
+
+		  var apigClient = Client.newClient({
+		    invokeUrl: AwsConstants.invokeUrl,
+		    accessKey: accessKeyId,
+		    secretKey: secretAccessKey,
+		    sessionToken: sessionToken,
+		    region: AwsConstants.region
+		  });
+		
+		  var pathTemplate     = AwsConstants.environment + '/api/bucketLocations';
+		  var body             = {
+			  id: data
+	      };
+		  var additionalParams = {};
+		  var params           = {};
+		  var method           = 'POST';
+		
+		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
+		    .then(function(result) {
+			  fulfill(result);
+		    }).catch(function(result){
+		    console.log(result);
+			reject(result);
+	      });
+	    });
+	  });
+	}
+	
+	configureScrenshotLinks() {
+		
+	  var that = this;
+
+	  // Match to Bootstraps data-toggle for the modal
+	  // and attach an onclick event handler
+	  $('a.btn-info,a.label').off().on('click', function (e) {
 
 		if ($(this).hasClass("selected") || $(this).closest("tr").hasClass("selected")) {
 			$(this).removeClass("selected");
@@ -228,8 +270,7 @@ export default function servicesBase(Component) {
 		}
 
 		if ($(this).hasClass("btn-info") && !$(this).hasClass("glyphicon-trash")) {
-			$(".modal-body").empty();
-
+			
 			// From the clicked element, get the data-target arrtibute
 			// which BS3 uses to determine the target modal
 			var target_modal = $(e.currentTarget).data('target');
@@ -237,18 +278,20 @@ export default function servicesBase(Component) {
 			var remote_content = $(e.currentTarget).data('src');
 
 			// Find the target modal in the DOM
-			var modal = $(target_modal);
+			var $modal = $(target_modal);
 			// Find the modal's <div class="modal-body"> so we can populate it
-			var modalBody = $(target_modal + ' .modal-body');
+			var $modalBody = $(target_modal + ' .modal-body');
 
 			// Capture BS3's show.bs.modal which is fires
 			// immediately when, you guessed it, the show instance method
 			// for the modal is called
-			modal.off().on('show.bs.modal', function () {
-				$(".modal-body").empty();
+			$modal.off().on('show.bs.modal', function () {
+				$modalBody.empty();
 
 				// use your remote content URL to load the modal body
-				//modalBody.load(remote_content);
+				that.bucketLocations(remote_content).then(function(d) {
+				  $modalBody.append(d);
+				});
 			}).modal();
 			// and show the modal
 
