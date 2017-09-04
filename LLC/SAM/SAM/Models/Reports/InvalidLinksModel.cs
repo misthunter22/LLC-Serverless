@@ -11,12 +11,12 @@ namespace SAM.Models.Reports
 
         public int AttemptCount { get; set; }
 
-        public DateTime? DateLastFound { get; set; }
+        public string DateLastFound { get; set; }
 
         public string Source { get; set; }
 
         public string Url { get; set; }
 
-        public DateTime? DateLastChecked { get; set; }
+        public string DateLastChecked { get; set; }
     }
 }

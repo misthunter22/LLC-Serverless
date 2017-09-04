@@ -290,7 +290,15 @@ export default function servicesBase(Component) {
 
 				// use your remote content URL to load the modal body
 				that.bucketLocations(remote_content).then(function(d) {
-				  $modalBody.append(d);
+				  var str = '<ul>';
+				  $.each( d.data, function( key, value ) {
+					str += '<li><a href="' + value.data + '" target="_blank">' + value.data + '</a></li>';
+                  });
+				  str += '</ul>';
+				  if (d.data.length == 0) {
+				    str = 'No Results';
+				  }
+				  $modalBody.html(str);
 				});
 			}).modal();
 			// and show the modal

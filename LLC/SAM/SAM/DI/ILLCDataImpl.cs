@@ -253,12 +253,14 @@ namespace SAM.DI
             return rows.Count.ToString();
         }
 
-        private DateTime? ParseDate(string date)
+        private string ParseDate(string date)
         {
             DateTime ret = DateTime.MinValue;
+            string str   = null;
             if (DateTime.TryParse(date, out ret))
             {
-                return ret;
+                str = ret.ToString("f");
+                return str;
             }
 
             return null;

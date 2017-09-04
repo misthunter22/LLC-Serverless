@@ -6,9 +6,9 @@ namespace SAM.Models.Admin
     {
         public int Id { get; set; }
 
-        public DateTime? DateCreated { get; set; }
+        public string DateCreated { get; set; }
 
-        public DateTime? DateModified { get; set; }
+        public string DateModified { get; set; }
 
         public string Description { get; set; }
 

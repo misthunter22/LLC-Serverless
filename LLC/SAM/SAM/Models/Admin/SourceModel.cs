@@ -10,15 +10,15 @@ namespace SAM.Models.Admin
 
         public bool? AllowLinkExtractions { get; set; }
 
-        public DateTime? DateCreated { get; set; }
+        public string DateCreated { get; set; }
 
         public string Description { get; set; }
 
         public string Title { get; set; }
 
-        public DateTime? DateLastChecked { get; set; }
+        public string DateLastChecked { get; set; }
 
-        public DateTime? DateLastExtracted { get; set; }
+        public string DateLastExtracted { get; set; }
 
         public string S3ObjectName { get; set; }
 
