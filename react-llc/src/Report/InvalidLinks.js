@@ -7,7 +7,8 @@ window.$ = $;
 global.jQuery = $;
 
 require('bootstrap');
-$.DataTable = require('datatables.net');
+require('datatables.net');
+require('datatables-bootstrap');
 
 const columns = [
   {
