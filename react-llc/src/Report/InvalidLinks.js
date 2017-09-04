@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import servicesBase         from '../Services/ServicesBase';
+import $                    from 'jquery';
 
-const $     = require('jquery');
+window.jQuery = $;
+window.$ = $;
+global.jQuery = $;
+
+require('bootstrap');
 $.DataTable = require('datatables.net');
 
 const columns = [
@@ -52,8 +57,8 @@ class InvalidLinks extends Component {
   }
   
   componentDidMount() {
-	var that = this;
-	$(this.refs.main).DataTable({
+	var that  = this;
+	var table = $(this.refs.main).DataTable({
       columns,
 	  dom: 'lfrtip',
       ordering: true,
@@ -84,7 +89,7 @@ class InvalidLinks extends Component {
 	  },
 	  {
 		render: function (data, type, row) {
-			return '<a href="/Report/BucketLocations/' + data + '" title="' + data + '" target="_blank" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
+			return '<a data-src="/Report/BucketLocations/' + data + '" title="' + data + '" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
 		},
 		targets: 6
 	  },
@@ -96,6 +101,13 @@ class InvalidLinks extends Component {
 	  }
 	  ]
     });
+	
+	table
+      .on('draw.dt', function () {
+        that.configureScrenshotLinks();
+      });
+	  
+    this.configureScrenshotLinks(); 
   }
   
   componentWillUnmount(){
