@@ -101,7 +101,7 @@ class Settings extends Component {
 	  table.columns.adjust();
       table.draw();
 	  
-	  this.turnOffSpinner(this);
+	  this.changeSpinner(this, false);
 	}
 	
 	return false;
