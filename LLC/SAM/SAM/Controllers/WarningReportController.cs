@@ -11,11 +11,11 @@ namespace SAM.Controllers
 {
     [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
-    public class InvalidReportController : Controller
+    public class WarningReportController : Controller
     {
         private ILLCData _service;
 
-        public InvalidReportController(ILLCData service)
+        public WarningReportController(ILLCData service)
         {
             _service = service;
         }
@@ -26,8 +26,8 @@ namespace SAM.Controllers
         {
             using (var client = new AmazonDynamoDBClient(_service.Region()))
             {
-                var results = _service.InvalidLinks(client, "LLC-Reports");
-                List<InvalidLinksModel> filter;
+                var results = _service.WarningLinks(client, "LLC-Reports");
+                List<WarningLinksModel> filter;
 
                 // Do the sorting first
                 if (m.direction == "asc")
@@ -38,19 +38,19 @@ namespace SAM.Controllers
                 // Look for any that match the string
                 if (!string.IsNullOrEmpty(m.search))
                 {
-                    filter = filter.Where(x => x.AttemptCount.ToString().Contains(m.search) ||
-                                                (x.DateLastChecked == null ? false : x.DateLastChecked.ToString().Contains(m.search)) ||
-                                                (x.DateLastFound == null ? false : x.DateLastFound.ToString().Contains(m.search)) ||
-                                                x.Id.ToString().Contains(m.search) ||
-                                                x.Link.ToString().Contains(m.search) ||
-                                                (x.Source == null ? false : x.Source.Contains(m.search)) ||
-                                                (x.Url == null ? false : x.Url.Contains(m.search))).ToList();
+                    filter = filter.Where(x => x.ContentSize.ToString().Contains(m.search) ||
+                                                (x.Id.ToString().Contains(m.search)) ||
+                                                (x.LinkId.ToString().Contains(m.search)) ||
+                                                x.Mean.ToString().Contains(m.search) ||
+                                                x.SdRange.ToString().Contains(m.search) ||
+                                                (x.StandardDeviation.ToString().Contains(m.search)) ||
+                                                (x.StatId.ToString().Contains(m.search))).ToList();
                 }
 
                 var filterCount = filter.Count;
                 filter = filter.Skip(m.start).Take(m.length).ToList();
 
-                var model   = new DataTableModel<InvalidLinksModel>
+                var model   = new DataTableModel<WarningLinksModel>
                 {
                     data = filter,
                     draw = m.draw,

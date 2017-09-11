@@ -22,6 +22,8 @@ namespace SAM.DI
 
         List<InvalidLinksModel> InvalidLinks(AmazonDynamoDBClient client, string tableName);
 
+        List<WarningLinksModel> WarningLinks(AmazonDynamoDBClient client, string tableName);
+
         List<BucketLocationsModel> BucketLocations(AmazonDynamoDBClient client, string id, string objectLinksTable, string objectsTable, string bucketsTable);
 
         List<BucketsModel> Buckets(AmazonDynamoDBClient client, string tableName);

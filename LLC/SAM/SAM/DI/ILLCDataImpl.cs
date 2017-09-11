@@ -135,6 +135,45 @@ namespace SAM.DI
             return ret;
         }
 
+        public List<WarningLinksModel> WarningLinks(AmazonDynamoDBClient client, string tableName)
+        {
+            var count = 0;
+            var ret = new List<WarningLinksModel>();
+            var last = new Dictionary<string, AttributeValue>();
+            last["Id"] = new AttributeValue { N = "0" };
+
+            while (last.ContainsKey("Id"))
+            {
+                var rows = client.ScanAsync(new ScanRequest
+                {
+                    ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    { ":val",  new AttributeValue { S = "Warning" } }
+                },
+                    FilterExpression = "ReportType = :val",
+                    TableName = tableName,
+                    ExclusiveStartKey = last["Id"].N == "0" ? null : last
+                }).Result;
+
+                count += rows.Count;
+                last = rows.LastEvaluatedKey;
+
+                ret.AddRange(rows.Items.Select(x => new WarningLinksModel
+                {
+                    Id = ParseInt(x["Id"].N),
+                    ContentSize = x.ContainsKey("ContentSize") ? ParseInt(x["ContentSize"].N) : -1,
+                    Mean = x.ContainsKey("Mean") ? ParseInt(x["Mean"].N) : -1,
+                    StandardDeviation = x.ContainsKey("StandardDeviation") ? ParseLong(x["StandardDeviation"].N) : -1,
+                    SdRange = x.ContainsKey("SdMaximum") ? ParseInt(x["SdMaximum"].N) : -1,
+                    LinkId = x.ContainsKey("Link") ? ParseInt(x["Link"].N) : -1,
+                    StatId = x.ContainsKey("Stat") ? ParseInt(x["Stat"].N) : -1
+                })
+                .ToList());
+            }
+
+            Console.WriteLine($"Warning Report Item Count: {ret.Count}");
+            return ret;
+        }
+
         public List<BucketLocationsModel> BucketLocations(AmazonDynamoDBClient client, string id, string objectLinksTable, string objectsTable, string bucketsTable)
         {
             var buckets  = Buckets(client, bucketsTable);
@@ -270,6 +309,20 @@ namespace SAM.DI
         {
             int ret = -1;
             int.TryParse(i, out ret);
+            return ret;
+        }
+
+        private double ParseDouble(string i)
+        {
+            double ret = -1.0;
+            double.TryParse(i, out ret);
+            return ret;
+        }
+
+        private long ParseLong(string i)
+        {
+            long ret = -1;
+            long.TryParse(i, out ret);
             return ret;
         }
     }

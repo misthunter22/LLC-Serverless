@@ -79,7 +79,7 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "5",
+		  "ReadCapacityUnits" : "30",
           "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Links", { "Ref" : "Environment" } ] ] }
@@ -101,7 +101,7 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "50",
+		  "ReadCapacityUnits" : "30",
           "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Buckets", { "Ref" : "Environment" } ] ] }
@@ -123,7 +123,7 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "50",
+		  "ReadCapacityUnits" : "30",
           "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Objects", { "Ref" : "Environment" } ] ] }
@@ -299,7 +299,7 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "50",
+		  "ReadCapacityUnits" : "30",
           "WriteCapacityUnits" : "3"
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-ObjectLinks", { "Ref" : "Environment" } ] ] }

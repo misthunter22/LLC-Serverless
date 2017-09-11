@@ -67,6 +67,10 @@ export default function servicesBase(Component) {
 	applyInvalidLinks(that, a) {
       that.setState({invalidLinks:a})
 	}
+	
+	applyWarningLinks(that, a) {
+      that.setState({warningLinks:a})
+	}
 		
 	sources(includeZero = false) {
 	  var that = this;
@@ -204,6 +208,50 @@ export default function servicesBase(Component) {
 		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
 		    .then(function(result) {
 			  that.applyInvalidLinks(that, result.data);
+			  fulfill(result);
+		    }).catch(function(result){
+		    console.log(result);
+			reject(result);
+	      });
+	    });
+	  });
+	}
+	
+	warningLinks(settings) {
+	  var that = this;
+	  return new Promise(function (fulfill, reject) {
+	    AWS.config.credentials.get(function(){
+
+		  // Credentials will be available when this function is called.
+		  var accessKeyId = AWS.config.credentials.accessKeyId;
+		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
+		  var sessionToken = AWS.config.credentials.sessionToken;
+
+		  var apigClient = Client.newClient({
+		    invokeUrl: AwsConstants.invokeUrl,
+		    accessKey: accessKeyId,
+		    secretKey: secretAccessKey,
+		    sessionToken: sessionToken,
+		    region: AwsConstants.region
+		  });
+		
+		  var pathTemplate     = AwsConstants.environment + '/api/warningReport';
+		  var body             = {
+			  draw:       settings.draw, 
+			  start:      settings.start, 
+			  length:     settings.length,
+			  column:     settings.order[0].column,
+			  columnName: settings.columns[settings.order[0].column].data,
+			  direction:  settings.order[0].dir,
+			  search:     settings.search.value
+	      };
+		  var additionalParams = {};
+		  var params           = {};
+		  var method           = 'POST';
+		
+		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
+		    .then(function(result) {
+			  that.applyWarningLinks(that, result.data);
 			  fulfill(result);
 		    }).catch(function(result){
 		    console.log(result);
