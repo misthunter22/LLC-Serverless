@@ -2,10 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using Amazon.DynamoDBv2;
 using SAM.DI;
-using System.Linq.Dynamic.Core;
 using SAM.Models.Reports;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SAM.Controllers
 {
@@ -26,7 +23,7 @@ namespace SAM.Controllers
         {
             using (var client = new AmazonDynamoDBClient(_service.Region()))
             {
-                var model = _service.BucketLocations(client, m.id, "LLC-ObjectLinks", "LLC-Objects","LLC-Buckets");
+                var model = _service.BucketLocations(client, m, "LLC-ObjectLinks", "LLC-Objects", "LLC-Buckets", "LLC-Stats");
                 return Json(model);
             }
         }

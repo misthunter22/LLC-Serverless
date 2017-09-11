@@ -18,5 +18,7 @@ namespace SAM.Models.Reports
         public int LinkId { get; set; }
 
         public int StatId { get; set; }
+
+        public string Url { get; set; }
     }
 }

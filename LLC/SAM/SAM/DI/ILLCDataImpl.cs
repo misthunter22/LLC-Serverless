@@ -8,6 +8,8 @@ using SAM.Models.Admin;
 using System;
 using SAM.Models.Reports;
 using SAM.Models;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace SAM.DI
 {
@@ -55,7 +57,7 @@ namespace SAM.DI
                     Title = d.ContainsKey("Name") ? d["Name"].S : null,
                 };
 
-                m.S3ObjectName = QueryDataInt(client, bucketTableName, m.S3BucketId.ToString(), "Name").Result;
+                m.S3ObjectName = QueryDataAttribute(client, bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
                 array.Add(m);
             }
 
@@ -174,9 +176,56 @@ namespace SAM.DI
             return ret;
         }
 
-        public List<BucketLocationsModel> BucketLocations(AmazonDynamoDBClient client, string id, string objectLinksTable, string objectsTable, string bucketsTable)
+        public void AddUrlToWarningLinks(AmazonDynamoDBClient client, List<WarningLinksModel> links, string tableName)
+        {
+            var keyList = new List<Dictionary<string, AttributeValue>>();
+            foreach (var r in links)
+            {
+                keyList.Add(new Dictionary<string, AttributeValue>
+                {
+                    { "Id", new AttributeValue { N = r.LinkId.ToString() } }
+                });
+            }
+
+            var batch = client.BatchGetItemAsync(new BatchGetItemRequest
+            {
+                RequestItems = new Dictionary<string, KeysAndAttributes>
+                {
+                    {
+                      tableName, new KeysAndAttributes
+                      {
+                        AttributesToGet = new List<string> { "Id", "Url" },
+                        ConsistentRead = true,
+                        Keys = keyList
+                      }
+                    }
+                }
+            });
+
+            var writer = new StringWriter();
+            JsonSerializer.Create().Serialize(writer, batch.Result);
+            Console.WriteLine(writer.ToString());
+
+            foreach (var r in batch.Result.Responses[tableName])
+            {
+                var first = links.FirstOrDefault(x => x.LinkId == ParseInt(r["Id"].N));
+                if (first != null)
+                {
+                    first.Url = r["Url"].S;
+                }
+            }
+        }
+
+        public List<BucketLocationsModel> BucketLocations(AmazonDynamoDBClient client, BucketLocationsRequest m, string objectLinksTable, string objectsTable, string bucketsTable, string statsTable)
         {
             var buckets  = Buckets(client, bucketsTable);
+
+            var id = m.id;
+            if ("stat".Equals(m.type))
+            {
+                id = QueryDataAttribute(client, statsTable, id, "Link").Result.N;
+            }
+
             var ret      = new List<string>();
             var last     = new Dictionary<string, AttributeValue>();
             last["Link"] = new AttributeValue { N = "0" };
@@ -258,7 +307,7 @@ namespace SAM.DI
             return rows.Count.ToString();
         }
 
-        public async Task<string> QueryDataInt(AmazonDynamoDBClient client, string tableName, string key, string field)
+        public async Task<AttributeValue> QueryDataAttribute(AmazonDynamoDBClient client, string tableName, string key, string field)
         {
             var resp = await client.QueryAsync(new QueryRequest
             {
@@ -269,10 +318,10 @@ namespace SAM.DI
             });
 
             var dict = resp.Items.FirstOrDefault();
-            var ret = string.Empty;
+            AttributeValue ret = null;
             if (dict != null)
             {
-                ret = dict[field].S;
+                ret = dict[field];
             }
 
             return ret;

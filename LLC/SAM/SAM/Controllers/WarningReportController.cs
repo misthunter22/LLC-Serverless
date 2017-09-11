@@ -49,6 +49,7 @@ namespace SAM.Controllers
 
                 var filterCount = filter.Count;
                 filter = filter.Skip(m.start).Take(m.length).ToList();
+                _service.AddUrlToWarningLinks(client, filter, "LLC-Links");
 
                 var model   = new DataTableModel<WarningLinksModel>
                 {

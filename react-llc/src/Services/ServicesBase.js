@@ -261,7 +261,7 @@ export default function servicesBase(Component) {
 	  });
 	}
 	
-    bucketLocations(data) {
+    bucketLocations(data, type) {
 	  return new Promise(function (fulfill, reject) {
 	    AWS.config.credentials.get(function(){
 
@@ -280,7 +280,8 @@ export default function servicesBase(Component) {
 		
 		  var pathTemplate     = AwsConstants.environment + '/api/bucketLocations';
 		  var body             = {
-			  id: data
+			  id: data,
+			  type: type
 	      };
 		  var additionalParams = {};
 		  var params           = {};
@@ -324,6 +325,7 @@ export default function servicesBase(Component) {
 			var target_modal = $(e.currentTarget).data('target');
 			// also get the remote content's URL
 			var remote_content = $(e.currentTarget).data('src');
+			var remote_type    = $(e.currentTarget).data('type');
 
 			// Find the target modal in the DOM
 			var $modal = $(target_modal);
@@ -337,7 +339,7 @@ export default function servicesBase(Component) {
 				$modalBody.empty();
 
 				// use your remote content URL to load the modal body
-				that.bucketLocations(remote_content).then(function(d) {
+				that.bucketLocations(remote_content, remote_type).then(function(d) {
 				  var str = '<ul>';
 				  $.each( d.data, function( key, value ) {
 					str += '<li><a href="' + value.data + '" target="_blank">' + value.data + '</a></li>';

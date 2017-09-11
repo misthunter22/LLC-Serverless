@@ -1,5 +1,6 @@
 ﻿using Amazon;
 using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
 using SAM.Models;
 using SAM.Models.Admin;
 using SAM.Models.Reports;
@@ -24,13 +25,15 @@ namespace SAM.DI
 
         List<WarningLinksModel> WarningLinks(AmazonDynamoDBClient client, string tableName);
 
-        List<BucketLocationsModel> BucketLocations(AmazonDynamoDBClient client, string id, string objectLinksTable, string objectsTable, string bucketsTable);
+        void AddUrlToWarningLinks(AmazonDynamoDBClient client, List<WarningLinksModel> links, string tableName);
+
+        List<BucketLocationsModel> BucketLocations(AmazonDynamoDBClient client, BucketLocationsRequest m, string objectLinksTable, string objectsTable, string bucketsTable, string statsTable);
 
         List<BucketsModel> Buckets(AmazonDynamoDBClient client, string tableName);
 
         Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b);
 
-        Task<string> QueryDataInt(AmazonDynamoDBClient client, string tableName, string key, string field);
+        Task<AttributeValue> QueryDataAttribute(AmazonDynamoDBClient client, string tableName, string key, string field);
 
         Task<string> QueryCountContains(AmazonDynamoDBClient client, string tableName, string column, string s);
     }

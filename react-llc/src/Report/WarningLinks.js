@@ -33,7 +33,7 @@ const columns = [
   },
   {
 	title: 'Link ID',
-	data: 'linkId'
+	data: 'url'
   },
   {
 	title: 'Compare Screenshots',
@@ -96,13 +96,13 @@ class WarningLinks extends Component {
       },
 	  {
 		render: function (data, type, row) {
-	      return '<a href="/Report/Screenshot/'+data+'" title="'+data+'" target="_blank" class="btn btn-info" data-toggle="modal" data-target="#myModal">'+data+'</a>';
+		  return '<a data-src="' + data + '" data-type="stat" title="' + data + '" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
 		},
 		targets: 6
 	  },
 	  {
 		render: function (data, type, row) {
-		  return '<a href="/Report/BucketLocations/' + data + '" title="' + data + '" target="_blank" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
+		  return '<a data-src="' + data + '" data-type="stat" title="' + data + '" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
 		},
 		targets: 7
 	  },

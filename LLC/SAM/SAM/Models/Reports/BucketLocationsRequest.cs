@@ -8,5 +8,7 @@ namespace SAM.Models.Reports
     public class BucketLocationsRequest
     {
         public string id { get; set; }
+
+        public string type { get; set; }
     }
 }
