@@ -318,7 +318,7 @@ export default function servicesBase(Component) {
 			}
 		}
 
-		if ($(this).hasClass("btn-info") && !$(this).hasClass("glyphicon-trash")) {
+		if ($(this).hasClass("bucket-locations")) {
 			
 			// From the clicked element, get the data-target arrtibute
 			// which BS3 uses to determine the target modal

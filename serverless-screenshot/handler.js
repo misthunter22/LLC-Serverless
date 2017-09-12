@@ -12,9 +12,7 @@ const screenHeight = 1024;
 // screenshot the given url
 module.exports.take_screenshot = (event, context, cb) => {
   console.info('Received event', event);
-  const targetUrl = event.queryStringParameters.url;
-  const linkId    = event.queryStringParameters.linkId;
-  const statId    = event.queryStringParameters.statId;
+  const targetUrl = event.queryStringParameters.url.toLowerCase();
   const timeout   = event.stageVariables.screenshotTimeout;
 
   // check if the given url is valid
@@ -22,24 +20,13 @@ module.exports.take_screenshot = (event, context, cb) => {
     cb(`422, please provide a valid url, not: ${targetUrl}`);
     return false;
   }
-  
-  // Check link ID
-  if (!linkId) {
-	cb(`422, please provide a valid link ID, not: ${linkId}`);
-    return false;  
-  }
-  
-  // Check stat ID
-  if (!statId) {
-	cb(`422, please provide a valid stat ID, not: ${statId}`);
-    return false;  
-  }
 
   const targetBucket   = event.stageVariables.bucketName;
-  const targetFilename = `${linkId}/${statId}.png`;
+  const targetHash     = crypto.createHash('md5').update(targetUrl).digest('hex');
+  const targetFilename = `${targetHash}/original.png`;
   console.log(`Snapshotting ${targetUrl} to s3://${targetBucket}/${targetFilename}`);
   
-  var program = phantomjs.exec('screenshot.js', targetUrl, `/tmp/${statId}.png`, screenWidth, screenHeight, timeout);
+  var program = phantomjs.exec('screenshot.js', targetUrl, `/tmp/${targetHash}.png`, screenWidth, screenHeight, timeout);
   program.stdout.pipe(process.stdout);
   program.stderr.pipe(process.stderr);
   program.on('exit', code => {
@@ -51,7 +38,7 @@ module.exports.take_screenshot = (event, context, cb) => {
 	  
     // snapshotting succeeded, let's upload to S3
     // read the file into buffer (perhaps make this async?)
-    const fileBuffer = fs.readFileSync(`/tmp/${statId}.png`);
+    const fileBuffer = fs.readFileSync(`/tmp/${targetHash}.png`);
 
     // upload the file
     const s3 = new AWS.S3({apiVersion: '2006-03-01'});
@@ -67,6 +54,7 @@ module.exports.take_screenshot = (event, context, cb) => {
 	  } 
 	  else {
 		var resp = {
+			"hash": `${targetHash}`,
 		    "key": `${targetFilename}`,
             "bucket": targetBucket,
             "url": `${event.stageVariables.endpoint}${targetFilename}`

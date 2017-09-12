@@ -96,13 +96,13 @@ class WarningLinks extends Component {
       },
 	  {
 		render: function (data, type, row) {
-		  return '<a data-src="' + data + '" data-type="stat" title="' + data + '" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
+		  return '<a data-src="' + data + '" data-type="stat" title="' + data + '" class="btn btn-info bucket-locations" data-toggle="modal" data-target="#myModal">' + data + '</a>';
 		},
 		targets: 6
 	  },
 	  {
 		render: function (data, type, row) {
-		  return '<a data-src="' + data + '" data-type="stat" title="' + data + '" class="btn btn-info" data-toggle="modal" data-target="#myModal">' + data + '</a>';
+		  return '<a data-src="' + data + '" data-type="stat" title="' + data + '" class="btn btn-info bucket-locations" data-toggle="modal" data-target="#myModal">' + data + '</a>';
 		},
 		targets: 7
 	  },
