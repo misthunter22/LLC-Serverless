@@ -22,8 +22,8 @@
   },
 
   "Conditions" : {
-    "CreateS3Bucket" : {"Fn::Equals" : [{"Ref" : "ShouldCreateBucket"}, "true"]},
-    "BucketNameGenerated" : {"Fn::Equals" : [{"Ref" : "BucketName"}, ""]}
+    "CreateS3Bucket" : { "Fn::Equals" : [ { "Ref" : "ShouldCreateBucket" }, "true"] },
+    "BucketNameGenerated" : { "Fn::Equals" : [ { "Ref" : "BucketName" }, ""] }
   },
 
   "Resources" : {
@@ -54,6 +54,74 @@
         }
       }
     },
+	"Count" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.Count::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 1024,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [ "AWSLambdaFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
+          }
+        }
+      }
+    },
+	"Iterator" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.Iterator::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 1024,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [ "AWSLambdaFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
+          }
+        }
+      }
+    },
+	"LinkChecker" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.LinkChecker::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 1024,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [ "AWSLambdaFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
+          }
+        }
+      }
+    },
+	"LinkExtractor" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.LinkExtractor::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 1024,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [ "AWSLambdaFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
+          }
+        }
+      }
+    },
 
     "Bucket" : {
         "Type" : "AWS::S3::Bucket",
@@ -61,6 +129,44 @@
         "Properties" : {
             "BucketName" : { "Fn::If" : ["BucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "BucketName" } ] }
         }
+    },
+
+	"StepFunctionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [ {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [ "states.us-west-2.amazonaws.com" ]
+            },
+            "Action": [ "sts:AssumeRole" ]
+          } ]
+        },
+        "Path": "/",
+        "Policies": [ { 
+		  "PolicyName" : "LORStepFunctionPolicy",
+          "PolicyDocument" : {
+            "Version" : "2012-10-17",
+            "Statement": [ {
+              "Effect"   : "Allow",
+              "Action"   : [
+                "Lambda:Invoke*"
+              ],
+              "Resource" : "*"
+            } ]
+          }
+        } ]
+      }
+    },
+
+	"LinkExtractorStep" : {
+		"Type" : "AWS::StepFunctions::StateMachine",
+        "Properties" : {
+			"DefinitionString" : "{\"StartAt\": \"HelloWorld\", \"States\": {\"HelloWorld\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:lambda:us-east-1:111122223333:function:HelloFunction\", \"End\": true}}}",
+            "RoleArn" : { "Fn::GetAtt" : [ "StepFunctionRole", "Arn" ] }
+		}
     },
 
 	"DbLinks" : {
