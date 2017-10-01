@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SAM.Applications.LinkChecker
+namespace SAM.Applications
 {
     public class Count : BaseHandler
     {

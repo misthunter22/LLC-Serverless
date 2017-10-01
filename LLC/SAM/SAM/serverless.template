@@ -11,9 +11,14 @@
     },  
     "BucketName" : {
         "Type" : "String",
-        "Description" : "Name of S3 bucket that will be proxied. If left blank a new table will be created.",
+        "Description" : "Name of S3 bucket that will be proxied. If left blank a new bucket will be created.",
         "MinLength" : "0"
     },
+	"ObjectBucketName" : {
+		"Type" : "String",
+        "Description" : "Name of S3 bucket that will be used for object extraction. If left blank a new bucket will be created.",
+        "MinLength" : "0"
+	},
 	"Environment" : {
 		"Type" : "String",
         "Description" : "Name of the environment so multiple stacks can be deployed to an account. Must be unique across an account. Can leave blank as well!",
@@ -23,7 +28,8 @@
 
   "Conditions" : {
     "CreateS3Bucket" : { "Fn::Equals" : [ { "Ref" : "ShouldCreateBucket" }, "true"] },
-    "BucketNameGenerated" : { "Fn::Equals" : [ { "Ref" : "BucketName" }, ""] }
+    "BucketNameGenerated" : { "Fn::Equals" : [ { "Ref" : "BucketName" }, ""] },
+	"ObjectBucketNameGenerated" : { "Fn::Equals" : [ { "Ref" : "ObjectBucketName" }, ""] }
   },
 
   "Resources" : {
@@ -122,12 +128,36 @@
         }
       }
     },
+	"ObjectExtractor" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.ObjectExtractor::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 1024,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [ "AWSLambdaFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "ObjectBucketName" } ] }
+          }
+        }
+      }
+    },
 
     "Bucket" : {
         "Type" : "AWS::S3::Bucket",
         "Condition" : "CreateS3Bucket",
         "Properties" : {
             "BucketName" : { "Fn::If" : ["BucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "BucketName" } ] }
+        }
+    },
+	"ObjectBucket" : {
+        "Type" : "AWS::S3::Bucket",
+        "Condition" : "CreateS3Bucket",
+        "Properties" : {
+            "BucketName" : { "Fn::If" : ["ObjectBucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "ObjectBucketName" } ] }
         }
     },
 
@@ -160,7 +190,6 @@
         } ]
       }
     },
-
 	"LinkExtractorStep" : {
 		"Type" : "AWS::StepFunctions::StateMachine",
         "Properties" : {

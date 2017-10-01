@@ -5,14 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SAM.Applications.LinkExtractor
+namespace SAM.Applications
 {
-    public class Count : BaseHandler
+    public class LinkChecker : BaseHandler
     {
         [LambdaSerializer(typeof(JsonSerializer))]
         public int Handler(object input, ILambdaContext context)
         {
-            return 1;
+            return 3;
         }
     }
 }
