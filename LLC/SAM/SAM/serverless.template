@@ -140,7 +140,7 @@
         "Policies": [ "AWSLambdaFullAccess" ],
         "Environment" : {
           "Variables" : {
-            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "ObjectBucketName" } ] }
+            
           }
         }
       }
@@ -157,8 +157,23 @@
         "Type" : "AWS::S3::Bucket",
         "Condition" : "CreateS3Bucket",
         "Properties" : {
-            "BucketName" : { "Fn::If" : ["ObjectBucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "ObjectBucketName" } ] }
+            "BucketName" : { "Fn::If" : ["ObjectBucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "ObjectBucketName" } ] },
+			"NotificationConfiguration" : {
+				"LambdaConfigurations" : [{
+					"Function" : { "Fn::GetAtt" : [ "ObjectExtractor", "Arn" ] },
+					"Event" : "s3:ObjectCreated:*"
+				}]
+			}
         }
+    },
+	"ObjectBucketLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties" : {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": { "Fn::GetAtt" : [ "ObjectExtractor", "Arn" ] },
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": { "Ref": "AWS::AccountId" }
+      }
     },
 
 	"StepFunctionRole": {
@@ -489,6 +504,9 @@
   "Outputs" : {
     "S3ProxyBucket" : {
         "Value" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
+    },
+	"S3ObjectBucket" : {
+        "Value" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"ObjectBucket"}, { "Ref" : "ObjectBucketName" } ] }
     }
   }
 }
