@@ -59,10 +59,14 @@ class Sources extends Component {
 	  columnDefs: [
 	  {
         "render": function (data, type, row) {
-		  return '<a href="/admin/sources/editsource/' + data +'" title="Edit this source.">' +
-                   '<i class="glyphicon glyphicon-pencil"></i>' +
-                   '<span class="sr-only">Edit</span>' +
-                 '</a>';
+		  if (row["source"] > 0) {
+		    return '<a href="/admin/sources/editsource/' + data +'" title="Edit this source.">' +
+                     '<i class="glyphicon glyphicon-pencil"></i>' +
+                     '<span class="sr-only">Edit</span>' +
+                   '</a>';
+		  }
+		  
+		  return '<span></span>';
         },
         "targets": 5
       },

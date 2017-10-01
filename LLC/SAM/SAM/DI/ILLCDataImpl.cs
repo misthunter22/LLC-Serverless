@@ -57,7 +57,12 @@ namespace SAM.DI
                     Title = d.ContainsKey("Name") ? d["Name"].S : null,
                 };
 
-                m.S3ObjectName = QueryDataAttribute(client, bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
+                // Skip the internal sources
+                if (i > 0)
+                {
+                    m.S3ObjectName = QueryDataAttribute(client, bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
+                }
+
                 array.Add(m);
             }
 
@@ -339,6 +344,16 @@ namespace SAM.DI
             });
 
             return rows.Count.ToString();
+        }
+
+        public async Task<List<Dictionary<string, AttributeValue>>> QueryTableAll(AmazonDynamoDBClient client, string tableName)
+        {
+            var rows = await client.ScanAsync(new ScanRequest
+            {
+                TableName = tableName
+            });
+
+            return rows.Items;
         }
 
         private string ParseDate(string date)

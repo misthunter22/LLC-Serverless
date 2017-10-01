@@ -432,6 +432,28 @@
 		},
 		"TableName" : { "Fn::Join" : [ "", [ "LLC-Meta", { "Ref" : "Environment" } ] ] }
 	  }
+	},
+	"DbLinkExtract" : {
+		"Type" : "AWS::DynamoDB::Table",
+		"Properties" : {
+		  "AttributeDefinitions" : [
+          {
+            "AttributeName" : "Id",
+            "AttributeType" : "N"   
+          }
+        ],
+		"KeySchema" : [
+		  {
+            "AttributeName" : "Id",
+            "KeyType" : "HASH"
+          }
+		],
+		"ProvisionedThroughput" : {
+		  "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "5"
+		},
+		"TableName" : { "Fn::Join" : [ "", [ "LLC-LinkExtract", { "Ref" : "Environment" } ] ] }
+	  }
 	}
   },
 

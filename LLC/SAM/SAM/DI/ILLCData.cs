@@ -36,5 +36,7 @@ namespace SAM.DI
         Task<AttributeValue> QueryDataAttribute(AmazonDynamoDBClient client, string tableName, string key, string field);
 
         Task<string> QueryCountContains(AmazonDynamoDBClient client, string tableName, string column, string s);
+
+        Task<List<Dictionary<string, AttributeValue>>> QueryTableAll(AmazonDynamoDBClient client, string tableName);
     }
 }
