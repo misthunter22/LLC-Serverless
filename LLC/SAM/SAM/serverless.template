@@ -164,6 +164,9 @@
 					"Function" : { "Fn::GetAtt" : [ "ObjectExtractor", "Arn" ] },
 					"Event" : "s3:ObjectCreated:*"
 				}]
+			},
+			"VersioningConfiguration" : {
+				"Status": "Enabled"
 			}
         }
     },
