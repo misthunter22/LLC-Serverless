@@ -1,5 +1,4 @@
 ﻿using Amazon;
-using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using SAM.Models;
 using SAM.Models.Admin;
@@ -13,30 +12,32 @@ namespace SAM.DI
     {
         RegionEndpoint Region();
 
-        string TableCount(AmazonDynamoDBClient client, string tableName);
+        string TableCount(string tableName);
 
-        List<SourceModel> Sources(AmazonDynamoDBClient client, string tableName, string bucketTableName);
+        List<SourceModel> Sources(string tableName, string bucketTableName);
 
-        SourceModel Source(AmazonDynamoDBClient client, string tableName, string bucketTableName, string id);
+        SourceModel Source(string tableName, string bucketTableName, string id);
 
-        List<SettingModel> Settings(AmazonDynamoDBClient client, string tableName);
+        List<SettingModel> Settings(string tableName);
 
-        List<InvalidLinksModel> InvalidLinks(AmazonDynamoDBClient client, string tableName);
+        List<InvalidLinksModel> InvalidLinks(string tableName);
 
-        List<WarningLinksModel> WarningLinks(AmazonDynamoDBClient client, string tableName);
+        List<WarningLinksModel> WarningLinks(string tableName);
 
-        void AddUrlToWarningLinks(AmazonDynamoDBClient client, List<WarningLinksModel> links, string tableName);
+        void AddUrlToWarningLinks(List<WarningLinksModel> links, string tableName);
 
-        List<BucketLocationsModel> BucketLocations(AmazonDynamoDBClient client, BucketLocationsRequest m, string objectLinksTable, string objectsTable, string bucketsTable, string statsTable);
+        List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m, string objectLinksTable, string objectsTable, string bucketsTable, string statsTable);
 
-        List<BucketsModel> Buckets(AmazonDynamoDBClient client, string tableName);
+        List<BucketsModel> Buckets(string tableName);
 
-        Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b);
+        void IncrementMetaTableKey(string tableName, string key);
 
-        Task<AttributeValue> QueryDataAttribute(AmazonDynamoDBClient client, string tableName, string key, string field);
+        Task<string> QueryCountBool(string tableName, string column, bool b);
 
-        Task<string> QueryCountContains(AmazonDynamoDBClient client, string tableName, string column, string s);
+        Task<AttributeValue> QueryDataAttribute(string tableName, string key, string field);
 
-        Task<List<Dictionary<string, AttributeValue>>> QueryTableAll(AmazonDynamoDBClient client, string tableName);
+        Task<string> QueryCountContains(string tableName, string column, string s);
+
+        Task<List<Dictionary<string, AttributeValue>>> QueryTableAll(string tableName);
     }
 }

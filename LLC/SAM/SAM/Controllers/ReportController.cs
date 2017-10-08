@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
-using Amazon.DynamoDBv2;
 using SAM.DI;
 
 namespace SAM.Controllers
@@ -20,11 +19,8 @@ namespace SAM.Controllers
         [HttpGet]
         public ActionResult Get(int id)
         {
-            using (var client = new AmazonDynamoDBClient(_service.Region()))
-            {
-                var url = _service.QueryDataAttribute(client, "LLC-Links", id.ToString(), "Url");
-                return Redirect(url.Result.S);
-            }
+            var url = _service.QueryDataAttribute("LLC-Links", id.ToString(), "Url");
+            return Redirect(url.Result.S);
         }
     }
 }

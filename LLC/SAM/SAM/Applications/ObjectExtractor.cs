@@ -13,15 +13,7 @@ namespace SAM.Applications
         public int Handler(object input, ILambdaContext context)
         {
             var service = new ILLCDataImpl();
-            using (var client = new AmazonDynamoDBClient(service.Region()))
-            {
-                using (var ctx = new DynamoDBContext(client))
-                {
-                    // http://docs.amazonaws.cn/en_us/amazondynamodb/latest/developerguide/DynamoDBContext.VersionSupport.html
-                    Console.WriteLine(JsonConvert.SerializeObject(input));
-                    return 5;
-                }
-            }
+            return 5;
         }
     }
 }

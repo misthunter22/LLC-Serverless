@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
-using Amazon.DynamoDBv2;
 using SAM.DI;
 using SAM.Models.Reports;
 
@@ -21,11 +20,8 @@ namespace SAM.Controllers
         [HttpPost]
         public JsonResult Post([FromBody] BucketLocationsRequest m)
         {
-            using (var client = new AmazonDynamoDBClient(_service.Region()))
-            {
-                var model = _service.BucketLocations(client, m, "LLC-ObjectLinks", "LLC-Objects", "LLC-Buckets", "LLC-Stats");
-                return Json(model);
-            }
+            var model = _service.BucketLocations(m, "LLC-ObjectLinks", "LLC-Objects", "LLC-Buckets", "LLC-Stats");
+            return Json(model);
         }
     }
 }

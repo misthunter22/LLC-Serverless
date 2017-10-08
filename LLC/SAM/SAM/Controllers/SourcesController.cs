@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
-using Amazon.DynamoDBv2;
 using SAM.DI;
 
 namespace SAM.Controllers
@@ -20,11 +19,8 @@ namespace SAM.Controllers
         [HttpGet]
         public JsonResult Get()
         {
-            using (var client = new AmazonDynamoDBClient(_service.Region()))
-            {
-                var results = _service.Sources(client, "LLC-Sources", "LLC-Buckets");
-                return Json(results);
-            }
+            var results = _service.Sources("LLC-Sources", "LLC-Buckets");
+            return Json(results);
         }
     }
 }

@@ -10,6 +10,7 @@ using SAM.Models.Reports;
 using SAM.Models;
 using Newtonsoft.Json;
 using System.IO;
+using Amazon.DynamoDBv2.DataModel;
 
 namespace SAM.DI
 {
@@ -22,338 +23,391 @@ namespace SAM.DI
             return _region;
         }
 
-        public string TableCount(AmazonDynamoDBClient client, string tableName)
+        public string TableCount(string tableName)
         {
-            var descr = client.DescribeTableAsync(tableName);
-            var count = descr.Result.Table.ItemCount;
-            return count.ToString();
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                var descr = client.DescribeTableAsync(tableName);
+                var count = descr.Result.Table.ItemCount;
+                return count.ToString();
+            }
         }
 
-        public List<SourceModel> Sources(AmazonDynamoDBClient client, string tableName, string bucketTableName)
+        public List<SourceModel> Sources(string tableName, string bucketTableName)
         {
-            var results = client.ScanAsync(new ScanRequest
+            using (var client = new AmazonDynamoDBClient(_region))
             {
-                TableName = tableName
-            }).Result;
-
-            var array = new List<SourceModel>();
-            foreach (var d in results.Items)
-            {
-                int i = int.Parse(d["Id"].N);
-                var m = new SourceModel
+                var results = client.ScanAsync(new ScanRequest
                 {
-                    AllowLinkChecking = d.ContainsKey("AllowLinkChecking") ? d["AllowLinkChecking"].BOOL : false,
-                    AllowLinkExtractions = d.ContainsKey("AllowLinkExtractions") ? d["AllowLinkExtractions"].BOOL : false,
-                    DateCreated = d.ContainsKey("DateCreated") ? ParseDate(d["DateCreated"].S) : null,
-                    DateLastChecked = d.ContainsKey("DateLastChecked") ? ParseDate(d["DateLastChecked"].S) : null,
-                    DateLastExtracted = d.ContainsKey("DateLastExtracted") ? ParseDate(d["DateLastExtracted"].S) : null,
-                    Description = d.ContainsKey("Description") ? d["Description"].S : null,
-                    HtmlFileCount = d.ContainsKey("HtmlFileCount") ? ParseInt(d["HtmlFileCount"].N) : -1,
-                    InvalidLinkCount = d.ContainsKey("InvalidLinkCount") ? ParseInt(d["InvalidLinkCount"].N) : -1,
-                    LinkCount = d.ContainsKey("LinkCount") ? ParseInt(d["LinkCount"].N) : -1,
-                    S3BucketId = d.ContainsKey("S3BucketId") ? ParseInt(d["S3BucketId"].N) : -1,
-                    S3ObjectCount = d.ContainsKey("S3ObjectCount") ? ParseInt(d["S3ObjectCount"].N) : -1,
-                    Source = i,
-                    Title = d.ContainsKey("Name") ? d["Name"].S : null,
-                };
+                    TableName = tableName
+                }).Result;
 
-                // Skip the internal sources
-                if (i > 0)
+                var array = new List<SourceModel>();
+                foreach (var d in results.Items)
                 {
-                    m.S3ObjectName = QueryDataAttribute(client, bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
+                    int i = int.Parse(d["Id"].N);
+                    var m = new SourceModel
+                    {
+                        AllowLinkChecking = d.ContainsKey("AllowLinkChecking") ? d["AllowLinkChecking"].BOOL : false,
+                        AllowLinkExtractions = d.ContainsKey("AllowLinkExtractions") ? d["AllowLinkExtractions"].BOOL : false,
+                        DateCreated = d.ContainsKey("DateCreated") ? ParseDate(d["DateCreated"].S) : null,
+                        DateLastChecked = d.ContainsKey("DateLastChecked") ? ParseDate(d["DateLastChecked"].S) : null,
+                        DateLastExtracted = d.ContainsKey("DateLastExtracted") ? ParseDate(d["DateLastExtracted"].S) : null,
+                        Description = d.ContainsKey("Description") ? d["Description"].S : null,
+                        HtmlFileCount = d.ContainsKey("HtmlFileCount") ? ParseInt(d["HtmlFileCount"].N) : -1,
+                        InvalidLinkCount = d.ContainsKey("InvalidLinkCount") ? ParseInt(d["InvalidLinkCount"].N) : -1,
+                        LinkCount = d.ContainsKey("LinkCount") ? ParseInt(d["LinkCount"].N) : -1,
+                        S3BucketId = d.ContainsKey("S3BucketId") ? ParseInt(d["S3BucketId"].N) : -1,
+                        S3ObjectCount = d.ContainsKey("S3ObjectCount") ? ParseInt(d["S3ObjectCount"].N) : -1,
+                        Source = i,
+                        Title = d.ContainsKey("Name") ? d["Name"].S : null,
+                    };
+
+                    // Skip the internal sources
+                    if (i > 0)
+                    {
+                        m.S3ObjectName = QueryDataAttribute(bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
+                    }
+
+                    array.Add(m);
                 }
 
-                array.Add(m);
+                return array.OrderBy(x => x.Source).ToList();
             }
-
-            return array.OrderBy(x => x.Source).ToList();
         }
 
-        public SourceModel Source(AmazonDynamoDBClient client, string tableName, string bucketTableName, string id)
+        public SourceModel Source(string tableName, string bucketTableName, string id)
         {
-            var results = Sources(client, tableName, bucketTableName);
-            return results.FirstOrDefault(x => x.Source.Equals(id));
-        }
-
-        public List<SettingModel> Settings(AmazonDynamoDBClient client, string tableName)
-        {
-            var results = client.ScanAsync(new ScanRequest
+            using (var client = new AmazonDynamoDBClient(_region))
             {
-                TableName = tableName
-            }).Result;
-
-            var array = new List<SettingModel>();
-            foreach (var d in results.Items)
-            {
-                int i = int.Parse(d["Id"].N);
-                var m = new SettingModel
-                {
-                    DateCreated = d.ContainsKey("DateCreated") ? ParseDate(d["DateCreated"].S) : null,
-                    DateModified = d.ContainsKey("DateModified") ? ParseDate(d["DateModified"].S) : null,
-                    Description = d.ContainsKey("Description") ? d["Description"].S : null,
-                    Id = i,
-                    ModifiedUser = d.ContainsKey("ModifiedUser") ? d["ModifiedUser"].S : null,
-                    Name = d.ContainsKey("Name") ? d["Name"].S : null,
-                    Value = d.ContainsKey("Value") ? d["Value"].S : null
-                };
-
-                array.Add(m);
+                var results = Sources(tableName, bucketTableName);
+                return results.FirstOrDefault(x => x.Source.Equals(id));
             }
-
-            return array.OrderBy(x => x.Name).ToList();
         }
 
-        public List<InvalidLinksModel> InvalidLinks(AmazonDynamoDBClient client, string tableName)
+        public List<SettingModel> Settings(string tableName)
         {
-            var count  = 0;
-            var ret    = new List<InvalidLinksModel>();
-            var last   = new Dictionary<string, AttributeValue>();
-            last["Id"] = new AttributeValue { N = "0" };
-
-            while (last.ContainsKey("Id"))
+            using (var client = new AmazonDynamoDBClient(_region))
             {
-                var rows = client.ScanAsync(new ScanRequest
+                var results = client.ScanAsync(new ScanRequest
                 {
-                    ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    { ":val",  new AttributeValue { S = "Invalid" } }
-                },
-                    FilterExpression = "ReportType = :val",
-                    TableName = tableName,
-                    ExclusiveStartKey = last["Id"].N == "0" ? null : last
+                    TableName = tableName
                 }).Result;
 
-                count += rows.Count;
-                last = rows.LastEvaluatedKey;
-
-                ret.AddRange(rows.Items.Select(x => new InvalidLinksModel
+                var array = new List<SettingModel>();
+                foreach (var d in results.Items)
                 {
-                    AttemptCount = x.ContainsKey("AttemptCount") ? ParseInt(x["AttemptCount"].S) : -1,
-                    DateLastChecked = x.ContainsKey("DateLastChecked") ? ParseDate(x["DateLastChecked"].S) : null,
-                    DateLastFound = x.ContainsKey("DateLastFound") ? ParseDate(x["DateLastFound"].S) : null,
-                    Id = ParseInt(x["Id"].N),
-                    Link = ParseInt(x["Link"].N),
-                    Source = x["Source"].S,
-                    Url = x["Url"].S
-                })
-                .ToList());         
-            }
-
-            Console.WriteLine($"Invalid Report Item Count: {ret.Count}");
-            return ret;
-        }
-
-        public List<WarningLinksModel> WarningLinks(AmazonDynamoDBClient client, string tableName)
-        {
-            var count = 0;
-            var ret = new List<WarningLinksModel>();
-            var last = new Dictionary<string, AttributeValue>();
-            last["Id"] = new AttributeValue { N = "0" };
-
-            while (last.ContainsKey("Id"))
-            {
-                var rows = client.ScanAsync(new ScanRequest
-                {
-                    ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    { ":val",  new AttributeValue { S = "Warning" } }
-                },
-                    FilterExpression = "ReportType = :val",
-                    TableName = tableName,
-                    ExclusiveStartKey = last["Id"].N == "0" ? null : last
-                }).Result;
-
-                count += rows.Count;
-                last = rows.LastEvaluatedKey;
-
-                ret.AddRange(rows.Items.Select(x => new WarningLinksModel
-                {
-                    Id = ParseInt(x["Id"].N),
-                    ContentSize = x.ContainsKey("ContentSize") ? ParseInt(x["ContentSize"].N) : -1,
-                    Mean = x.ContainsKey("Mean") ? ParseInt(x["Mean"].N) : -1,
-                    StandardDeviation = x.ContainsKey("StandardDeviation") ? ParseLong(x["StandardDeviation"].N) : -1,
-                    SdRange = x.ContainsKey("SdMaximum") ? ParseInt(x["SdMaximum"].N) : -1,
-                    LinkId = x.ContainsKey("Link") ? ParseInt(x["Link"].N) : -1,
-                    StatId = x.ContainsKey("Stat") ? ParseInt(x["Stat"].N) : -1
-                })
-                .ToList());
-            }
-
-            Console.WriteLine($"Warning Report Item Count: {ret.Count}");
-            return ret;
-        }
-
-        public void AddUrlToWarningLinks(AmazonDynamoDBClient client, List<WarningLinksModel> links, string tableName)
-        {
-            var keyList = new List<Dictionary<string, AttributeValue>>();
-            foreach (var r in links)
-            {
-                keyList.Add(new Dictionary<string, AttributeValue>
-                {
-                    { "Id", new AttributeValue { N = r.LinkId.ToString() } }
-                });
-            }
-
-            var batch = client.BatchGetItemAsync(new BatchGetItemRequest
-            {
-                RequestItems = new Dictionary<string, KeysAndAttributes>
-                {
+                    int i = int.Parse(d["Id"].N);
+                    var m = new SettingModel
                     {
-                      tableName, new KeysAndAttributes
-                      {
-                        AttributesToGet = new List<string> { "Id", "Url" },
-                        ConsistentRead = true,
-                        Keys = keyList
-                      }
+                        DateCreated = d.ContainsKey("DateCreated") ? ParseDate(d["DateCreated"].S) : null,
+                        DateModified = d.ContainsKey("DateModified") ? ParseDate(d["DateModified"].S) : null,
+                        Description = d.ContainsKey("Description") ? d["Description"].S : null,
+                        Id = i,
+                        ModifiedUser = d.ContainsKey("ModifiedUser") ? d["ModifiedUser"].S : null,
+                        Name = d.ContainsKey("Name") ? d["Name"].S : null,
+                        Value = d.ContainsKey("Value") ? d["Value"].S : null
+                    };
+
+                    array.Add(m);
+                }
+
+                return array.OrderBy(x => x.Name).ToList();
+            }
+        }
+
+        public List<InvalidLinksModel> InvalidLinks(string tableName)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                var count = 0;
+                var ret = new List<InvalidLinksModel>();
+                var last = new Dictionary<string, AttributeValue>();
+                last["Id"] = new AttributeValue { N = "0" };
+
+                while (last.ContainsKey("Id"))
+                {
+                    var rows = client.ScanAsync(new ScanRequest
+                    {
+                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                            { ":val",  new AttributeValue { S = "Invalid" } }
+                        },
+                        FilterExpression = "ReportType = :val",
+                        TableName = tableName,
+                        ExclusiveStartKey = last["Id"].N == "0" ? null : last
+                    }).Result;
+
+                    count += rows.Count;
+                    last = rows.LastEvaluatedKey;
+
+                    ret.AddRange(rows.Items.Select(x => new InvalidLinksModel
+                    {
+                        AttemptCount = x.ContainsKey("AttemptCount") ? ParseInt(x["AttemptCount"].S) : -1,
+                        DateLastChecked = x.ContainsKey("DateLastChecked") ? ParseDate(x["DateLastChecked"].S) : null,
+                        DateLastFound = x.ContainsKey("DateLastFound") ? ParseDate(x["DateLastFound"].S) : null,
+                        Id = ParseInt(x["Id"].N),
+                        Link = ParseInt(x["Link"].N),
+                        Source = x["Source"].S,
+                        Url = x["Url"].S
+                    })
+                    .ToList());
+                }
+
+                Console.WriteLine($"Invalid Report Item Count: {ret.Count}");
+                return ret;
+            }
+        }
+
+        public List<WarningLinksModel> WarningLinks(string tableName)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                var count = 0;
+                var ret = new List<WarningLinksModel>();
+                var last = new Dictionary<string, AttributeValue>();
+                last["Id"] = new AttributeValue { N = "0" };
+
+                while (last.ContainsKey("Id"))
+                {
+                    var rows = client.ScanAsync(new ScanRequest
+                    {
+                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                            { ":val",  new AttributeValue { S = "Warning" } }
+                        },
+                        FilterExpression = "ReportType = :val",
+                        TableName = tableName,
+                        ExclusiveStartKey = last["Id"].N == "0" ? null : last
+                    }).Result;
+
+                    count += rows.Count;
+                    last = rows.LastEvaluatedKey;
+
+                    ret.AddRange(rows.Items.Select(x => new WarningLinksModel
+                    {
+                        Id = ParseInt(x["Id"].N),
+                        ContentSize = x.ContainsKey("ContentSize") ? ParseInt(x["ContentSize"].N) : -1,
+                        Mean = x.ContainsKey("Mean") ? ParseInt(x["Mean"].N) : -1,
+                        StandardDeviation = x.ContainsKey("StandardDeviation") ? ParseLong(x["StandardDeviation"].N) : -1,
+                        SdRange = x.ContainsKey("SdMaximum") ? ParseInt(x["SdMaximum"].N) : -1,
+                        LinkId = x.ContainsKey("Link") ? ParseInt(x["Link"].N) : -1,
+                        StatId = x.ContainsKey("Stat") ? ParseInt(x["Stat"].N) : -1
+                    })
+                    .ToList());
+                }
+
+                Console.WriteLine($"Warning Report Item Count: {ret.Count}");
+                return ret;
+            }
+        }
+
+        public void AddUrlToWarningLinks(List<WarningLinksModel> links, string tableName)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                var keyList = new List<Dictionary<string, AttributeValue>>();
+                foreach (var r in links)
+                {
+                    keyList.Add(new Dictionary<string, AttributeValue>
+                    {
+                        { "Id", new AttributeValue { N = r.LinkId.ToString() } }
+                    });
+                }
+
+                var batch = client.BatchGetItemAsync(new BatchGetItemRequest
+                {
+                    RequestItems = new Dictionary<string, KeysAndAttributes>
+                    {
+                        {
+                            tableName, new KeysAndAttributes
+                            {
+                                AttributesToGet = new List<string> { "Id", "Url" },
+                                ConsistentRead = true,
+                                Keys = keyList
+                            }
+                        }
+                    }
+                });
+
+                var writer = new StringWriter();
+                JsonSerializer.Create().Serialize(writer, batch.Result);
+                Console.WriteLine(writer.ToString());
+
+                foreach (var r in batch.Result.Responses[tableName])
+                {
+                    var first = links.FirstOrDefault(x => x.LinkId == ParseInt(r["Id"].N));
+                    if (first != null)
+                    {
+                        first.Url = r["Url"].S;
                     }
                 }
-            });
+            }
+        }
 
-            var writer = new StringWriter();
-            JsonSerializer.Create().Serialize(writer, batch.Result);
-            Console.WriteLine(writer.ToString());
-
-            foreach (var r in batch.Result.Responses[tableName])
+        public List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m, string objectLinksTable, string objectsTable, string bucketsTable, string statsTable)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
             {
-                var first = links.FirstOrDefault(x => x.LinkId == ParseInt(r["Id"].N));
-                if (first != null)
+                var buckets = Buckets(bucketsTable);
+
+                var id = m.id;
+                if ("stat".Equals(m.type))
                 {
-                    first.Url = r["Url"].S;
+                    id = QueryDataAttribute(statsTable, id, "Link").Result.N;
+                }
+
+                var ret = new List<string>();
+                var last = new Dictionary<string, AttributeValue>();
+                last["Link"] = new AttributeValue { N = "0" };
+
+                while (last.ContainsKey("Link"))
+                {
+                    var rows = client.ScanAsync(new ScanRequest
+                    {
+                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                            { ":val",  new AttributeValue { N = id } }
+                        },
+                        FilterExpression = "Link = :val",
+                        TableName = objectLinksTable,
+                        ExclusiveStartKey = last["Link"].N == "0" ? null : last
+                    }).Result;
+
+                    last = rows.LastEvaluatedKey;
+                    ret.AddRange(rows.Items.Select(x => x.ContainsKey("Object") ? x["Object"].N : "").ToList());
+                }
+
+                var resp = new List<BucketLocationsModel>();
+                foreach (var o in ret)
+                {
+                    var obj = client.QueryAsync(new QueryRequest
+                    {
+                        TableName = objectsTable,
+                        KeyConditionExpression = "Id = :v_Id",
+                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                            { ":v_Id", new AttributeValue { N =  o }}
+                        }
+                    });
+
+                    var item = obj.Result.Items.FirstOrDefault();
+                    resp.Add(new BucketLocationsModel
+                    {
+                        data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == ParseInt(item["Bucket"].N)).Name, item["Key"].S)
+                    });
+                }
+
+                return resp;
+            }
+        }
+
+        public List<BucketsModel> Buckets(string tableName)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                var ret = new List<BucketsModel>();
+                var last = new Dictionary<string, AttributeValue>();
+                last["Id"] = new AttributeValue { N = "0" };
+
+                while (last.ContainsKey("Id"))
+                {
+                    var rows = client.ScanAsync(new ScanRequest
+                    {
+                        TableName = tableName,
+                        ExclusiveStartKey = last["Id"].N == "0" ? null : last
+                    }).Result;
+
+                    last = rows.LastEvaluatedKey;
+                    ret.AddRange(rows.Items.Select(x => new BucketsModel
+                    {
+                        Id = ParseInt(x["Id"].N),
+                        Name = x["Name"].S
+                    })
+                    .ToList());
+                }
+
+                return ret;
+            }
+        }
+
+        public void IncrementMetaTableKey(string tableName, string key)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                using (var ctx = new DynamoDBContext(client))
+                {
+                    // http://docs.amazonaws.cn/en_us/amazondynamodb/latest/developerguide/DynamoDBContext.VersionSupport.html
+                    
                 }
             }
         }
 
-        public List<BucketLocationsModel> BucketLocations(AmazonDynamoDBClient client, BucketLocationsRequest m, string objectLinksTable, string objectsTable, string bucketsTable, string statsTable)
+        public async Task<string> QueryCountBool(string tableName, string column, bool b)
         {
-            var buckets  = Buckets(client, bucketsTable);
-
-            var id = m.id;
-            if ("stat".Equals(m.type))
+            using (var client = new AmazonDynamoDBClient(_region))
             {
-                id = QueryDataAttribute(client, statsTable, id, "Link").Result.N;
-            }
-
-            var ret      = new List<string>();
-            var last     = new Dictionary<string, AttributeValue>();
-            last["Link"] = new AttributeValue { N = "0" };
-
-            while (last.ContainsKey("Link"))
-            {
-                var rows = client.ScanAsync(new ScanRequest
+                var rows = await client.ScanAsync(new ScanRequest
                 {
                     ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    { ":val",  new AttributeValue { N = id } }
-                },
-                    FilterExpression = "Link = :val",
-                    TableName = objectLinksTable,
-                    ExclusiveStartKey = last["Link"].N == "0" ? null : last
-                }).Result;
-
-                last = rows.LastEvaluatedKey;
-
-                ret.AddRange(rows.Items.Select(x => x.ContainsKey("Object") ? x["Object"].N : "").ToList());
-            }
-
-            var resp = new List<BucketLocationsModel>();
-            foreach (var o in ret) {
-                var obj = client.QueryAsync(new QueryRequest
-                {
-                    TableName = objectsTable,
-                    KeyConditionExpression = "Id = :v_Id",
-                    ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    {":v_Id", new AttributeValue { N =  o }}}
+                        { ":val",  new AttributeValue { BOOL = b } }
+                    },
+                    FilterExpression = $"{column} = :val",
+                    TableName = tableName
                 });
 
-                var item = obj.Result.Items.FirstOrDefault();
-                resp.Add(new BucketLocationsModel
-                {
-                    data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == ParseInt(item["Bucket"].N)).Name, item["Key"].S)
-                });
+                return rows.Count.ToString();
             }
-
-            return resp;
         }
 
-        public List<BucketsModel> Buckets(AmazonDynamoDBClient client, string tableName)
+        public async Task<AttributeValue> QueryDataAttribute(string tableName, string key, string field)
         {
-            var ret = new List<BucketsModel>();
-            var last = new Dictionary<string, AttributeValue>();
-            last["Id"] = new AttributeValue { N = "0" };
-
-            while (last.ContainsKey("Id"))
+            using (var client = new AmazonDynamoDBClient(_region))
             {
-                var rows = client.ScanAsync(new ScanRequest
+                var resp = await client.QueryAsync(new QueryRequest
                 {
                     TableName = tableName,
-                    ExclusiveStartKey = last["Id"].N == "0" ? null : last
-                }).Result;
+                    KeyConditionExpression = "Id = :v_Id",
+                    ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                        { ":v_Id", new AttributeValue { N =  key }}
+                    }
+                });
 
-                last = rows.LastEvaluatedKey;
-                ret.AddRange(rows.Items.Select(x => new BucketsModel
+                var dict = resp.Items.FirstOrDefault();
+                AttributeValue ret = null;
+                if (dict != null)
                 {
-                    Id = ParseInt(x["Id"].N),
-                    Name = x["Name"].S
-                })
-                .ToList());
+                    ret = dict[field];
+                }
+
+                return ret;
             }
-
-            return ret;
         }
 
-        public async Task<string> QueryCountBool(AmazonDynamoDBClient client, string tableName, string column, bool b)
+        public async Task<string> QueryCountContains(string tableName, string column, string s)
         {
-            var rows = await client.ScanAsync(new ScanRequest
+            using (var client = new AmazonDynamoDBClient(_region))
             {
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    { ":val",  new AttributeValue { BOOL = b } }
-                },
-                FilterExpression = $"{column} = :val",
-                TableName = tableName
-            });
+                var rows = await client.ScanAsync(new ScanRequest
+                {
+                    ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                        { ":val",  new AttributeValue(s) }
+                    },
+                    FilterExpression = $"contains({column}, :val)",
+                    TableName = tableName
+                });
 
-            return rows.Count.ToString();
-        }
-
-        public async Task<AttributeValue> QueryDataAttribute(AmazonDynamoDBClient client, string tableName, string key, string field)
-        {
-            var resp = await client.QueryAsync(new QueryRequest
-            {
-                TableName = tableName,
-                KeyConditionExpression = "Id = :v_Id",
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    {":v_Id", new AttributeValue { N =  key }}}
-            });
-
-            var dict = resp.Items.FirstOrDefault();
-            AttributeValue ret = null;
-            if (dict != null)
-            {
-                ret = dict[field];
+                return rows.Count.ToString();
             }
-
-            return ret;
         }
 
-        public async Task<string> QueryCountContains(AmazonDynamoDBClient client, string tableName, string column, string s)
+        public async Task<List<Dictionary<string, AttributeValue>>> QueryTableAll(string tableName)
         {
-            var rows = await client.ScanAsync(new ScanRequest
+            using (var client = new AmazonDynamoDBClient(_region))
             {
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    { ":val",  new AttributeValue(s) }
-                },
-                FilterExpression = $"contains({column}, :val)",
-                TableName = tableName
-            });
+                var rows = await client.ScanAsync(new ScanRequest
+                {
+                    TableName = tableName
+                });
 
-            return rows.Count.ToString();
-        }
-
-        public async Task<List<Dictionary<string, AttributeValue>>> QueryTableAll(AmazonDynamoDBClient client, string tableName)
-        {
-            var rows = await client.ScanAsync(new ScanRequest
-            {
-                TableName = tableName
-            });
-
-            return rows.Items;
+                return rows.Items;
+            }
         }
 
         private string ParseDate(string date)
