@@ -145,6 +145,23 @@
         }
       }
     },
+	"ObjectExtractorS3Event" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.ObjectExtractorS3Event::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 1024,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [ "AWSLambdaFullAccess", "AmazonKinesisFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            
+          }
+        }
+      }
+    },
 
     "Bucket" : {
         "Type" : "AWS::S3::Bucket",
@@ -161,8 +178,12 @@
             "BucketName" : { "Fn::If" : ["ObjectBucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "ObjectBucketName" } ] },
 			"NotificationConfiguration" : {
 				"LambdaConfigurations" : [{
-					"Function" : { "Fn::GetAtt" : [ "ObjectExtractor", "Arn" ] },
-					"Event" : "s3:ObjectCreated:*"
+					"Function" : { "Fn::GetAtt" : [ "ObjectExtractorS3Event", "Arn" ] },
+					"Event" : "s3:ObjectCreated:Put"
+				},
+				{
+					"Function" : { "Fn::GetAtt" : [ "ObjectExtractorS3Event", "Arn" ] },
+					"Event" : "s3:ObjectRemoved:DeleteMarkerCreated"
 				}]
 			},
 			"VersioningConfiguration" : {

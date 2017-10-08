@@ -11,6 +11,10 @@ using SAM.Models;
 using Newtonsoft.Json;
 using System.IO;
 using Amazon.DynamoDBv2.DataModel;
+using SAM.Models.Dynamo;
+using Amazon.Kinesis;
+using Amazon.Kinesis.Model;
+using System.Text;
 
 namespace SAM.DI
 {
@@ -327,15 +331,43 @@ namespace SAM.DI
             }
         }
 
-        public void IncrementMetaTableKey(string tableName, string key)
+        public async Task<int> IncrementMetaTableKey(string tableName, string key, int diff)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
                 using (var ctx = new DynamoDBContext(client))
                 {
                     // http://docs.amazonaws.cn/en_us/amazondynamodb/latest/developerguide/DynamoDBContext.VersionSupport.html
-                    
+                    var meta = ctx.LoadAsync<Meta>(key).Result;
+
+                    Console.WriteLine($"Key before: {meta.Key}");
+                    meta.Key = meta.Key + diff;
+
+                    await ctx.SaveAsync(meta);
+
+                    Console.WriteLine($"Key after : {meta.Key}");
+                    return meta.Key;
                 }
+            }
+        }
+
+        public void SubmitMetaTableQueue(string tableName, string key, int diff)
+        {
+            using (AmazonKinesisClient client = new AmazonKinesisClient(_region))
+            {
+                var byteArray = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(new KinesisMetaJob
+                {
+                    diff = diff,
+                    Key = key,
+                    Table = tableName
+                }));
+
+                client.PutRecordAsync(new PutRecordRequest
+                {
+                    Data = new MemoryStream(byteArray),
+                    PartitionKey = diff > 0 ? "Add" : "Remove",
+                    StreamName = "test"
+                });
             }
         }
 

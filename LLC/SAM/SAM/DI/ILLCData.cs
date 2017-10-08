@@ -30,7 +30,9 @@ namespace SAM.DI
 
         List<BucketsModel> Buckets(string tableName);
 
-        void IncrementMetaTableKey(string tableName, string key);
+        void SubmitMetaTableQueue(string tableName, string key, int diff);
+
+        Task<int> IncrementMetaTableKey(string tableName, string key, int diff);
 
         Task<string> QueryCountBool(string tableName, string column, bool b);
 
