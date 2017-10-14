@@ -15,9 +15,12 @@ namespace SAM.Applications
             Console.WriteLine(input.GetType());
             JObject obj = (JObject)input;
 
+            var evt = obj["Records"][0]["eventName"].ToString();
+            Console.WriteLine(evt);
+            var diff = "ObjectCreated:Put".Equals(evt) ? 1 : -1;
+
             var service = new ILLCDataImpl();
-            return 0;
-            //return service.IncrementMetaTableKey("LLC-Meta", "Test", 0).Result;
+            return service.IncrementMetaTableKey("LLC-Meta", "Test", diff).Result;
         }
     }
 }

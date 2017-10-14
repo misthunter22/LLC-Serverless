@@ -337,16 +337,26 @@ namespace SAM.DI
             {
                 using (var ctx = new DynamoDBContext(client))
                 {
-                    // http://docs.amazonaws.cn/en_us/amazondynamodb/latest/developerguide/DynamoDBContext.VersionSupport.html
-                    var meta = ctx.LoadAsync<Meta>(key).Result;
+                    while (true)
+                    {
+                        try
+                        {
+                            // http://docs.amazonaws.cn/en_us/amazondynamodb/latest/developerguide/DynamoDBContext.VersionSupport.html
+                            var meta = ctx.LoadAsync<Meta>(key).Result;
 
-                    Console.WriteLine($"Key before: {meta.Key}");
-                    meta.Key = meta.Key + diff;
+                            Console.WriteLine($"Key before: {meta.Key}");
+                            meta.Key = meta.Key + diff;
 
-                    await ctx.SaveAsync(meta);
+                            await ctx.SaveAsync(meta);
 
-                    Console.WriteLine($"Key after : {meta.Key}");
-                    return meta.Key;
+                            Console.WriteLine($"Key after : {meta.Key}");
+                            return meta.Key;
+                        }
+                        catch (ConditionalCheckFailedException)
+                        {
+                            Console.WriteLine("ConditionalCheckFailedException. Retrying again...");
+                        }
+                    }
                 }
             }
         }

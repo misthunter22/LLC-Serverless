@@ -14,5 +14,8 @@ namespace SAM.Models.Dynamo
 
         [DynamoDBProperty]
         public int Key { get; set; }
+
+        [DynamoDBVersion]
+        public int? VersionNumber { get; set; }
     }
 }
