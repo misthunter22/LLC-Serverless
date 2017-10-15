@@ -33,7 +33,8 @@
     "AWSSDK.CognitoIdentity": "3.3.2.10",
     "AWSSDK.DynamoDBv2": "3.3.4.13",
     "System.Linq.Dynamic.Core": "1.0.6.13",
-    "AWSSDK.Kinesis": "3.3.3" },
+    "AWSSDK.Kinesis": "3.3.3",
+    "AWSSDK.CloudWatch": "3.3.4.1" },
 
   "tools": {
     "Amazon.Lambda.Tools": "1.5.0",

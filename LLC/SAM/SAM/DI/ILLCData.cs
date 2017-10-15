@@ -1,4 +1,5 @@
 ﻿using Amazon;
+using Amazon.CloudWatch.Model;
 using Amazon.DynamoDBv2.Model;
 using Amazon.S3.Model;
 using SAM.Models;
@@ -13,7 +14,7 @@ namespace SAM.DI
     {
         RegionEndpoint Region();
 
-        string TableCount(string tableName);
+        long TableCount(string tableName);
 
         List<SourceModel> Sources(string tableName, string bucketTableName);
 
@@ -35,7 +36,11 @@ namespace SAM.DI
 
         GetObjectResponse ObjectGet(string bucket, string key);
 
-        Task<int> IncrementMetaTableKey(string tableName, string key, int diff);
+        GetMetricStatisticsResponse BucketCount(string bucket);
+
+        Task<long> IncrementMetaTableKey(string tableName, string key, long diff);
+
+        Task<long> SetMetaTableKey(string tableName, string key, long set);
 
         Task<string> QueryCountBool(string tableName, string column, bool b);
 

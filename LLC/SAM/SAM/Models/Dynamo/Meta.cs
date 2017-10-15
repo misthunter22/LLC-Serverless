@@ -13,7 +13,7 @@ namespace SAM.Models.Dynamo
         public string Id { get; set; }
 
         [DynamoDBProperty]
-        public int Key { get; set; }
+        public long Key { get; set; }
 
         [DynamoDBVersion]
         public int? VersionNumber { get; set; }

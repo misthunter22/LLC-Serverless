@@ -24,6 +24,8 @@ namespace SAM.Models.Admin
 
         public int S3BucketId { get; set; }
 
+        public string S3BucketSearchPrefix { get; set; }
+
         public int S3ObjectCount { get; set; }
 
         public int LinkCount { get; set; }

@@ -14,6 +14,8 @@ using Amazon.DynamoDBv2.DataModel;
 using SAM.Models.Dynamo;
 using Amazon.S3.Model;
 using Amazon.S3;
+using Amazon.CloudWatch.Model;
+using Amazon.CloudWatch;
 
 namespace SAM.DI
 {
@@ -26,13 +28,13 @@ namespace SAM.DI
             return _region;
         }
 
-        public string TableCount(string tableName)
+        public long TableCount(string tableName)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
                 var descr = client.DescribeTableAsync(tableName);
                 var count = descr.Result.Table.ItemCount;
-                return count.ToString();
+                return count;
             }
         }
 
@@ -69,7 +71,8 @@ namespace SAM.DI
                     // Skip the internal sources
                     if (i > 0)
                     {
-                        m.S3ObjectName = QueryDataAttribute(bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
+                        m.S3ObjectName         = QueryDataAttribute(bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
+                        m.S3BucketSearchPrefix = QueryDataAttribute(bucketTableName, m.S3BucketId.ToString(), "SearchPrefix").Result.S;
                     }
 
                     array.Add(m);
@@ -363,7 +366,28 @@ namespace SAM.DI
             }
         }
 
-        public async Task<int> IncrementMetaTableKey(string tableName, string key, int diff)
+        public GetMetricStatisticsResponse BucketCount(string bucket)
+        {
+            using (var client = new AmazonCloudWatchClient(_region))
+            {
+                return client.GetMetricStatisticsAsync(new GetMetricStatisticsRequest
+                {
+                    Dimensions = new List<Dimension>
+                    {
+                        new Dimension { Name = "BucketName", Value = bucket },
+                        new Dimension { Name = "StorageType", Value = "AllStorageTypes" },
+                    },
+                    EndTime = DateTime.Now.AddDays(1),
+                    MetricName = "NumberOfObjects",
+                    Namespace = "AWS/S3",
+                    Period = 60,
+                    StartTime = DateTime.Now,
+                    Statistics = new List<string> { "Maximum", "Minimum" }
+                }).Result;
+            }
+        }
+
+        public async Task<long> IncrementMetaTableKey(string tableName, string key, long diff)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
@@ -378,6 +402,36 @@ namespace SAM.DI
 
                             Console.WriteLine($"Key before: {meta.Key}");
                             meta.Key = meta.Key + diff;
+
+                            await ctx.SaveAsync(meta);
+
+                            Console.WriteLine($"Key after : {meta.Key}");
+                            return meta.Key;
+                        }
+                        catch (ConditionalCheckFailedException)
+                        {
+                            Console.WriteLine("ConditionalCheckFailedException. Retrying again...");
+                        }
+                    }
+                }
+            }
+        }
+
+        public async Task<long> SetMetaTableKey(string tableName, string key, long set)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                using (var ctx = new DynamoDBContext(client))
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            // http://docs.amazonaws.cn/en_us/amazondynamodb/latest/developerguide/DynamoDBContext.VersionSupport.html
+                            var meta = ctx.LoadAsync<Meta>(key).Result;
+
+                            Console.WriteLine($"Key before: {meta.Key}");
+                            meta.Key = set;
 
                             await ctx.SaveAsync(meta);
 
