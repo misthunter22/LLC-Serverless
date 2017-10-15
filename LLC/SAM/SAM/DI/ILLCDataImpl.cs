@@ -12,9 +12,8 @@ using Newtonsoft.Json;
 using System.IO;
 using Amazon.DynamoDBv2.DataModel;
 using SAM.Models.Dynamo;
-using Amazon.Kinesis;
-using Amazon.Kinesis.Model;
-using System.Text;
+using Amazon.S3.Model;
+using Amazon.S3;
 
 namespace SAM.DI
 {
@@ -80,12 +79,20 @@ namespace SAM.DI
             }
         }
 
-        public SourceModel Source(string tableName, string bucketTableName, string id)
+        public SourceModel Source(string tableName, string bucketTableName, string id, SourceSearchType type)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
                 var results = Sources(tableName, bucketTableName);
-                return results.FirstOrDefault(x => x.Source.Equals(id));
+                switch(type)
+                {
+                    case SourceSearchType.Id:
+                        return results.FirstOrDefault(x => x.Source.Equals(id));
+                    case SourceSearchType.Name:
+                        return results.FirstOrDefault(x => id.Equals(x.S3ObjectName, StringComparison.CurrentCultureIgnoreCase));
+                    default:
+                        return null;
+                }
             }
         }
 
@@ -331,6 +338,31 @@ namespace SAM.DI
             }
         }
 
+        public ListVersionsResponse ObjectVersions(string bucket, string key)
+        {
+            using (var client = new AmazonS3Client(_region))
+            {
+                return client.ListVersionsAsync(new ListVersionsRequest
+                {
+                    BucketName = bucket,
+                    MaxKeys = 5,
+                    KeyMarker = key
+                }).Result;
+            }
+        }
+
+        public GetObjectResponse ObjectGet(string bucket, string key)
+        {
+            using (var client = new AmazonS3Client(_region))
+            {
+                return client.GetObjectAsync(new GetObjectRequest
+                {
+                    BucketName = bucket,
+                    Key = key
+                }).Result;
+            }
+        }
+
         public async Task<int> IncrementMetaTableKey(string tableName, string key, int diff)
         {
             using (var client = new AmazonDynamoDBClient(_region))
@@ -358,26 +390,6 @@ namespace SAM.DI
                         }
                     }
                 }
-            }
-        }
-
-        public void SubmitMetaTableQueue(string tableName, string key, int diff)
-        {
-            using (AmazonKinesisClient client = new AmazonKinesisClient(_region))
-            {
-                var byteArray = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(new KinesisMetaJob
-                {
-                    diff = diff,
-                    Key = key,
-                    Table = tableName
-                }));
-
-                client.PutRecordAsync(new PutRecordRequest
-                {
-                    Data = new MemoryStream(byteArray),
-                    PartitionKey = diff > 0 ? "Add" : "Remove",
-                    StreamName = "test"
-                });
             }
         }
 

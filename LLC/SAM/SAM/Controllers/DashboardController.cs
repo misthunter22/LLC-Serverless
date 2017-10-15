@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using SAM.DI;
+using SAM.Models.Admin;
 
 namespace SAM.Controllers
 {
@@ -19,7 +20,7 @@ namespace SAM.Controllers
         [HttpGet("{id}")]
         public JsonResult Get(string id)
         {
-            var results = _service.Source("LLC-Sources", "LLC-Buckets", id);
+            var results = _service.Source("LLC-Sources", "LLC-Buckets", id, SourceSearchType.Id);
             return Json(results);
         }
     }

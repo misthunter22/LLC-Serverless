@@ -1,5 +1,6 @@
 ﻿using Amazon;
 using Amazon.DynamoDBv2.Model;
+using Amazon.S3.Model;
 using SAM.Models;
 using SAM.Models.Admin;
 using SAM.Models.Reports;
@@ -16,7 +17,7 @@ namespace SAM.DI
 
         List<SourceModel> Sources(string tableName, string bucketTableName);
 
-        SourceModel Source(string tableName, string bucketTableName, string id);
+        SourceModel Source(string tableName, string bucketTableName, string id, SourceSearchType type);
 
         List<SettingModel> Settings(string tableName);
 
@@ -30,7 +31,9 @@ namespace SAM.DI
 
         List<BucketsModel> Buckets(string tableName);
 
-        void SubmitMetaTableQueue(string tableName, string key, int diff);
+        ListVersionsResponse ObjectVersions(string bucket, string key);
+
+        GetObjectResponse ObjectGet(string bucket, string key);
 
         Task<int> IncrementMetaTableKey(string tableName, string key, int diff);
 
