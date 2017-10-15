@@ -73,6 +73,7 @@ namespace SAM.DI
                     {
                         m.S3ObjectName         = QueryDataAttribute(bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
                         m.S3BucketSearchPrefix = QueryDataAttribute(bucketTableName, m.S3BucketId.ToString(), "SearchPrefix").Result.S;
+                        Console.WriteLine($"S3 object name is {m.S3ObjectName}");
                     }
 
                     array.Add(m);
