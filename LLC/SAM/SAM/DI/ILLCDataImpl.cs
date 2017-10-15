@@ -467,6 +467,18 @@ namespace SAM.DI
 
         public async Task<AttributeValue> QueryDataAttribute(string tableName, string key, string field)
         {
+            var dict = await QueryDataAttributes(tableName, key);
+            AttributeValue ret = null;
+            if (dict != null)
+            {
+                ret = dict[field];
+            }
+
+            return ret;
+        }
+
+        public async Task<Dictionary<string, AttributeValue>> QueryDataAttributes(string tableName, string key)
+        {
             using (var client = new AmazonDynamoDBClient(_region))
             {
                 var resp = await client.QueryAsync(new QueryRequest
@@ -479,13 +491,7 @@ namespace SAM.DI
                 });
 
                 var dict = resp.Items.FirstOrDefault();
-                AttributeValue ret = null;
-                if (dict != null)
-                {
-                    ret = dict[field];
-                }
-
-                return ret;
+                return dict;
             }
         }
 

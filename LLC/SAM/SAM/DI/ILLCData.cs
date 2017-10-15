@@ -46,6 +46,8 @@ namespace SAM.DI
 
         Task<AttributeValue> QueryDataAttribute(string tableName, string key, string field);
 
+        Task<Dictionary<string, AttributeValue>> QueryDataAttributes(string tableName, string key);
+
         Task<string> QueryCountContains(string tableName, string column, string s);
 
         Task<List<Dictionary<string, AttributeValue>>> QueryTableAll(string tableName);
