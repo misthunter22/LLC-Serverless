@@ -169,7 +169,7 @@ namespace SAM.DI
 
                 foreach (var r in batch.Result.Responses["LLC-Links"])
                 {
-                    var first = links.FirstOrDefault(x => x.LinkId == ParseInt(r["Id"].N));
+                    var first = links.FirstOrDefault(x => x.LinkId == StringHelper.ParseInt(r["Id"].N));
                     if (first != null)
                     {
                         first.Url = r["Url"].S;
@@ -225,7 +225,7 @@ namespace SAM.DI
                     var item = obj.Result.Items.FirstOrDefault();
                     resp.Add(new BucketLocationsModel
                     {
-                        data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == ParseInt(item["Bucket"].N)).Name, item["Key"].S)
+                        data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == StringHelper.ParseInt(item["Bucket"].N)).Name, item["Key"].S)
                     });
                 }
 
@@ -390,40 +390,6 @@ namespace SAM.DI
 
                 return rows.Items;
             }
-        }
-
-        private string ParseDate(string date)
-        {
-            DateTime ret = DateTime.MinValue;
-            string str   = null;
-            if (DateTime.TryParse(date, out ret))
-            {
-                str = ret.ToString("f");
-                return str;
-            }
-
-            return null;
-        }
-
-        private int ParseInt(string i)
-        {
-            int ret = -1;
-            int.TryParse(i, out ret);
-            return ret;
-        }
-
-        private double ParseDouble(string i)
-        {
-            double ret = -1.0;
-            double.TryParse(i, out ret);
-            return ret;
-        }
-
-        private long ParseLong(string i)
-        {
-            long ret = -1;
-            long.TryParse(i, out ret);
-            return ret;
         }
     }
 }

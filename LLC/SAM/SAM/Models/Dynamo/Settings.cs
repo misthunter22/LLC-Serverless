@@ -1,4 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
+using SAM.DI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,23 @@ namespace SAM.Models.Dynamo
         [DynamoDBHashKey]
         public int Id { get; set; }
 
-        [DynamoDBProperty]
-        public string DateCreated { get; set; }
+        private string _dateCreated;
 
         [DynamoDBProperty]
-        public string DateModified { get; set; }
+        public string DateCreated
+        {
+            get { return _dateCreated; }
+            set { _dateCreated = StringHelper.ParseDate(value); }
+        }
+
+        private string _dateModified;
+
+        [DynamoDBProperty]
+        public string DateModified
+        {
+            get { return _dateModified; }
+            set { _dateModified = StringHelper.ParseDate(value); }
+        }
 
         [DynamoDBProperty]
         public string Description { get; set; }
