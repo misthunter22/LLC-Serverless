@@ -178,7 +178,7 @@ namespace SAM.DI
             }
         }
 
-        public List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m, string objectLinksTable, string objectsTable, string statsTable)
+        public List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
@@ -187,7 +187,7 @@ namespace SAM.DI
                 var id = m.id;
                 if ("stat".Equals(m.type))
                 {
-                    id = QueryDataAttribute(statsTable, id, "Link").Result.N;
+                    id = QueryDataAttribute("LLC-Stats", id, "Link").Result.N;
                 }
 
                 var ret = new List<string>();
@@ -202,7 +202,7 @@ namespace SAM.DI
                             { ":val",  new AttributeValue { N = id } }
                         },
                         FilterExpression = "Link = :val",
-                        TableName = objectLinksTable,
+                        TableName = "LLC-ObjectLinks",
                         ExclusiveStartKey = last["Link"].N == "0" ? null : last
                     }).Result;
 
@@ -215,7 +215,7 @@ namespace SAM.DI
                 {
                     var obj = client.QueryAsync(new QueryRequest
                     {
-                        TableName = objectsTable,
+                        TableName = "LLC-Objects",
                         KeyConditionExpression = "Id = :v_Id",
                         ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
                             { ":v_Id", new AttributeValue { N =  o }}

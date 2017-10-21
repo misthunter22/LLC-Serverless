@@ -20,7 +20,7 @@ namespace SAM.Controllers
         [HttpPost]
         public JsonResult Post([FromBody] BucketLocationsRequest m)
         {
-            var model = _service.BucketLocations(m, "LLC-ObjectLinks", "LLC-Objects", "LLC-Stats");
+            var model = _service.BucketLocations(m);
             return Json(model);
         }
     }

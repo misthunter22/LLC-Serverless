@@ -31,7 +31,7 @@ namespace SAM.DI
 
         void AddUrlToWarningLinks(List<WarningLinks> links);
 
-        List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m, string objectLinksTable, string objectsTable, string statsTable);
+        List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m);
 
         GetObjectResponse ObjectGet(string bucket, string key);
 
