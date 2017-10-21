@@ -14,8 +14,6 @@ using Amazon.DynamoDBv2.DataModel;
 using SAM.Models.Dynamo;
 using Amazon.S3.Model;
 using Amazon.S3;
-using Amazon.CloudWatch.Model;
-using Amazon.CloudWatch;
 using Amazon.DynamoDBv2.DocumentModel;
 
 namespace SAM.DI
@@ -81,122 +79,63 @@ namespace SAM.DI
             }
         }
 
-        public List<SettingModel> Settings(string tableName)
+        public List<Settings> Settings()
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
-                var results = client.ScanAsync(new ScanRequest
+                using (var ctx = new DynamoDBContext(client))
                 {
-                    TableName = tableName
-                }).Result;
-
-                var array = new List<SettingModel>();
-                foreach (var d in results.Items)
-                {
-                    int i = int.Parse(d["Id"].N);
-                    var m = new SettingModel
-                    {
-                        DateCreated = d.ContainsKey("DateCreated") ? ParseDate(d["DateCreated"].S) : null,
-                        DateModified = d.ContainsKey("DateModified") ? ParseDate(d["DateModified"].S) : null,
-                        Description = d.ContainsKey("Description") ? d["Description"].S : null,
-                        Id = i,
-                        ModifiedUser = d.ContainsKey("ModifiedUser") ? d["ModifiedUser"].S : null,
-                        Name = d.ContainsKey("Name") ? d["Name"].S : null,
-                        Value = d.ContainsKey("Value") ? d["Value"].S : null
-                    };
-
-                    array.Add(m);
+                    var settings = ctx.FromScanAsync<Settings>(new ScanOperationConfig()).GetRemainingAsync().Result;
+                    return settings.OrderBy(x => x.Name).ToList();
                 }
-
-                return array.OrderBy(x => x.Name).ToList();
             }
         }
 
-        public List<InvalidLinksModel> InvalidLinks(string tableName)
+        public List<InvalidLinks> InvalidLinks()
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
-                var count = 0;
-                var ret = new List<InvalidLinksModel>();
-                var last = new Dictionary<string, AttributeValue>();
-                last["Id"] = new AttributeValue { N = "0" };
-
-                while (last.ContainsKey("Id"))
+                using (var ctx = new DynamoDBContext(client))
                 {
-                    var rows = client.ScanAsync(new ScanRequest
+                    var links = ctx.FromScanAsync<InvalidLinks>(new ScanOperationConfig
                     {
-                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                            { ":val",  new AttributeValue { S = "Invalid" } }
-                        },
-                        FilterExpression = "ReportType = :val",
-                        TableName = tableName,
-                        ExclusiveStartKey = last["Id"].N == "0" ? null : last
-                    }).Result;
-
-                    count += rows.Count;
-                    last = rows.LastEvaluatedKey;
-
-                    ret.AddRange(rows.Items.Select(x => new InvalidLinksModel
-                    {
-                        AttemptCount = x.ContainsKey("AttemptCount") ? ParseInt(x["AttemptCount"].S) : -1,
-                        DateLastChecked = x.ContainsKey("DateLastChecked") ? ParseDate(x["DateLastChecked"].S) : null,
-                        DateLastFound = x.ContainsKey("DateLastFound") ? ParseDate(x["DateLastFound"].S) : null,
-                        Id = ParseInt(x["Id"].N),
-                        Link = ParseInt(x["Link"].N),
-                        Source = x["Source"].S,
-                        Url = x["Url"].S
+                        FilterExpression = new Expression
+                        {
+                            ExpressionStatement = "ReportType = :val",
+                            ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry> {
+                                { ":val",  "Invalid" }
+                            }
+                        }
                     })
-                    .ToList());
+                    .GetRemainingAsync().Result;
+                    return links;
                 }
-
-                Console.WriteLine($"Invalid Report Item Count: {ret.Count}");
-                return ret;
             }
         }
 
-        public List<WarningLinksModel> WarningLinks(string tableName)
+        public List<WarningLinks> WarningLinks()
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
-                var count = 0;
-                var ret = new List<WarningLinksModel>();
-                var last = new Dictionary<string, AttributeValue>();
-                last["Id"] = new AttributeValue { N = "0" };
-
-                while (last.ContainsKey("Id"))
+                using (var ctx = new DynamoDBContext(client))
                 {
-                    var rows = client.ScanAsync(new ScanRequest
+                    var links = ctx.FromScanAsync<WarningLinks>(new ScanOperationConfig
                     {
-                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                            { ":val",  new AttributeValue { S = "Warning" } }
-                        },
-                        FilterExpression = "ReportType = :val",
-                        TableName = tableName,
-                        ExclusiveStartKey = last["Id"].N == "0" ? null : last
-                    }).Result;
-
-                    count += rows.Count;
-                    last = rows.LastEvaluatedKey;
-
-                    ret.AddRange(rows.Items.Select(x => new WarningLinksModel
-                    {
-                        Id = ParseInt(x["Id"].N),
-                        ContentSize = x.ContainsKey("ContentSize") ? ParseInt(x["ContentSize"].N) : -1,
-                        Mean = x.ContainsKey("Mean") ? ParseInt(x["Mean"].N) : -1,
-                        StandardDeviation = x.ContainsKey("StandardDeviation") ? ParseLong(x["StandardDeviation"].N) : -1,
-                        SdRange = x.ContainsKey("SdMaximum") ? ParseInt(x["SdMaximum"].N) : -1,
-                        LinkId = x.ContainsKey("Link") ? ParseInt(x["Link"].N) : -1,
-                        StatId = x.ContainsKey("Stat") ? ParseInt(x["Stat"].N) : -1
+                        FilterExpression = new Expression
+                        {
+                            ExpressionStatement = "ReportType = :val",
+                            ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry> {
+                                { ":val",  "Warning" }
+                            }
+                        }
                     })
-                    .ToList());
+                    .GetRemainingAsync().Result;
+                    return links;
                 }
-
-                Console.WriteLine($"Warning Report Item Count: {ret.Count}");
-                return ret;
             }
         }
 
-        public void AddUrlToWarningLinks(List<WarningLinksModel> links, string tableName)
+        public void AddUrlToWarningLinks(List<WarningLinks> links)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
@@ -214,7 +153,7 @@ namespace SAM.DI
                     RequestItems = new Dictionary<string, KeysAndAttributes>
                     {
                         {
-                            tableName, new KeysAndAttributes
+                            "LLC-Links", new KeysAndAttributes
                             {
                                 AttributesToGet = new List<string> { "Id", "Url" },
                                 ConsistentRead = true,
@@ -228,7 +167,7 @@ namespace SAM.DI
                 JsonSerializer.Create().Serialize(writer, batch.Result);
                 Console.WriteLine(writer.ToString());
 
-                foreach (var r in batch.Result.Responses[tableName])
+                foreach (var r in batch.Result.Responses["LLC-Links"])
                 {
                     var first = links.FirstOrDefault(x => x.LinkId == ParseInt(r["Id"].N));
                     if (first != null)
@@ -239,11 +178,11 @@ namespace SAM.DI
             }
         }
 
-        public List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m, string objectLinksTable, string objectsTable, string bucketsTable, string statsTable)
+        public List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m, string objectLinksTable, string objectsTable, string statsTable)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
-                var buckets = Buckets(bucketsTable);
+                var buckets = Buckets();
 
                 var id = m.id;
                 if ("stat".Equals(m.type))
@@ -294,45 +233,15 @@ namespace SAM.DI
             }
         }
 
-        public List<BucketsModel> Buckets(string tableName)
+        public List<Buckets> Buckets()
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
-                var ret = new List<BucketsModel>();
-                var last = new Dictionary<string, AttributeValue>();
-                last["Id"] = new AttributeValue { N = "0" };
-
-                while (last.ContainsKey("Id"))
+                using (var ctx = new DynamoDBContext(client))
                 {
-                    var rows = client.ScanAsync(new ScanRequest
-                    {
-                        TableName = tableName,
-                        ExclusiveStartKey = last["Id"].N == "0" ? null : last
-                    }).Result;
-
-                    last = rows.LastEvaluatedKey;
-                    ret.AddRange(rows.Items.Select(x => new BucketsModel
-                    {
-                        Id = ParseInt(x["Id"].N),
-                        Name = x["Name"].S
-                    })
-                    .ToList());
+                    var buckets = ctx.FromScanAsync<Buckets>(new ScanOperationConfig()).GetRemainingAsync().Result;
+                    return buckets;
                 }
-
-                return ret;
-            }
-        }
-
-        public ListVersionsResponse ObjectVersions(string bucket, string key)
-        {
-            using (var client = new AmazonS3Client(_region))
-            {
-                return client.ListVersionsAsync(new ListVersionsRequest
-                {
-                    BucketName = bucket,
-                    MaxKeys = 5,
-                    KeyMarker = key
-                }).Result;
             }
         }
 
@@ -348,28 +257,7 @@ namespace SAM.DI
             }
         }
 
-        public GetMetricStatisticsResponse BucketCount(string bucket)
-        {
-            using (var client = new AmazonCloudWatchClient(_region))
-            {
-                return client.GetMetricStatisticsAsync(new GetMetricStatisticsRequest
-                {
-                    Dimensions = new List<Dimension>
-                    {
-                        new Dimension { Name = "BucketName", Value = bucket },
-                        new Dimension { Name = "StorageType", Value = "AllStorageTypes" },
-                    },
-                    EndTime = DateTime.Now.AddDays(1),
-                    MetricName = "NumberOfObjects",
-                    Namespace = "AWS/S3",
-                    Period = 60,
-                    StartTime = DateTime.Now,
-                    Statistics = new List<string> { "Maximum", "Minimum" }
-                }).Result;
-            }
-        }
-
-        public async Task<long> IncrementMetaTableKey(string tableName, string key, long diff)
+        public async Task<long> IncrementMetaTableKey(string key, long diff)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
@@ -379,7 +267,6 @@ namespace SAM.DI
                     {
                         try
                         {
-                            // http://docs.amazonaws.cn/en_us/amazondynamodb/latest/developerguide/DynamoDBContext.VersionSupport.html
                             var meta = ctx.LoadAsync<Meta>(key).Result;
 
                             Console.WriteLine($"Key before: {meta.Key}");
@@ -399,7 +286,7 @@ namespace SAM.DI
             }
         }
 
-        public async Task<long> SetMetaTableKey(string tableName, string key, long set)
+        public async Task<long> SetMetaTableKey(string key, long set)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
@@ -409,7 +296,6 @@ namespace SAM.DI
                     {
                         try
                         {
-                            // http://docs.amazonaws.cn/en_us/amazondynamodb/latest/developerguide/DynamoDBContext.VersionSupport.html
                             var meta = ctx.LoadAsync<Meta>(key).Result;
 
                             Console.WriteLine($"Key before: {meta.Key}");

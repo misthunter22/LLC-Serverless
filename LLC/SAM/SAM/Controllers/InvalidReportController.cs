@@ -5,6 +5,7 @@ using System.Linq.Dynamic.Core;
 using SAM.Models.Reports;
 using System.Collections.Generic;
 using System.Linq;
+using SAM.Models.Dynamo;
 
 namespace SAM.Controllers
 {
@@ -23,8 +24,8 @@ namespace SAM.Controllers
         [HttpPost]
         public JsonResult Post([FromBody] DataTableRequest m)
         {
-            var results = _service.InvalidLinks("LLC-Reports");
-            List<InvalidLinksModel> filter;
+            var results = _service.InvalidLinks();
+            List<InvalidLinks> filter;
 
             // Do the sorting first
             if (m.direction == "asc")
@@ -47,7 +48,7 @@ namespace SAM.Controllers
             var filterCount = filter.Count;
             filter = filter.Skip(m.start).Take(m.length).ToList();
 
-            var model   = new DataTableModel<InvalidLinksModel>
+            var model   = new DataTableModel<InvalidLinks>
             {
                 data = filter,
                 draw = m.draw,

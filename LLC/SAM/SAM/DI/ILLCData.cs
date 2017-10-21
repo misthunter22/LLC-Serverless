@@ -21,27 +21,23 @@ namespace SAM.DI
 
         Sources Source(string id, SourceSearchType type);
 
-        List<SettingModel> Settings(string tableName);
+        List<Buckets> Buckets();
 
-        List<InvalidLinksModel> InvalidLinks(string tableName);
+        List<Settings> Settings();
 
-        List<WarningLinksModel> WarningLinks(string tableName);
+        List<InvalidLinks> InvalidLinks();
 
-        void AddUrlToWarningLinks(List<WarningLinksModel> links, string tableName);
+        List<WarningLinks> WarningLinks();
 
-        List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m, string objectLinksTable, string objectsTable, string bucketsTable, string statsTable);
+        void AddUrlToWarningLinks(List<WarningLinks> links);
 
-        List<BucketsModel> Buckets(string tableName);
-
-        ListVersionsResponse ObjectVersions(string bucket, string key);
+        List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m, string objectLinksTable, string objectsTable, string statsTable);
 
         GetObjectResponse ObjectGet(string bucket, string key);
 
-        GetMetricStatisticsResponse BucketCount(string bucket);
+        Task<long> IncrementMetaTableKey(string key, long diff);
 
-        Task<long> IncrementMetaTableKey(string tableName, string key, long diff);
-
-        Task<long> SetMetaTableKey(string tableName, string key, long set);
+        Task<long> SetMetaTableKey(string key, long set);
 
         Task<string> QueryCountBool(string tableName, string column, bool b);
 

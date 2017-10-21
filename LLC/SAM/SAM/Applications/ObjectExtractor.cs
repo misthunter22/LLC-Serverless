@@ -49,7 +49,7 @@ namespace SAM.Applications
 
                 // Update the table with the latest S3 count
                 var count = service.TableCount("LLC-Objects");
-                ret = service.SetMetaTableKey("LLC-Meta", "Objects", count).Result;
+                ret = service.SetMetaTableKey("Objects", count).Result;
             }
             else
             {

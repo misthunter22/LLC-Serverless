@@ -19,7 +19,7 @@ namespace SAM.Controllers
         [HttpGet]
         public JsonResult Get()
         {
-            var results = _service.Settings("LLC-Settings");
+            var results = _service.Settings();
             return Json(results);
         }
     }
