@@ -100,10 +100,10 @@ export default function servicesBase(Component) {
 			var push = [];
 		  	for (var i = 0; i < result.data.length; i++) {
 			  var s = result.data[i];
-			  if (includeZero || s.source > 0) {
+			  if (includeZero || s.id > 0) {
 				var obj  = {};
-				obj['source']       = s.source;
-				obj['title']        = s.title;
+				obj['source']       = s.id;
+				obj['title']        = s.name;
 				obj['objects']      = s.s3ObjectCount;
 				obj['html']         = s.htmlFileCount;
 				obj['links']        = s.linkCount;
