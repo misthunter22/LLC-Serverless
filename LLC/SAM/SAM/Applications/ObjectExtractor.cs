@@ -30,7 +30,7 @@ namespace SAM.Applications
 
             // Get the source
             long ret = -1;
-            var source = service.Source("LLC-Sources", "LLC-Buckets", n, Models.Admin.SourceSearchType.Name);
+            var source = service.Source(n, Models.Admin.SourceSearchType.Name);
             if (source != null)
             {
                 // Compute the list of exclusions

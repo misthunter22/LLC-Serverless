@@ -16,12 +16,15 @@ using Amazon.S3.Model;
 using Amazon.S3;
 using Amazon.CloudWatch.Model;
 using Amazon.CloudWatch;
+using Amazon.DynamoDBv2.DocumentModel;
 
 namespace SAM.DI
 {
     public class ILLCDataImpl : ILLCData
     {
         protected RegionEndpoint _region = RegionEndpoint.USWest2;
+
+        private string _bucketTableName = "LLC-Buckets";
 
         public RegionEndpoint Region()
         {
@@ -38,60 +41,38 @@ namespace SAM.DI
             }
         }
 
-        public List<SourceModel> Sources(string tableName, string bucketTableName)
+        public List<Sources> Sources()
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
-                var results = client.ScanAsync(new ScanRequest
+                using (var ctx = new DynamoDBContext(client))
                 {
-                    TableName = tableName
-                }).Result;
-
-                var array = new List<SourceModel>();
-                foreach (var d in results.Items)
-                {
-                    int i = int.Parse(d["Id"].N);
-                    var m = new SourceModel
+                    var sources = ctx.FromScanAsync<Sources>(new ScanOperationConfig()).GetRemainingAsync().Result;
+                    foreach (var m in sources)
                     {
-                        AllowLinkChecking = d.ContainsKey("AllowLinkChecking") ? d["AllowLinkChecking"].BOOL : false,
-                        AllowLinkExtractions = d.ContainsKey("AllowLinkExtractions") ? d["AllowLinkExtractions"].BOOL : false,
-                        DateCreated = d.ContainsKey("DateCreated") ? ParseDate(d["DateCreated"].S) : null,
-                        DateLastChecked = d.ContainsKey("DateLastChecked") ? ParseDate(d["DateLastChecked"].S) : null,
-                        DateLastExtracted = d.ContainsKey("DateLastExtracted") ? ParseDate(d["DateLastExtracted"].S) : null,
-                        Description = d.ContainsKey("Description") ? d["Description"].S : null,
-                        HtmlFileCount = d.ContainsKey("HtmlFileCount") ? ParseInt(d["HtmlFileCount"].N) : -1,
-                        InvalidLinkCount = d.ContainsKey("InvalidLinkCount") ? ParseInt(d["InvalidLinkCount"].N) : -1,
-                        LinkCount = d.ContainsKey("LinkCount") ? ParseInt(d["LinkCount"].N) : -1,
-                        S3BucketId = d.ContainsKey("S3BucketId") ? ParseInt(d["S3BucketId"].N) : -1,
-                        S3ObjectCount = d.ContainsKey("S3ObjectCount") ? ParseInt(d["S3ObjectCount"].N) : -1,
-                        Source = i,
-                        Title = d.ContainsKey("Name") ? d["Name"].S : null,
-                    };
-
-                    // Skip the internal sources
-                    if (i > 0)
-                    {
-                        m.S3ObjectName         = QueryDataAttribute(bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
-                        m.S3BucketSearchPrefix = QueryDataAttribute(bucketTableName, m.S3BucketId.ToString(), "SearchPrefix").Result.S;
-                        Console.WriteLine($"S3 object name is {m.S3ObjectName}");
+                        // Skip the internal sources
+                        if (m.Id > 0)
+                        {
+                            m.S3ObjectName = QueryDataAttribute(_bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
+                            m.S3BucketSearchPrefix = QueryDataAttribute(_bucketTableName, m.S3BucketId.ToString(), "SearchPrefix").Result.S;
+                            Console.WriteLine($"S3 object name is {m.S3ObjectName}");
+                        }
                     }
 
-                    array.Add(m);
+                    return sources.OrderBy(x => x.Id).ToList();
                 }
-
-                return array.OrderBy(x => x.Source).ToList();
             }
         }
 
-        public SourceModel Source(string tableName, string bucketTableName, string id, SourceSearchType type)
+        public Sources Source(string id, SourceSearchType type)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
-                var results = Sources(tableName, bucketTableName);
+                var results = Sources();
                 switch(type)
                 {
                     case SourceSearchType.Id:
-                        return results.FirstOrDefault(x => x.Source.Equals(id));
+                        return results.FirstOrDefault(x => x.Id.Equals(id));
                     case SourceSearchType.Name:
                         return results.FirstOrDefault(x => id.Equals(x.S3ObjectName, StringComparison.CurrentCultureIgnoreCase));
                     default:

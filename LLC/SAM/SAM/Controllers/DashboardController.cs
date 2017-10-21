@@ -20,7 +20,7 @@ namespace SAM.Controllers
         [HttpGet("{id}")]
         public JsonResult Get(string id)
         {
-            var results = _service.Source("LLC-Sources", "LLC-Buckets", id, SourceSearchType.Id);
+            var results = _service.Source(id, SourceSearchType.Id);
             return Json(results);
         }
     }

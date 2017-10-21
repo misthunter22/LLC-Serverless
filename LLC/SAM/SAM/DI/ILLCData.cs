@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2.Model;
 using Amazon.S3.Model;
 using SAM.Models;
 using SAM.Models.Admin;
+using SAM.Models.Dynamo;
 using SAM.Models.Reports;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,9 +17,9 @@ namespace SAM.DI
 
         long TableCount(string tableName);
 
-        List<SourceModel> Sources(string tableName, string bucketTableName);
+        List<Sources> Sources();
 
-        SourceModel Source(string tableName, string bucketTableName, string id, SourceSearchType type);
+        Sources Source(string id, SourceSearchType type);
 
         List<SettingModel> Settings(string tableName);
 

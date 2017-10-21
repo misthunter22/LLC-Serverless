@@ -345,7 +345,7 @@ export default function servicesBase(Component) {
 					str += '<li><a href="' + value.data + '" target="_blank">' + value.data + '</a></li>';
                   });
 				  str += '</ul>';
-				  if (d.data.length == 0) {
+				  if (d.data.length === 0) {
 				    str = 'No Results';
 				  }
 				  $modalBody.html(str);
