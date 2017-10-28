@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SAM", "SAM\SAM\SAM.xproj", "{6A6F6809-C100-4A5C-99E7-D0FADAC71B8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAM", "SAM\SAM\SAM.csproj", "{6A6F6809-C100-4A5C-99E7-D0FADAC71B8B}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SAM.Tests", "SAM\SAM.Tests\SAM.Tests.xproj", "{19087912-C52D-4A0A-8694-3AFC2AE1E5D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAM.Tests", "SAM\SAM.Tests\SAM.Tests.csproj", "{19087912-C52D-4A0A-8694-3AFC2AE1E5D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Db", "Db\Db.csproj", "{E0BDC50C-920E-48CA-8835-1BD34B1DF9C6}"
 EndProject
@@ -44,5 +44,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D0565B34-B374-4D55-9E13-26400F7F9CDE}
 	EndGlobalSection
 EndGlobal
