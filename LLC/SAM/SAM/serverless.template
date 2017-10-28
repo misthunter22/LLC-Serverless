@@ -19,9 +19,9 @@
         "Description" : "Name of S3 bucket that will be used for object extraction. If left blank a new bucket will be created.",
         "MinLength" : "0"
 	},
-	"Environment" : {
+    "Environment" : {
 		"Type" : "String",
-        "Description" : "Name of the environment so multiple stacks can be deployed to an account. Must be unique across an account. Can leave blank as well!",
+        "Description" : "Name of the environment so multiple stacks can be deployed to an account. Must be unique across an account. Can leave blank as well! (not currently supported)",
         "MinLength" : "0"
 	}
   },
@@ -135,7 +135,7 @@
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 1024,
-        "Timeout": 30,
+        "Timeout": 300,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonS3FullAccess" ],
         "Environment" : {
@@ -237,7 +237,7 @@
 		  "ReadCapacityUnits" : "30",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-Links", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-Links"
 	  }
 	},
 	"DbBuckets" : {
@@ -259,7 +259,7 @@
 		  "ReadCapacityUnits" : "30",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-Buckets", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-Buckets"
 	  }
 	},
 	"DbObjects" : {
@@ -268,7 +268,11 @@
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
-            "AttributeType" : "N"   
+            "AttributeType" : "N"
+          },
+		  {
+		    "AttributeName" : "Key",
+            "AttributeType" : "S"
           }
         ],
 		"KeySchema" : [
@@ -281,7 +285,15 @@
 		  "ReadCapacityUnits" : "30",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-Objects", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-Objects",
+		"GlobalSecondaryIndexes" : [ 
+		  {
+		    "IndexName": "KeyIndex",
+			"KeySchema": [ { "AttributeName": "Key", "KeyType" : "HASH" } ],
+            "Projection": { "ProjectionType": "ALL" },
+            "ProvisionedThroughput": { "ReadCapacityUnits" : "5", "WriteCapacityUnits" : "1" }
+		  }
+		]
 	  }
 	},
 	"DbStats" : {
@@ -303,7 +315,7 @@
 		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-Stats", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-Stats"
 	  }
 	},
 	"DbReports" : {
@@ -325,7 +337,7 @@
 		  "ReadCapacityUnits" : "50",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-Reports", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-Reports"
 	  }
 	},
 	"DbPackages" : {
@@ -347,7 +359,7 @@
 		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-Packages", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-Packages"
 	  }
 	},
 	"DbPackageFiles" : {
@@ -369,7 +381,7 @@
 		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-PackageFiles", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-PackageFiles"
 	  }
 	},
 	"DbPackageLinks" : {
@@ -391,7 +403,7 @@
 		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-PackageLinks", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-PackageLinks"
 	  }
 	},
 	"DbSettings" : {
@@ -413,7 +425,7 @@
 		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-Settings", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-Settings"
 	  }
 	},
 	"DbSources" : {
@@ -435,7 +447,7 @@
 		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-Sources", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-Sources"
 	  }
 	},
 	"DbObjectLinks" : {
@@ -457,7 +469,7 @@
 		  "ReadCapacityUnits" : "30",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-ObjectLinks", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-ObjectLinks"
 	  }
 	},
 	"DbTableMeta" : {
@@ -479,7 +491,7 @@
 		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-Meta", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-Meta"
 	  }
 	},
 	"DbLinkExtract" : {
@@ -501,7 +513,7 @@
 		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "5"
 		},
-		"TableName" : { "Fn::Join" : [ "", [ "LLC-LinkExtract", { "Ref" : "Environment" } ] ] }
+		"TableName" : "LLC-LinkExtract"
 	  }
 	}
   },

@@ -35,6 +35,12 @@ namespace SAM.DI
 
         GetObjectResponse ObjectGet(string bucket, string key);
 
+        Task<T> SetTableRow<T>(T row);
+
+        List<T> GetTableScan<T>(string column, string id);
+
+        List<T> GetTableQuery<T>(string column, string id, string keyIndex);
+
         Task<long> IncrementMetaTableKey(string key, long diff);
 
         Task<long> SetMetaTableKey(string key, long set);
@@ -44,6 +50,8 @@ namespace SAM.DI
         Task<AttributeValue> QueryDataAttribute(string tableName, string key, string field);
 
         Task<Dictionary<string, AttributeValue>> QueryDataAttributes(string tableName, string key);
+
+        Task<Dictionary<string, AttributeValue>> QueryDataAttributes(string tableName, AttributeValue key, string field, string index);
 
         Task<string> QueryCountContains(string tableName, string column, string s);
 

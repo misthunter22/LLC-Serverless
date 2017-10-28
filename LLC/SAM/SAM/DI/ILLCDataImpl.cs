@@ -7,7 +7,6 @@ using Amazon;
 using SAM.Models.Admin;
 using System;
 using SAM.Models.Reports;
-using SAM.Models;
 using Newtonsoft.Json;
 using System.IO;
 using Amazon.DynamoDBv2.DataModel;
@@ -93,46 +92,12 @@ namespace SAM.DI
 
         public List<InvalidLinks> InvalidLinks()
         {
-            using (var client = new AmazonDynamoDBClient(_region))
-            {
-                using (var ctx = new DynamoDBContext(client))
-                {
-                    var links = ctx.FromScanAsync<InvalidLinks>(new ScanOperationConfig
-                    {
-                        FilterExpression = new Expression
-                        {
-                            ExpressionStatement = "ReportType = :val",
-                            ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry> {
-                                { ":val",  "Invalid" }
-                            }
-                        }
-                    })
-                    .GetRemainingAsync().Result;
-                    return links;
-                }
-            }
+            return GetTableScan<InvalidLinks>("ReportType", "Invalid");
         }
 
         public List<WarningLinks> WarningLinks()
         {
-            using (var client = new AmazonDynamoDBClient(_region))
-            {
-                using (var ctx = new DynamoDBContext(client))
-                {
-                    var links = ctx.FromScanAsync<WarningLinks>(new ScanOperationConfig
-                    {
-                        FilterExpression = new Expression
-                        {
-                            ExpressionStatement = "ReportType = :val",
-                            ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry> {
-                                { ":val",  "Warning" }
-                            }
-                        }
-                    })
-                    .GetRemainingAsync().Result;
-                    return links;
-                }
-            }
+            return GetTableScan<WarningLinks>("ReportType", "Warning");
         }
 
         public void AddUrlToWarningLinks(List<WarningLinks> links)
@@ -257,6 +222,69 @@ namespace SAM.DI
             }
         }
 
+        public async Task<T> SetTableRow<T>(T row)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                using (var ctx = new DynamoDBContext(client))
+                {
+                    await ctx.SaveAsync(row);
+                    return row;
+                }
+            }
+        }
+
+        public List<T> GetTableQuery<T>(string column, string id, string indexName)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                using (var ctx = new DynamoDBContext(client))
+                {
+                    var row = ctx.FromQueryAsync<T>(new QueryOperationConfig
+                    {
+                        IndexName = indexName,
+                        KeyExpression = new Expression
+                        {
+                            ExpressionStatement = "#key = :val",
+                            ExpressionAttributeNames = new Dictionary<string, string> {
+                                { "#key", column }
+                            },
+                            ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry> {
+                                { ":val",  id }
+                            }
+                        }
+                    });
+
+                    return row.GetRemainingAsync().Result;
+                }
+            }
+        }
+
+        public List<T> GetTableScan<T>(string column, string id)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                using (var ctx = new DynamoDBContext(client))
+                {
+                    var row = ctx.FromScanAsync<T>(new ScanOperationConfig
+                    {
+                        FilterExpression = new Expression
+                        {
+                            ExpressionStatement = "#key = :val",
+                            ExpressionAttributeNames = new Dictionary<string, string> {
+                                { "#key", column }
+                            },
+                            ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry> {
+                                { ":val",  id }
+                            }
+                        }
+                    });
+
+                    return row.GetRemainingAsync().Result;
+                }
+            }
+        }
+
         public async Task<long> IncrementMetaTableKey(string key, long diff)
         {
             using (var client = new AmazonDynamoDBClient(_region))
@@ -346,14 +374,24 @@ namespace SAM.DI
 
         public async Task<Dictionary<string, AttributeValue>> QueryDataAttributes(string tableName, string key)
         {
+            return await QueryDataAttributes(tableName, new AttributeValue { N = key }, "Id", null);
+        }
+
+        public async Task<Dictionary<string, AttributeValue>> QueryDataAttributes(string tableName, AttributeValue key, string field, string index)
+        {
             using (var client = new AmazonDynamoDBClient(_region))
             {
                 var resp = await client.QueryAsync(new QueryRequest
                 {
                     TableName = tableName,
-                    KeyConditionExpression = "Id = :v_Id",
+                    IndexName = index,
+                    KeyConditionExpression = "#key = :v_Id",
                     ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                        { ":v_Id", new AttributeValue { N =  key }}
+                        { ":v_Id", key }
+                    },
+                    ExpressionAttributeNames = new Dictionary<string, string>
+                    {
+                        { "#key", field }
                     }
                 });
 
