@@ -12,7 +12,7 @@ namespace SAM.Models.Dynamo
     public class Objects
     {
         [DynamoDBHashKey]
-        public BigInteger Id { get; set; }
+        public string Id { get; set; }
 
         [DynamoDBProperty]
         public int? Bucket { get; set; }

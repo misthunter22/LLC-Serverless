@@ -10,7 +10,7 @@ namespace SAM.Models.Dynamo
     public class WarningLinks
     {
         [DynamoDBHashKey]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [DynamoDBProperty]
         public int ContentSize { get; set; }

@@ -38,6 +38,17 @@ namespace SAM.DI
             }
         }
 
+        public Objects Object(string id)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                using (var ctx = new DynamoDBContext(client))
+                {
+                    return ctx.LoadAsync<Objects>(id).Result;
+                }
+            }
+        }
+
         public List<Sources> Sources()
         {
             using (var client = new AmazonDynamoDBClient(_region))
@@ -48,7 +59,7 @@ namespace SAM.DI
                     foreach (var m in sources)
                     {
                         // Skip the internal sources
-                        if (m.Id > 0)
+                        if (StringHelper.ParseInt(m.Id) > 0)
                         {
                             m.S3ObjectName = QueryDataAttribute(_bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
                             m.S3BucketSearchPrefix = QueryDataAttribute(_bucketTableName, m.S3BucketId.ToString(), "SearchPrefix").Result.S;
@@ -190,7 +201,7 @@ namespace SAM.DI
                     var item = obj.Result.Items.FirstOrDefault();
                     resp.Add(new BucketLocationsModel
                     {
-                        data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == StringHelper.ParseInt(item["Bucket"].N)).Name, item["Key"].S)
+                        data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == item["Bucket"].S).Name, item["Key"].S)
                     });
                 }
 
@@ -325,6 +336,13 @@ namespace SAM.DI
                         try
                         {
                             var meta = ctx.LoadAsync<Meta>(key).Result;
+                            if (meta == null)
+                            {
+                                meta = new Meta {
+                                    Id = key,
+                                    Key = set
+                                };   
+                            }
 
                             Console.WriteLine($"Key before: {meta.Key}");
                             meta.Key = set;
@@ -374,7 +392,7 @@ namespace SAM.DI
 
         public async Task<Dictionary<string, AttributeValue>> QueryDataAttributes(string tableName, string key)
         {
-            return await QueryDataAttributes(tableName, new AttributeValue { N = key }, "Id", null);
+            return await QueryDataAttributes(tableName, new AttributeValue { S = key }, "Id", null);
         }
 
         public async Task<Dictionary<string, AttributeValue>> QueryDataAttributes(string tableName, AttributeValue key, string field, string index)

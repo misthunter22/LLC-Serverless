@@ -11,7 +11,7 @@ namespace SAM.Models.Dynamo
     public class Sources
     {
         [DynamoDBHashKey]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [DynamoDBProperty]
         public bool AllowLinkChecking { get; set; }

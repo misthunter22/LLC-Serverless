@@ -11,7 +11,7 @@ namespace SAM.Models.Dynamo
     public class InvalidLinks
     {
         [DynamoDBHashKey]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [DynamoDBProperty]
         public int Link { get; set; }

@@ -11,7 +11,7 @@ namespace SAM.Models.Dynamo
     public class Settings
     {
         [DynamoDBHashKey]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         private string _dateCreated;
 

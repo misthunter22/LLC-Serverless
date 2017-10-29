@@ -6,59 +6,69 @@
       "rule-name": "1",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "__MigrationHistory"
-      },
-      "rule-action": "exclude"
-    },
-    {
-      "rule-type": "selection",
-      "rule-id": "2",
-      "rule-name": "2",
-      "object-locator": {
-        "schema-name": "dbo",
-        "table-name": "AspNet%"
-      },
-      "rule-action": "exclude"
-    },
-    {
-      "rule-type": "selection",
-      "rule-id": "3",
-      "rule-name": "3",
-      "object-locator": {
-        "schema-name": "dbo",
-        "table-name": "Logs"
-      },
-      "rule-action": "exclude"
-    },
-    {
-      "rule-type": "selection",
-      "rule-id": "4",
-      "rule-name": "4",
-      "object-locator": {
-        "schema-name": "dbo",
-        "table-name": "SchemaVersions"
-      },
-      "rule-action": "exclude"
-    },
-    {
-      "rule-type": "selection",
-      "rule-id": "5",
-      "rule-name": "5",
-      "object-locator": {
-        "schema-name": "dbo",
-        "table-name": "%"
+        "table-name": "%-Dynamo"
       },
       "rule-action": "include"
     },
     {
-      "rule-type": "selection",
-      "rule-id": "6",
-      "rule-name": "6",
+      "rule-type": "transformation",
+      "rule-id": "2",
+      "rule-name": "2",
+      "rule-target": "table",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "sysdiagrams"
+        "table-name": "LinkReports-Dynamo"
       },
-      "rule-action": "exclude"
+      "rule-action": "rename",
+      "value": "LLC-Reports"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "3",
+      "rule-name": "3",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "LLC-Links"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "4",
+      "rule-name": "4",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkStats-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "LLC-Stats"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "5",
+      "rule-name": "5",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "PackageUploadFiles-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "LLC-PackageFiles"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "6",
+      "rule-name": "6",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "PackageUploadLink-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "LLC-PackageLinks"
     },
     {
       "rule-type": "transformation",
@@ -67,10 +77,10 @@
       "rule-target": "table",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "LinkReports"
+        "table-name": "PackageUploads-Dynamo"
       },
       "rule-action": "rename",
-      "value": "LLC-Reports"
+      "value": "LLC-Packages"
     },
     {
       "rule-type": "transformation",
@@ -79,10 +89,10 @@
       "rule-target": "table",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "Links"
+        "table-name": "S3Buckets-Dynamo"
       },
       "rule-action": "rename",
-      "value": "LLC-Links"
+      "value": "LLC-Buckets"
     },
     {
       "rule-type": "transformation",
@@ -91,10 +101,10 @@
       "rule-target": "table",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "LinkStats"
+        "table-name": "S3Objects-Dynamo"
       },
       "rule-action": "rename",
-      "value": "LLC-Stats"
+      "value": "LLC-Objects"
     },
     {
       "rule-type": "transformation",
@@ -103,10 +113,10 @@
       "rule-target": "table",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "PackageUploadFiles"
+        "table-name": "S3Objects_Links-Dynamo"
       },
       "rule-action": "rename",
-      "value": "LLC-PackageFiles"
+      "value": "LLC-ObjectLinks"
     },
     {
       "rule-type": "transformation",
@@ -115,10 +125,10 @@
       "rule-target": "table",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "PackageUploadLink"
+        "table-name": "Settings-Dynamo"
       },
       "rule-action": "rename",
-      "value": "LLC-PackageLinks"
+      "value": "LLC-Settings"
     },
     {
       "rule-type": "transformation",
@@ -127,70 +137,75 @@
       "rule-target": "table",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "PackageUploads"
+        "table-name": "Sources-Dynamo"
       },
       "rule-action": "rename",
-      "value": "LLC-Packages"
+      "value": "LLC-Sources"
     },
     {
       "rule-type": "transformation",
       "rule-id": "13",
       "rule-name": "13",
-      "rule-target": "table",
+      "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "S3Buckets"
+        "table-name": "LinkReports-Dynamo",
+        "column-name": "Link_LinkId"
       },
       "rule-action": "rename",
-      "value": "LLC-Buckets"
+      "value": "Link"
     },
     {
       "rule-type": "transformation",
       "rule-id": "14",
       "rule-name": "14",
-      "rule-target": "table",
+      "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "S3Objects"
+        "table-name": "LinkReports-Dynamo",
+        "column-name": "LinkStatId"
       },
       "rule-action": "rename",
-      "value": "LLC-Objects"
+      "value": "Stat"
     },
     {
       "rule-type": "transformation",
       "rule-id": "15",
       "rule-name": "15",
-      "rule-target": "table",
+      "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "S3Objects_Links"
+        "table-name": "Links-Dynamo",
+        "column-name": "LinkId"
       },
       "rule-action": "rename",
-      "value": "LLC-ObjectLinks"
+      "value": "Id"
     },
     {
       "rule-type": "transformation",
       "rule-id": "16",
       "rule-name": "16",
-      "rule-target": "table",
+      "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "Settings"
+        "table-name": "Links-Dynamo",
+        "column-name": "LinkUrl"
       },
       "rule-action": "rename",
-      "value": "LLC-Settings"
+      "value": "Url"
     },
     {
       "rule-type": "transformation",
       "rule-id": "17",
       "rule-name": "17",
-      "rule-target": "table",
+      "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "Sources"
+        "table-name": "Links-Dynamo",
+        "column-name": "LinkCheckDisabledUser"
       },
       "rule-action": "rename",
-      "value": "LLC-Sources"
+      "value": "DisabledUser"
     },
     {
       "rule-type": "transformation",
@@ -199,11 +214,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "LinkReports",
-        "column-name": "Link_LinkId"
+        "table-name": "Links-Dynamo",
+        "column-name": "SourceId"
       },
       "rule-action": "rename",
-      "value": "Link"
+      "value": "Source"
     },
     {
       "rule-type": "transformation",
@@ -212,11 +227,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "LinkReports",
-        "column-name": "LinkStatId"
+        "table-name": "Links-Dynamo",
+        "column-name": "LinkCheckDisabledDate"
       },
       "rule-action": "rename",
-      "value": "Stat"
+      "value": "DisabledDate"
     },
     {
       "rule-type": "transformation",
@@ -225,11 +240,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "Links",
-        "column-name": "LinkId"
+        "table-name": "Links-Dynamo",
+        "column-name": "IsValid"
       },
       "rule-action": "rename",
-      "value": "Id"
+      "value": "Valid"
     },
     {
       "rule-type": "transformation",
@@ -238,11 +253,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "Links",
-        "column-name": "LinkUrl"
+        "table-name": "Links-Dynamo",
+        "column-name": "DateStatsUpdated"
       },
       "rule-action": "rename",
-      "value": "Url"
+      "value": "DateUpdated"
     },
     {
       "rule-type": "transformation",
@@ -251,11 +266,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "Links",
-        "column-name": "LinkCheckDisabledUser"
+        "table-name": "LinkStats-Dynamo",
+        "column-name": "LinkStatId"
       },
       "rule-action": "rename",
-      "value": "DisabledUser"
+      "value": "Id"
     },
     {
       "rule-type": "transformation",
@@ -264,11 +279,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "Links",
-        "column-name": "SourceId"
+        "table-name": "LinkStats-Dynamo",
+        "column-name": "LinkId"
       },
       "rule-action": "rename",
-      "value": "Source"
+      "value": "Link"
     },
     {
       "rule-type": "transformation",
@@ -277,11 +292,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "Links",
-        "column-name": "LinkCheckDisabledDate"
+        "table-name": "LinkStats-Dynamo",
+        "column-name": "ErrorMessage"
       },
       "rule-action": "rename",
-      "value": "DisabledDate"
+      "value": "Error"
     },
     {
       "rule-type": "transformation",
@@ -290,11 +305,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "Links",
-        "column-name": "IsValid"
+        "table-name": "LinkStats-Dynamo",
+        "column-name": "StatusDesc"
       },
       "rule-action": "rename",
-      "value": "Valid"
+      "value": "StatusDescription"
     },
     {
       "rule-type": "transformation",
@@ -303,11 +318,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "Links",
-        "column-name": "DateStatsUpdated"
+        "table-name": "PackageUploadFiles-Dynamo",
+        "column-name": "Link_LinkId"
       },
       "rule-action": "rename",
-      "value": "DateUpdated"
+      "value": "Link"
     },
     {
       "rule-type": "transformation",
@@ -316,8 +331,8 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "LinkStats",
-        "column-name": "LinkStatId"
+        "table-name": "PackageUploadLink-Dynamo",
+        "column-name": "PackageUploads_Id"
       },
       "rule-action": "rename",
       "value": "Id"
@@ -329,8 +344,8 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "LinkStats",
-        "column-name": "LinkId"
+        "table-name": "PackageUploadLink-Dynamo",
+        "column-name": "Links_LinkId"
       },
       "rule-action": "rename",
       "value": "Link"
@@ -342,11 +357,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "LinkStats",
-        "column-name": "ErrorMessage"
+        "table-name": "S3Buckets-Dynamo",
+        "column-name": "S3BucketId"
       },
       "rule-action": "rename",
-      "value": "Error"
+      "value": "Id"
     },
     {
       "rule-type": "transformation",
@@ -355,11 +370,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "LinkStats",
-        "column-name": "StatusDesc"
+        "table-name": "S3Objects-Dynamo",
+        "column-name": "S3ObjectId"
       },
       "rule-action": "rename",
-      "value": "StatusDescription"
+      "value": "Id"
     },
     {
       "rule-type": "transformation",
@@ -368,11 +383,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "PackageUploadFiles",
-        "column-name": "Link_LinkId"
+        "table-name": "S3Objects-Dynamo",
+        "column-name": "S3BucketId"
       },
       "rule-action": "rename",
-      "value": "Link"
+      "value": "Bucket"
     },
     {
       "rule-type": "transformation",
@@ -381,11 +396,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "PackageUploadLink",
-        "column-name": "PackageUploads_Id"
+        "table-name": "S3Objects-Dynamo",
+        "column-name": "LinkCheckDisabledUser"
       },
       "rule-action": "rename",
-      "value": "Id"
+      "value": "DisabledUser"
     },
     {
       "rule-type": "transformation",
@@ -394,11 +409,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "PackageUploadLink",
-        "column-name": "Links_LinkId"
+        "table-name": "S3Objects-Dynamo",
+        "column-name": "LinkCheckDisabledDate"
       },
       "rule-action": "rename",
-      "value": "Link"
+      "value": "DisabledDate"
     },
     {
       "rule-type": "transformation",
@@ -407,8 +422,8 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "S3Buckets",
-        "column-name": "S3BucketId"
+        "table-name": "S3Objects_Links-Dynamo",
+        "column-name": "S3ObjectLinkId"
       },
       "rule-action": "rename",
       "value": "Id"
@@ -420,11 +435,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "S3Objects",
+        "table-name": "S3Objects_Links-Dynamo",
         "column-name": "S3ObjectId"
       },
       "rule-action": "rename",
-      "value": "Id"
+      "value": "Object"
     },
     {
       "rule-type": "transformation",
@@ -433,11 +448,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "S3Objects",
-        "column-name": "S3BucketId"
+        "table-name": "S3Objects_Links-Dynamo",
+        "column-name": "LinkId"
       },
       "rule-action": "rename",
-      "value": "Bucket"
+      "value": "Link"
     },
     {
       "rule-type": "transformation",
@@ -446,11 +461,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "S3Objects",
-        "column-name": "LinkCheckDisabledUser"
+        "table-name": "Settings-Dynamo",
+        "column-name": "SettingId"
       },
       "rule-action": "rename",
-      "value": "DisabledUser"
+      "value": "Id"
     },
     {
       "rule-type": "transformation",
@@ -459,11 +474,11 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "S3Objects",
-        "column-name": "LinkCheckDisabledDate"
+        "table-name": "Sources-Dynamo",
+        "column-name": "SourceId"
       },
       "rule-action": "rename",
-      "value": "DisabledDate"
+      "value": "Id"
     },
     {
       "rule-type": "transformation",
@@ -472,72 +487,7 @@
       "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
-        "table-name": "S3Objects_Links",
-        "column-name": "S3ObjectLinkId"
-      },
-      "rule-action": "rename",
-      "value": "Id"
-    },
-    {
-      "rule-type": "transformation",
-      "rule-id": "40",
-      "rule-name": "40",
-      "rule-target": "column",
-      "object-locator": {
-        "schema-name": "dbo",
-        "table-name": "S3Objects_Links",
-        "column-name": "S3ObjectId"
-      },
-      "rule-action": "rename",
-      "value": "Object"
-    },
-    {
-      "rule-type": "transformation",
-      "rule-id": "41",
-      "rule-name": "41",
-      "rule-target": "column",
-      "object-locator": {
-        "schema-name": "dbo",
-        "table-name": "S3Objects_Links",
-        "column-name": "LinkId"
-      },
-      "rule-action": "rename",
-      "value": "Link"
-    },
-    {
-      "rule-type": "transformation",
-      "rule-id": "42",
-      "rule-name": "42",
-      "rule-target": "column",
-      "object-locator": {
-        "schema-name": "dbo",
-        "table-name": "Settings",
-        "column-name": "SettingId"
-      },
-      "rule-action": "rename",
-      "value": "Id"
-    },
-    {
-      "rule-type": "transformation",
-      "rule-id": "43",
-      "rule-name": "43",
-      "rule-target": "column",
-      "object-locator": {
-        "schema-name": "dbo",
-        "table-name": "Sources",
-        "column-name": "SourceId"
-      },
-      "rule-action": "rename",
-      "value": "Id"
-    },
-    {
-      "rule-type": "transformation",
-      "rule-id": "44",
-      "rule-name": "44",
-      "rule-target": "column",
-      "object-locator": {
-        "schema-name": "dbo",
-        "table-name": "Settings",
+        "table-name": "Settings-Dynamo",
         "column-name": "S3BucketId"
       },
       "rule-action": "rename",

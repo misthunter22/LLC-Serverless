@@ -17,6 +17,8 @@ namespace SAM.DI
 
         long TableCount(string tableName);
 
+        Objects Object(string id);
+
         List<Sources> Sources();
 
         Sources Source(string id, SourceSearchType type);
