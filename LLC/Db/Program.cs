@@ -95,7 +95,6 @@ namespace Db
             var tableName = "LLC-Reports" + env;
             var table     = Table.LoadTable(client, tableName);
             var batch     = table.CreateBatchWrite();
-            var key       = GetTableNextKeyIndex(client, env, "Reports");
 
             var results = client.ScanAsync(new ScanRequest
             {
@@ -121,7 +120,7 @@ namespace Db
                     if (r["ReportType"].S == "Invalid")
                     {
                         var k = new Dictionary<string, AttributeValue>();
-                        k["Id"] = new AttributeValue { N = r["Id"].N };
+                        k["Id"] = new AttributeValue { N = r["Id"].S };
 
                         client.DeleteItem(new DeleteItemRequest
                         {
@@ -148,14 +147,14 @@ namespace Db
             {
                 Console.WriteLine("zero, proceeding...");
                 var last = new Dictionary<string, AttributeValue>();
-                last["Id"] = new AttributeValue { N = "0" };
+                last["Id"] = new AttributeValue { S = "0" };
 
                 while (last.ContainsKey("Id"))
                 {
                     var invalid = client.ScanAsync(new ScanRequest
                     {
                         TableName = "LLC-Links" + env,
-                        ExclusiveStartKey = last["Id"].N == "0" ? null : last
+                        ExclusiveStartKey = last["Id"].S == "0" ? null : last
                     }).Result;
 
                     foreach (var i in invalid.Items)
@@ -163,8 +162,8 @@ namespace Db
                         if (!(i.ContainsKey("Valid") && i["Valid"].BOOL))
                         {
                             var document = new Document();
-                            AddToDocument(document, "Id", ++key);
-                            AddToDocument(document, "Link", i["Id"].N);
+                            AddToDocument(document, "Id", Guid.NewGuid().ToString());
+                            AddToDocument(document, "Link", i["Id"].S);
                             AddToDocument(document, "ReportType", "Invalid");
                             AddToDocument(document, "Source", "IDLA S-LOR on AWS");
                             AddToDocument(document, "Url", i["Url"].S);
@@ -181,7 +180,6 @@ namespace Db
                 }
 
                 batch.Execute();
-                SetTableNextKeyIndex(client, env, "Reports", key.ToString());
             }
         }
 

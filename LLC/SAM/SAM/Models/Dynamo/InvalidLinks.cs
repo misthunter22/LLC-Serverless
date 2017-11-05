@@ -14,7 +14,7 @@ namespace SAM.Models.Dynamo
         public string Id { get; set; }
 
         [DynamoDBProperty]
-        public int Link { get; set; }
+        public string Link { get; set; }
 
         [DynamoDBProperty]
         public int AttemptCount { get; set; }

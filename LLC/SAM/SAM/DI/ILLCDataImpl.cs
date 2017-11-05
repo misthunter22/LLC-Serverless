@@ -118,10 +118,13 @@ namespace SAM.DI
                 var keyList = new List<Dictionary<string, AttributeValue>>();
                 foreach (var r in links)
                 {
-                    keyList.Add(new Dictionary<string, AttributeValue>
+                    if (!string.IsNullOrEmpty(r.Link))
                     {
-                        { "Id", new AttributeValue { N = r.LinkId.ToString() } }
-                    });
+                        keyList.Add(new Dictionary<string, AttributeValue>
+                        {
+                            { "Id", new AttributeValue { S = r.Link } }
+                        });
+                    }
                 }
 
                 var batch = client.BatchGetItemAsync(new BatchGetItemRequest
@@ -145,7 +148,7 @@ namespace SAM.DI
 
                 foreach (var r in batch.Result.Responses["LLC-Links"])
                 {
-                    var first = links.FirstOrDefault(x => x.LinkId == StringHelper.ParseInt(r["Id"].N));
+                    var first = links.FirstOrDefault(x => x.Link == r["Id"].S);
                     if (first != null)
                     {
                         first.Url = r["Url"].S;
@@ -163,27 +166,27 @@ namespace SAM.DI
                 var id = m.id;
                 if ("stat".Equals(m.type))
                 {
-                    id = QueryDataAttribute("LLC-Stats", id, "Link").Result.N;
+                    id = QueryDataAttribute("LLC-Stats", id, "Link").Result.S;
                 }
 
                 var ret = new List<string>();
                 var last = new Dictionary<string, AttributeValue>();
-                last["Link"] = new AttributeValue { N = "0" };
+                last["Link"] = new AttributeValue { S = "0" };
 
                 while (last.ContainsKey("Link"))
                 {
                     var rows = client.ScanAsync(new ScanRequest
                     {
                         ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                            { ":val",  new AttributeValue { N = id } }
+                            { ":val",  new AttributeValue { S = id } }
                         },
                         FilterExpression = "Link = :val",
                         TableName = "LLC-ObjectLinks",
-                        ExclusiveStartKey = last["Link"].N == "0" ? null : last
+                        ExclusiveStartKey = last["Link"].S == "0" ? null : last
                     }).Result;
 
                     last = rows.LastEvaluatedKey;
-                    ret.AddRange(rows.Items.Select(x => x.ContainsKey("Object") ? x["Object"].N : "").ToList());
+                    ret.AddRange(rows.Items.Select(x => x.ContainsKey("Object") ? x["Object"].S : "").ToList());
                 }
 
                 var resp = new List<BucketLocationsModel>();
@@ -194,7 +197,7 @@ namespace SAM.DI
                         TableName = "LLC-Objects",
                         KeyConditionExpression = "Id = :v_Id",
                         ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                            { ":v_Id", new AttributeValue { N =  o }}
+                            { ":v_Id", new AttributeValue { S =  o }}
                         }
                     });
 

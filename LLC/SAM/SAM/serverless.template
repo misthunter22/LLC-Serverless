@@ -8,6 +8,11 @@
       "Type" : "String",        
       "AllowedValues" : ["true", "false"],
       "Description" : "If true then the S3 bucket that will be proxied will be created with the CloudFormation stack."
+    },
+	"ShouldCreateObjectBucket" : {
+      "Type" : "String",        
+      "AllowedValues" : ["true", "false"],
+      "Description" : "If true then the S3 object bucket that will be proxied will be created with the CloudFormation stack."
     },  
     "BucketName" : {
         "Type" : "String",
@@ -23,6 +28,7 @@
 
   "Conditions" : {
     "CreateS3Bucket" : { "Fn::Equals" : [ { "Ref" : "ShouldCreateBucket" }, "true"] },
+	"CreateS3ObjectBucket" : { "Fn::Equals" : [ { "Ref" : "ShouldCreateObjectBucket" }, "true"] },
     "BucketNameGenerated" : { "Fn::Equals" : [ { "Ref" : "BucketName" }, ""] },
 	"ObjectBucketNameGenerated" : { "Fn::Equals" : [ { "Ref" : "ObjectBucketName" }, ""] }
   },
@@ -151,7 +157,7 @@
 
 	"ObjectBucket" : {
         "Type" : "AWS::S3::Bucket",
-        "Condition" : "CreateS3Bucket",
+        "Condition" : "CreateS3ObjectBucket",
         "Properties" : {
             "BucketName" : { "Fn::If" : ["ObjectBucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "ObjectBucketName" } ] },
 			"NotificationConfiguration" : {

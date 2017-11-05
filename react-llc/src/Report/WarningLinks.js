@@ -37,12 +37,12 @@ const columns = [
   },
   {
 	title: 'Compare Screenshots',
-	data: 'linkId',
+	data: 'link',
 	sortable: false
   },
   {
 	title: 'Bucket Locations',
-	data: 'statId',
+	data: 'stat',
 	sortable: false
   },
   {
@@ -90,7 +90,7 @@ class WarningLinks extends Component {
       columnDefs: [
       {
         render: function (data, type, row) {
-          return '<a href="' + data + '" title="' + data + '" target="_blank" class="label label-success">' + row["linkId"] + '</a>';
+          return '<a href="' + data + '" title="' + data + '" target="_blank" class="label label-success">' + row["link"] + '</a>';
         },
         targets: 5
       },

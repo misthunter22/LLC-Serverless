@@ -19,16 +19,16 @@ namespace SAM.Models.Dynamo
         public int Mean { get; set; }
 
         [DynamoDBProperty]
-        public long StandardDeviation { get; set; }
+        public decimal StandardDeviation { get; set; }
 
         [DynamoDBProperty]
         public int SdRange { get; set; }
 
         [DynamoDBProperty]
-        public int LinkId { get; set; }
+        public string Link { get; set; }
 
         [DynamoDBProperty]
-        public int StatId { get; set; }
+        public string Stat { get; set; }
 
         [DynamoDBProperty]
         public string Url { get; set; }

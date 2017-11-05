@@ -38,11 +38,11 @@ namespace SAM.Controllers
             {
                 filter = filter.Where(x => x.ContentSize.ToString().Contains(m.search) ||
                                             (x.Id.ToString().Contains(m.search)) ||
-                                            (x.LinkId.ToString().Contains(m.search)) ||
+                                            (x.Link.Contains(m.search)) ||
                                             x.Mean.ToString().Contains(m.search) ||
                                             x.SdRange.ToString().Contains(m.search) ||
                                             (x.StandardDeviation.ToString().Contains(m.search)) ||
-                                            (x.StatId.ToString().Contains(m.search))).ToList();
+                                            (x.Stat.Contains(m.search))).ToList();
             }
 
             var filterCount = filter.Count;
