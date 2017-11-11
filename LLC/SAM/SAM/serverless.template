@@ -61,36 +61,20 @@
         }
       }
     },
-	"LinkExtractorCount" : {
+	"LinkExtractorProcessor" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SAM::SAM.Applications.LinkExtractor.Count::Handler",
+        "Handler": "SAM::SAM.Applications.LinkExtractor.Processor::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 1024,
         "Timeout": 300,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
           "Variables" : {
-            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
-          }
-        }
-      }
-    },
-	"LinkExtractorIterator" : {
-      "Type" : "AWS::Serverless::Function",
-      "Properties": {
-        "Handler": "SAM::SAM.Applications.LinkExtractor.Iterator::Handler",
-        "Runtime": "dotnetcore1.0",
-        "CodeUri": "",
-        "MemorySize": 1024,
-        "Timeout": 30,
-        "Role": null,
-        "Policies": [ "AWSLambdaFullAccess" ],
-        "Environment" : {
-          "Variables" : {
-            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
+			"Queue": { "Ref" : "LinkExtractorQueue" }
           }
         }
       }
@@ -182,42 +166,12 @@
       }
     },
 
-	"StepFunctionRole": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version" : "2012-10-17",
-          "Statement": [ {
-            "Effect": "Allow",
-            "Principal": {
-              "Service": [ "states.us-west-2.amazonaws.com" ]
-            },
-            "Action": [ "sts:AssumeRole" ]
-          } ]
-        },
-        "Path": "/",
-        "Policies": [ { 
-		  "PolicyName" : "LORStepFunctionPolicy",
-          "PolicyDocument" : {
-            "Version" : "2012-10-17",
-            "Statement": [ {
-              "Effect"   : "Allow",
-              "Action"   : [
-                "Lambda:Invoke*"
-              ],
-              "Resource" : "*"
-            } ]
-          }
-        } ]
-      }
-    },
-	"LinkExtractorStep" : {
-		"Type" : "AWS::StepFunctions::StateMachine",
-        "Properties" : {
-			"DefinitionString" : "{\"StartAt\": \"HelloWorld\", \"States\": {\"HelloWorld\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:lambda:us-east-1:111122223333:function:HelloFunction\", \"End\": true}}}",
-            "RoleArn" : { "Fn::GetAtt" : [ "StepFunctionRole", "Arn" ] }
+	"LinkExtractorQueue" : {
+		"Type" : "AWS::SQS::Queue",
+		"Properties" : {
+			"VisibilityTimeout": 0
 		}
-    },
+	},
 
 	"DbLinks" : {
 		"Type" : "AWS::DynamoDB::Table",
@@ -365,52 +319,6 @@
 		"TableName" : "LLC-Packages"
 	  }
 	},
-	"DbPackageFiles" : {
-		"Type" : "AWS::DynamoDB::Table",
-		"Properties" : {
-		  "AttributeDefinitions" : [
-          {
-            "AttributeName" : "Id",
-            "AttributeType" : "S"   
-          }
-        ],
-		"KeySchema" : [
-		  {
-            "AttributeName" : "Id",
-            "KeyType" : "HASH"
-          }
-		],
-		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "3"
-		},
-		"TableName" : "LLC-PackageFiles"
-	  },
-	  "DependsOn" : "DbPackages"
-	},
-	"DbPackageLinks" : {
-		"Type" : "AWS::DynamoDB::Table",
-		"Properties" : {
-		  "AttributeDefinitions" : [
-          {
-            "AttributeName" : "Id",
-            "AttributeType" : "S"   
-          }
-        ],
-		"KeySchema" : [
-		  {
-            "AttributeName" : "Id",
-            "KeyType" : "HASH"
-          }
-		],
-		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "3"
-		},
-		"TableName" : "LLC-PackageLinks"
-	  },
-	  "DependsOn" : "DbPackages"
-	},
 	"DbSettings" : {
 		"Type" : "AWS::DynamoDB::Table",
 		"Properties" : {
@@ -475,50 +383,6 @@
           "WriteCapacityUnits" : "3"
 		},
 		"TableName" : "LLC-ObjectLinks"
-	  }
-	},
-	"DbTableMeta" : {
-		"Type" : "AWS::DynamoDB::Table",
-		"Properties" : {
-		  "AttributeDefinitions" : [
-          {
-            "AttributeName" : "Id",
-            "AttributeType" : "S"   
-          }
-        ],
-		"KeySchema" : [
-		  {
-            "AttributeName" : "Id",
-            "KeyType" : "HASH"
-          }
-		],
-		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "3"
-		},
-		"TableName" : "LLC-Meta"
-	  }
-	},
-	"DbLinkExtractor" : {
-		"Type" : "AWS::DynamoDB::Table",
-		"Properties" : {
-		  "AttributeDefinitions" : [
-          {
-            "AttributeName" : "Id",
-            "AttributeType" : "S"   
-          }
-        ],
-		"KeySchema" : [
-		  {
-            "AttributeName" : "Id",
-            "KeyType" : "HASH"
-          }
-		],
-		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "5",
-          "WriteCapacityUnits" : "5"
-		},
-		"TableName" : "LLC-LinkExtractor"
 	  }
 	}
   },

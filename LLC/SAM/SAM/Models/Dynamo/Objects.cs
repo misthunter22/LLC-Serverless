@@ -1,10 +1,4 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
-using SAM.DI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Threading.Tasks;
 
 namespace SAM.Models.Dynamo
 {
@@ -19,6 +13,9 @@ namespace SAM.Models.Dynamo
 
         [DynamoDBProperty]
         public string ContentLastModified { get; set; }
+
+        [DynamoDBProperty]
+        public string DateLinksLastExtracted { get; set; }
 
         [DynamoDBProperty]
         public string DateFirstFound { get; set; }

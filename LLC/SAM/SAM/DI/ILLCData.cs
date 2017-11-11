@@ -1,8 +1,6 @@
 ﻿using Amazon;
-using Amazon.CloudWatch.Model;
 using Amazon.DynamoDBv2.Model;
 using Amazon.S3.Model;
-using SAM.Models;
 using SAM.Models.Admin;
 using SAM.Models.Dynamo;
 using SAM.Models.Reports;
@@ -17,6 +15,8 @@ namespace SAM.DI
 
         long TableCount(string tableName);
 
+        void TableCapacity(string tableName, int read, int write);
+
         Objects Object(string id);
 
         List<Sources> Sources();
@@ -27,13 +27,19 @@ namespace SAM.DI
 
         List<Settings> Settings();
 
+        Settings Settings(string name);
+
         List<InvalidLinks> InvalidLinks();
 
         List<WarningLinks> WarningLinks();
 
-        List<Objects> LinkExtractor(string bucket);
+        int LinkExtractor(string bucket);
 
         void AddUrlToWarningLinks(List<WarningLinks> links);
+
+        void EnqueueObjects(List<Objects> objects);
+
+        bool QueueEmpty();
 
         List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m);
 

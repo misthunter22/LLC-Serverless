@@ -15,6 +15,8 @@ using Amazon.S3.Model;
 using Amazon.S3;
 using Amazon.DynamoDBv2.DocumentModel;
 using System.Text;
+using Amazon.SQS;
+using Amazon.SQS.Model;
 
 namespace SAM.DI
 {
@@ -24,9 +26,38 @@ namespace SAM.DI
 
         private string _bucketTableName = "LLC-Buckets";
 
+        private int _maxQueue = 10;
+
         public RegionEndpoint Region()
         {
             return _region;
+        }
+
+        private static void WaitUntilTableReady(AmazonDynamoDBClient client, string tableName)
+        {
+            string status = null;
+            // Let us wait until table is created. Call DescribeTable.
+            do
+            {
+                System.Threading.Thread.Sleep(5000); // Wait 5 seconds.
+                try
+                {
+                    var res = client.DescribeTableAsync(new DescribeTableRequest
+                    {
+                        TableName = tableName
+                    });
+
+                    Console.WriteLine("Table name: {0}, status: {1}",
+                              res.Result.Table.TableName,
+                              res.Result.Table.TableStatus);
+                    status = res.Result.Table.TableStatus;
+                }
+                catch (ResourceNotFoundException)
+                {
+                    // DescribeTable is eventually consistent. So you might
+                    // get resource not found. So we handle the potential exception.
+                }
+            } while (status != "ACTIVE");
         }
 
         public long TableCount(string tableName)
@@ -36,6 +67,50 @@ namespace SAM.DI
                 var descr = client.DescribeTableAsync(tableName);
                 var count = descr.Result.Table.ItemCount;
                 return count;
+            }
+        }
+
+        public void TableCapacity(string tableName, int read, int write)
+        {
+            if (read <= 0 && write <= 0)
+                return;
+
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                ProvisionedThroughput throughput;
+
+                if (read > 0 && write <= 0)
+                {
+                    throughput = new ProvisionedThroughput
+                    {
+                        ReadCapacityUnits = read,
+                        WriteCapacityUnits = 5
+                    };
+                }
+                else if (read <= 0 && write > 0)
+                {
+                    throughput = new ProvisionedThroughput
+                    {
+                        ReadCapacityUnits = 5,
+                        WriteCapacityUnits = write
+                    };
+                }
+                else
+                {
+                    throughput = new ProvisionedThroughput
+                    {
+                        ReadCapacityUnits = read,
+                        WriteCapacityUnits = write
+                    };
+                }
+
+                var descr = client.UpdateTableAsync(new UpdateTableRequest
+                {
+                    ProvisionedThroughput = throughput,
+                    TableName = tableName
+                });
+
+                WaitUntilTableReady(client, tableName);
             }
         }
 
@@ -100,6 +175,12 @@ namespace SAM.DI
                     return settings.OrderBy(x => x.Name).ToList();
                 }
             }
+        }
+
+        public Settings Settings(string name)
+        {
+            var settings = Settings();
+            return settings.FirstOrDefault(x => x.Name == name);
         }
 
         public List<InvalidLinks> InvalidLinks()
@@ -225,24 +306,26 @@ namespace SAM.DI
             }
         }
 
-        public List<Objects> LinkExtractor(string bucket)
+        public int LinkExtractor(string bucket)
         {
             using (var client = new AmazonDynamoDBClient(_region))
             {
                 using (var ctx = new DynamoDBContext(client))
                 {
-                    var objects   = new List<Objects>();
+                    var count     = 0;
                     var completed = false;
 
                     var row = ctx.FromScanAsync<Objects>(new ScanOperationConfig
                     {
                         FilterExpression = new Expression
                         {
-                            ExpressionStatement = "#bucket = :bucket and attribute_not_exists(#disabled) and contains(#key, :html)",
+                            ExpressionStatement = "#bucket = :bucket and attribute_not_exists(#disabled) and contains(#key, :html) and (attribute_not_exists(#date) or #date < #content)",
                             ExpressionAttributeNames = new Dictionary<string, string> {
                                 { "#bucket",   "Bucket" },
                                 { "#disabled", "LinkCheckDisabledDate" },
-                                { "#key",      "Key" }
+                                { "#key",      "Key" },
+                                { "#date",     "DateLinksLastExtracted" },
+                                { "#content",  "ContentLastModified" }
                             },
                             ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry> {
                                 { ":bucket", bucket },
@@ -253,13 +336,51 @@ namespace SAM.DI
 
                     while (!completed)
                     {
-                        var result = row.GetNextSetAsync();
-                        objects.AddRange(result.Result);
+                        var result  = row.GetNextSetAsync();
+                        var objects = result.Result.Where(x => x.IsFolder == false).ToList();
+                        EnqueueObjects(objects);
                         completed = row.IsDone;
+                        count += objects.Count;
                     }
 
-                    return objects.Where(x => x.IsFolder == false).ToList();
+                    return count;
                 }
+            }
+        }
+
+        public void EnqueueObjects(List<Objects> objects)
+        {
+            using (var sqsClient = new AmazonSQSClient())
+            {
+                var count = objects.Count < _maxQueue ? 1 : (int) Math.Ceiling(((double)objects.Count) / ((double)_maxQueue));
+                for (var i = 0; i < count; i++)
+                {
+                    sqsClient.SendMessageBatchAsync(new SendMessageBatchRequest
+                    {
+                        Entries = objects.Skip(i * _maxQueue).Take(_maxQueue).Select(x => new SendMessageBatchRequestEntry
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            MessageBody = JsonConvert.SerializeObject(x)
+                        })
+                        .ToList(),
+                        QueueUrl = Environment.GetEnvironmentVariable("Queue")
+                    });
+                }
+            }
+        }
+
+        public bool QueueEmpty()
+        {
+            using (var sqsClient = new AmazonSQSClient())
+            {
+                var attr = sqsClient.GetQueueAttributesAsync(new GetQueueAttributesRequest
+                {
+                    AttributeNames = new List<string> { "ApproximateNumberOfMessages" },
+                    QueueUrl = Environment.GetEnvironmentVariable("Queue")
+                });
+
+                Console.WriteLine($"Queue count: {0}", attr.Result.ApproximateNumberOfMessages);
+                return attr.Result.ApproximateNumberOfMessages == 0;
             }
         }
 
