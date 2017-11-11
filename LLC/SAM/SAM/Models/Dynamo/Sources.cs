@@ -62,7 +62,7 @@ namespace SAM.Models.Dynamo
         public string Name { get; set; }
 
         [DynamoDBProperty]
-        public int? S3BucketId { get; set; }
+        public string S3BucketId { get; set; }
 
         [DynamoDBProperty]
         public string S3BucketSearchPrefix { get; set; }

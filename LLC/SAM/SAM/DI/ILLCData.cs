@@ -31,11 +31,15 @@ namespace SAM.DI
 
         List<WarningLinks> WarningLinks();
 
+        List<Objects> LinkExtractor(string bucket);
+
         void AddUrlToWarningLinks(List<WarningLinks> links);
 
         List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m);
 
         GetObjectResponse ObjectGet(string bucket, string key);
+
+        PutObjectResponse ObjectPut<T>(string bucket, string key, T obj);
 
         Task<T> SetTableRow<T>(T row);
 

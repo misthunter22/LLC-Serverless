@@ -14,6 +14,7 @@ using SAM.Models.Dynamo;
 using Amazon.S3.Model;
 using Amazon.S3;
 using Amazon.DynamoDBv2.DocumentModel;
+using System.Text;
 
 namespace SAM.DI
 {
@@ -77,7 +78,7 @@ namespace SAM.DI
             using (var client = new AmazonDynamoDBClient(_region))
             {
                 var results = Sources();
-                switch(type)
+                switch (type)
                 {
                     case SourceSearchType.Id:
                         return results.FirstOrDefault(x => x.Id.Equals(id));
@@ -224,6 +225,44 @@ namespace SAM.DI
             }
         }
 
+        public List<Objects> LinkExtractor(string bucket)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                using (var ctx = new DynamoDBContext(client))
+                {
+                    var objects   = new List<Objects>();
+                    var completed = false;
+
+                    var row = ctx.FromScanAsync<Objects>(new ScanOperationConfig
+                    {
+                        FilterExpression = new Expression
+                        {
+                            ExpressionStatement = "#bucket = :bucket and attribute_not_exists(#disabled) and contains(#key, :html)",
+                            ExpressionAttributeNames = new Dictionary<string, string> {
+                                { "#bucket",   "Bucket" },
+                                { "#disabled", "LinkCheckDisabledDate" },
+                                { "#key",      "Key" }
+                            },
+                            ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry> {
+                                { ":bucket", bucket },
+                                { ":html",   ".htm" }
+                            }
+                        }
+                    });
+
+                    while (!completed)
+                    {
+                        var result = row.GetNextSetAsync();
+                        objects.AddRange(result.Result);
+                        completed = row.IsDone;
+                    }
+
+                    return objects.Where(x => x.IsFolder == false).ToList();
+                }
+            }
+        }
+
         public GetObjectResponse ObjectGet(string bucket, string key)
         {
             using (var client = new AmazonS3Client(_region))
@@ -232,6 +271,20 @@ namespace SAM.DI
                 {
                     BucketName = bucket,
                     Key = key
+                }).Result;
+            }
+        }
+
+        public PutObjectResponse ObjectPut<T>(string bucket, string key, T obj)
+        {
+            using (var client = new AmazonS3Client(_region))
+            {
+                return client.PutObjectAsync(new PutObjectRequest
+                {
+                    BucketName = bucket,
+                    Key = key,
+                    ContentType = "application/json",
+                    InputStream = new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(obj)))
                 }).Result;
             }
         }
@@ -341,10 +394,11 @@ namespace SAM.DI
                             var meta = ctx.LoadAsync<Meta>(key).Result;
                             if (meta == null)
                             {
-                                meta = new Meta {
+                                meta = new Meta
+                                {
                                     Id = key,
                                     Key = set
-                                };   
+                                };
                             }
 
                             Console.WriteLine($"Key before: {meta.Key}");

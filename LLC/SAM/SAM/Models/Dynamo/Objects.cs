@@ -15,7 +15,7 @@ namespace SAM.Models.Dynamo
         public string Id { get; set; }
 
         [DynamoDBProperty]
-        public int? Bucket { get; set; }
+        public string Bucket { get; set; }
 
         [DynamoDBProperty]
         public string ContentLastModified { get; set; }

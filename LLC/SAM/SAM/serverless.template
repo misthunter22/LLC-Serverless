@@ -61,10 +61,27 @@
         }
       }
     },
-	"Count" : {
+	"LinkExtractorCount" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SAM::SAM.Applications.Count::Handler",
+        "Handler": "SAM::SAM.Applications.LinkExtractor.Count::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 1024,
+        "Timeout": 300,
+        "Role": null,
+        "Policies": [ "AWSLambdaFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
+          }
+        }
+      }
+    },
+	"LinkExtractorIterator" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.LinkExtractor.Iterator::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 1024,
@@ -78,10 +95,10 @@
         }
       }
     },
-	"Iterator" : {
+	"LinkExtractor" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SAM::SAM.Applications.Iterator::Handler",
+        "Handler": "SAM::SAM.Applications.LinkExtractor.LinkExtractor::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 1024,
@@ -99,23 +116,6 @@
       "Type" : "AWS::Serverless::Function",
       "Properties": {
         "Handler": "SAM::SAM.Applications.LinkChecker::Handler",
-        "Runtime": "dotnetcore1.0",
-        "CodeUri": "",
-        "MemorySize": 1024,
-        "Timeout": 30,
-        "Role": null,
-        "Policies": [ "AWSLambdaFullAccess" ],
-        "Environment" : {
-          "Variables" : {
-            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
-          }
-        }
-      }
-    },
-	"LinkExtractor" : {
-      "Type" : "AWS::Serverless::Function",
-      "Properties": {
-        "Handler": "SAM::SAM.Applications.LinkExtractor::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 1024,
@@ -499,7 +499,7 @@
 		"TableName" : "LLC-Meta"
 	  }
 	},
-	"DbLinkExtract" : {
+	"DbLinkExtractor" : {
 		"Type" : "AWS::DynamoDB::Table",
 		"Properties" : {
 		  "AttributeDefinitions" : [
@@ -518,7 +518,7 @@
 		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "5"
 		},
-		"TableName" : "LLC-LinkExtract"
+		"TableName" : "LLC-LinkExtractor"
 	  }
 	}
   },
