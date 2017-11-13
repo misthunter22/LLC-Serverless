@@ -25,10 +25,8 @@ namespace SAM.Applications.LinkExtractor
                 var bucket = buckets.FirstOrDefault(x => x.Id == source.S3BucketId);
                 if (bucket != null)
                 {
-                    /*Console.WriteLine($"Working on bucket {bucket.Id}");
-                    var objs = Service.LinkExtractor(bucket.Id);*/
-                    Console.WriteLine($"Working on bucket 1");
-                    var objs = Service.LinkExtractor("1");
+                    Console.WriteLine($"Working on bucket {bucket.Id}");
+                    var objs = Service.LinkExtractor(bucket.Id);
                     objects += objs;
                 }
             }

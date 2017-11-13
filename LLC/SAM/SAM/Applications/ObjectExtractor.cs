@@ -90,55 +90,7 @@ namespace SAM.Applications
                 Console.WriteLine($"Object is: {JsonConvert.SerializeObject(newRow)}");
                 var result = Service.SetTableRow(newRow).Result;
 
-                // Peform any link extractions
-                var content = Service.ObjectGet(n, k);
-
-                // Find any links 
-                if (content == null)
-                    return;
-
-                Console.WriteLine("Found S3 content");
-
-                var reader = new StreamReader(content.ResponseStream);
-                var text   = reader.ReadToEnd();
-
-                MatchCollection matchList = R.Matches(text);
-
-                if (matchList.Count > 0)
-                {
-                    Console.WriteLine("Found HTML Regex matches");
-
-                    // One or more links were found so we'll include each in the bulk update
-                    foreach (Match m in matchList)
-                    {
-                        // Allow send through URLs up to 1024 in length to avoid errors
-                        var url = m.Groups[1].Value;
-                        url = (url.Length >= MaxUrlLength ? url.Substring(0, MaxUrlLength - 1) : url);
-                        Console.WriteLine($"Found URL: {url}");
-
-                        var row = new Links
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            DateLastFound = date,
-                            Source = source.Id,
-                            Url = url
-                        };
-
-                        var existingLink = Service.GetTableQuery<Links>("Url", url, "UrlIndex");
-                        if (existingLink.Count == 0)
-                        {
-                            row.DateFirstFound = date;
-                        }
-                        else
-                        {
-                            row = existingLink[0];
-                            row.DateLastFound = date;
-                        }
-
-                        var r = Service.SetTableRow(row).Result;
-                        Console.WriteLine(JsonConvert.SerializeObject(r));
-                    }
-                }
+                LinkExtractions(newRow, n, source.Id);
             }
         }
     }

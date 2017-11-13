@@ -1,5 +1,9 @@
 ﻿using Amazon.DynamoDBv2.DocumentModel;
+using Newtonsoft.Json;
 using SAM.DI;
+using SAM.Models.Dynamo;
+using System;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace SAM.Applications
@@ -35,6 +39,61 @@ namespace SAM.Applications
 
                 else
                     item.Add(key, value.ToString());
+            }
+        }
+
+        protected void LinkExtractions(Objects obj, string name, string source)
+        {
+            var date = DateTime.Now.ToString();
+
+            // Peform any link extractions
+            var content = Service.ObjectGet(name, obj.Key);
+
+            // Find any links 
+            if (content == null)
+                return;
+
+            Console.WriteLine("Found S3 content");
+
+            var reader = new StreamReader(content.ResponseStream);
+            var text = reader.ReadToEnd();
+
+            MatchCollection matchList = R.Matches(text);
+
+            if (matchList.Count > 0)
+            {
+                Console.WriteLine("Found HTML Regex matches");
+
+                // One or more links were found so we'll include each in the bulk update
+                foreach (Match m in matchList)
+                {
+                    // Allow send through URLs up to 1024 in length to avoid errors
+                    var url = m.Groups[1].Value;
+                    url = (url.Length >= MaxUrlLength ? url.Substring(0, MaxUrlLength - 1) : url);
+                    Console.WriteLine($"Found URL: {url}");
+
+                    var row = new Links
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        DateLastFound = date,
+                        Source = source,
+                        Url = url
+                    };
+
+                    var existingLink = Service.GetTableQuery<Links>("Url", url, "UrlIndex");
+                    if (existingLink.Count == 0)
+                    {
+                        row.DateFirstFound = date;
+                    }
+                    else
+                    {
+                        row = existingLink[0];
+                        row.DateLastFound = date;
+                    }
+
+                    var r = Service.SetTableRow(row).Result;
+                    Console.WriteLine(JsonConvert.SerializeObject(r));
+                }
             }
         }
     }
