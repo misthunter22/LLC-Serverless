@@ -180,6 +180,10 @@
           {
             "AttributeName" : "Id",
             "AttributeType" : "S"   
+          },
+		  {
+            "AttributeName" : "Url",
+            "AttributeType" : "S"   
           }
         ],
 		"KeySchema" : [
@@ -189,10 +193,18 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "30",
+		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : "LLC-Links"
+		"TableName" : "LLC-Links",
+		"GlobalSecondaryIndexes" : [ 
+		  {
+		    "IndexName": "UrlIndex",
+			"KeySchema": [ { "AttributeName": "Url", "KeyType" : "HASH" } ],
+            "Projection": { "ProjectionType": "ALL" },
+            "ProvisionedThroughput": { "ReadCapacityUnits" : "5", "WriteCapacityUnits" : "3" }
+		  }
+		]
 	  },
 	  "DependsOn" : "DbBuckets"
 	},
@@ -212,7 +224,7 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "30",
+		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
 		"TableName" : "LLC-Buckets"
@@ -239,7 +251,7 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "30",
+		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
 		"TableName" : "LLC-Objects",
@@ -248,7 +260,7 @@
 		    "IndexName": "KeyIndex",
 			"KeySchema": [ { "AttributeName": "Key", "KeyType" : "HASH" } ],
             "Projection": { "ProjectionType": "ALL" },
-            "ProvisionedThroughput": { "ReadCapacityUnits" : "5", "WriteCapacityUnits" : "10" }
+            "ProvisionedThroughput": { "ReadCapacityUnits" : "5", "WriteCapacityUnits" : "3" }
 		  }
 		]
 	  }
@@ -259,6 +271,10 @@
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
+            "AttributeType" : "S"   
+          },
+		  {
+            "AttributeName" : "Link",
             "AttributeType" : "S"   
           }
         ],
@@ -272,7 +288,15 @@
 		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : "LLC-Stats"
+		"TableName" : "LLC-Stats",
+		"GlobalSecondaryIndexes" : [ 
+		  {
+		    "IndexName": "LinkIndex",
+			"KeySchema": [ { "AttributeName": "Link", "KeyType" : "HASH" } ],
+            "Projection": { "ProjectionType": "ALL" },
+            "ProvisionedThroughput": { "ReadCapacityUnits" : "5", "WriteCapacityUnits" : "3" }
+		  }
+		]
 	  }
 	},
 	"DbReports" : {
@@ -281,6 +305,10 @@
 		  "AttributeDefinitions" : [
           {
             "AttributeName" : "Id",
+            "AttributeType" : "S"   
+          },
+		  {
+            "AttributeName" : "Stat",
             "AttributeType" : "S"   
           }
         ],
@@ -291,10 +319,18 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "50",
+		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : "LLC-Reports"
+		"TableName" : "LLC-Reports",
+		"GlobalSecondaryIndexes" : [ 
+		  {
+		    "IndexName": "StatIndex",
+			"KeySchema": [ { "AttributeName": "Stat", "KeyType" : "HASH" } ],
+            "Projection": { "ProjectionType": "ALL" },
+            "ProvisionedThroughput": { "ReadCapacityUnits" : "5", "WriteCapacityUnits" : "3" }
+		  }
+		]
 	  }
 	},
 	"DbPackages" : {
@@ -370,6 +406,10 @@
           {
             "AttributeName" : "Id",
             "AttributeType" : "S"   
+          },
+		  {
+            "AttributeName" : "Link",
+            "AttributeType" : "S"   
           }
         ],
 		"KeySchema" : [
@@ -379,12 +419,20 @@
           }
 		],
 		"ProvisionedThroughput" : {
-		  "ReadCapacityUnits" : "30",
+		  "ReadCapacityUnits" : "5",
           "WriteCapacityUnits" : "3"
 		},
-		"TableName" : "LLC-ObjectLinks"
+		"TableName" : "LLC-ObjectLinks",
+		"GlobalSecondaryIndexes" : [ 
+		  {
+		    "IndexName": "LinkIndex",
+			"KeySchema": [ { "AttributeName": "Link", "KeyType" : "HASH" } ],
+            "Projection": { "ProjectionType": "ALL" },
+            "ProvisionedThroughput": { "ReadCapacityUnits" : "5", "WriteCapacityUnits" : "3" }
+		  }
+		]
 	  }
-	}
+  }
   },
 
   "Outputs" : {

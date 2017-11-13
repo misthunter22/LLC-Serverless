@@ -177,7 +177,7 @@ CREATE TABLE [Links-Dynamo] (
 	[NewId] varchar(256),
 	LinkId varchar(256),
 	SourceId varchar(256) NULL,
-	LinkUrl varchar(2048),
+	LinkUrl varchar(1024),
 	DateFirstFound smalldatetime,
 	DateLastFound smalldatetime,
 	LinkCheckDisabledDate smalldatetime NULL,
@@ -230,7 +230,7 @@ INSERT INTO   [LinkStats-Dynamo] (LinkStatId, LinkId, ContentSize, DownloadTime,
 SELECT LinkStatId, LinkId, ContentSize, DownloadTime, DateChecked, ErrorMessage, StatusCode, StatusDesc, ContentType FROM LinkStats
 
 INSERT INTO   [Links-Dynamo] (LinkId, SourceId, LinkUrl, DateFirstFound, DateLastFound, LinkCheckDisabledDate, LinkCheckDisabledUser, AttemptCount, IsValid, DateLastChecked, AllTimeMinDownloadTime, AllTimeMaxDownloadTime, AllTimeStdDevDownloadTime, PastWeekMinDownloadTime, PastWeekMaxDownloadTime, PastWeekStdDevDownloadTime, DateStatsUpdated, ReportNotBeforeDate)
-SELECT LinkId, SourceId, LinkUrl, DateFirstFound, DateLastFound, LinkCheckDisabledDate, LinkCheckDisabledUser, AttemptCount, IsValid, DateLastChecked, AllTimeMinDownloadTime, AllTimeMaxDownloadTime, AllTimeStdDevDownloadTime, PastWeekMinDownloadTime, PastWeekMaxDownloadTime, PastWeekStdDevDownloadTime, DateStatsUpdated, ReportNotBeforeDate FROM Links
+SELECT LinkId, SourceId, LEFT(LinkUrl, 1024), DateFirstFound, DateLastFound, LinkCheckDisabledDate, LinkCheckDisabledUser, AttemptCount, IsValid, DateLastChecked, AllTimeMinDownloadTime, AllTimeMaxDownloadTime, AllTimeStdDevDownloadTime, PastWeekMinDownloadTime, PastWeekMaxDownloadTime, PastWeekStdDevDownloadTime, DateStatsUpdated, ReportNotBeforeDate FROM Links
 
 GO
 

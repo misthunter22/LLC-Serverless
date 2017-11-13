@@ -33,11 +33,17 @@ namespace SAM.DI
 
         List<WarningLinks> WarningLinks();
 
+        void AddLink(Links link);
+
         int LinkExtractor(string bucket);
 
         void AddUrlToWarningLinks(List<WarningLinks> links);
 
         void EnqueueObjects(List<Objects> objects);
+
+        List<Objects> DequeueObjects();
+
+        void RemoveObjectsFromQueue(List<Objects> objects);
 
         bool QueueEmpty();
 
@@ -51,7 +57,7 @@ namespace SAM.DI
 
         List<T> GetTableScan<T>(string column, string id);
 
-        List<T> GetTableQuery<T>(string column, string id, string keyIndex);
+        List<T> GetTableQuery<T>(string column, string id, string indexName);
 
         Task<long> IncrementMetaTableKey(string key, long diff);
 

@@ -1,24 +1,20 @@
-﻿using Amazon.DynamoDBv2.Model;
-using Amazon.Lambda.Core;
+﻿using Amazon.Lambda.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SAM.DI;
 using SAM.Models.Dynamo;
 using System;
-using System.Numerics;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace SAM.Applications
 {
     public class ObjectExtractor : BaseHandler
     {
         [LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
-        public long Handler(object input, ILambdaContext context)
+        public void Handler(object input, ILambdaContext context)
         {
-            Console.WriteLine(JsonConvert.SerializeObject(input));
             Console.WriteLine(input.GetType());
             JObject obj = (JObject)input;
-
-            var service = new ILLCDataImpl();
 
             // Determine the type of event (+/-)
             var record = obj["Records"][0];
@@ -29,9 +25,6 @@ namespace SAM.Applications
             Console.WriteLine(evt);
             Console.WriteLine(k);
 
-            // Get the source
-            long ret = -1;
-
             // Compute the list of exclusions
             var isMobile = k.IndexOf("mobile_pages") >= 0;
 
@@ -41,69 +34,112 @@ namespace SAM.Applications
                 var e = record["s3"]["object"]["eTag"].ToString();
                 var n = record["s3"]["bucket"]["name"].ToString();
 
-                var source = service.Source(n, Models.Admin.SourceSearchType.Name);
-                if (source != null)
+                var source = Service.Source(n, Models.Admin.SourceSearchType.Name);
+                if (source == null)
                 {
-                    var prefix = source.S3BucketSearchPrefix;
-                    if (!prefix.EndsWith("/"))
-                        prefix = prefix + "/";
+                    Console.WriteLine($"Could not find source {n} by name");
+                    return;
+                }
 
-                    Console.WriteLine($"Found source {source.Name}");
-                    Console.WriteLine($"Source prefix is {source.S3BucketSearchPrefix}");
+                var prefix = source.S3BucketSearchPrefix;
+                if (!prefix.EndsWith("/"))
+                    prefix = prefix + "/";
 
-                    if (k.StartsWith(prefix))
-                    {
-                        Console.WriteLine("Prefix matches");
+                Console.WriteLine($"Found source {source.Name}");
+                Console.WriteLine($"Source prefix is {source.S3BucketSearchPrefix}");
 
-                        // Set the object in the table on 
-                        // the create action
-                        var newId       = Guid.NewGuid();
-                        var date        = DateTime.Now.ToString();
-                        var keySplit    = k.Split('/');
-                        var itemName    = keySplit[keySplit.Length - 1];
-                        var existingRow = service.GetTableQuery<Objects>("Key", k, "KeyIndex");
-                        Console.WriteLine($"New ID is : {newId}");
-                        var newRow      = new Objects
-                        {
-                            Bucket = source.S3BucketId,
-                            ContentLastModified = date,
-                            DateLastFound = date,
-                            ETag = e,
-                            IsFolder = k.EndsWith("/"),
-                            ItemName = itemName,
-                            Key = k
-                        };
+                if (!k.StartsWith(prefix))
+                    return;
 
-                        if (existingRow.Count == 0)
-                        {
-                            newRow.Id = newId.ToString();
-                            newRow.DateFirstFound = date;
-                            Console.WriteLine($"Adding new item with ID: {newRow.Id}");
-                        }
-                        else
-                        {
-                            newRow = service.Object(existingRow[0].Id);
-                            newRow.ContentLastModified = date;
-                            newRow.DateLastFound = date;
-                            newRow.ETag = e;
-                            Console.WriteLine($"Using existing ID: {newRow.Id}");
-                        }
+                Console.WriteLine("Prefix matches");
 
-                        Console.WriteLine($"Object is: {JsonConvert.SerializeObject(newRow)}");
-                        var result = service.SetTableRow(newRow).Result;
+                // Set the object in the table on 
+                // the create action
+                var newId       = Guid.NewGuid();
+                var date        = DateTime.Now.ToString();
+                var keySplit    = k.Split('/');
+                var itemName    = keySplit[keySplit.Length - 1];
+                var existingRow = Service.GetTableQuery<Objects>("Key", k, "KeyIndex");
+                Console.WriteLine($"New ID is : {newId}");
+                var newRow      = new Objects
+                {
+                    Bucket = source.S3BucketId,
+                    ContentLastModified = date,
+                    DateLastFound = date,
+                    ETag = e,
+                    IsFolder = k.EndsWith("/"),
+                    ItemName = itemName,
+                    Key = k
+                };
 
-                        // Update the table with the latest S3 count
-                        var count = service.TableCount("LLC-Objects");
-                        ret = service.SetMetaTableKey("Objects", count).Result;
-                    }
+                if (existingRow.Count == 0)
+                {
+                    newRow.Id = newId.ToString();
+                    newRow.DateFirstFound = date;
+                    Console.WriteLine($"Adding new item with ID: {newRow.Id}");
                 }
                 else
                 {
-                    Console.WriteLine($"Could not find source {n} by name");
+                    newRow = Service.Object(existingRow[0].Id);
+                    newRow.ContentLastModified = date;
+                    newRow.DateLastFound = date;
+                    newRow.ETag = e;
+                    Console.WriteLine($"Using existing ID: {newRow.Id}");
+                }
+
+                Console.WriteLine($"Object is: {JsonConvert.SerializeObject(newRow)}");
+                var result = Service.SetTableRow(newRow).Result;
+
+                // Peform any link extractions
+                var content = Service.ObjectGet(n, k);
+
+                // Find any links 
+                if (content == null)
+                    return;
+
+                Console.WriteLine("Found S3 content");
+
+                var reader = new StreamReader(content.ResponseStream);
+                var text   = reader.ReadToEnd();
+
+                MatchCollection matchList = R.Matches(text);
+
+                if (matchList.Count > 0)
+                {
+                    Console.WriteLine("Found HTML Regex matches");
+
+                    // One or more links were found so we'll include each in the bulk update
+                    foreach (Match m in matchList)
+                    {
+                        // Allow send through URLs up to 1024 in length to avoid errors
+                        var url = m.Groups[1].Value;
+                        url = (url.Length >= MaxUrlLength ? url.Substring(0, MaxUrlLength - 1) : url);
+                        Console.WriteLine($"Found URL: {url}");
+
+                        var row = new Links
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            DateLastFound = date,
+                            Source = source.Id,
+                            Url = url
+                        };
+
+                        var existingLink = Service.GetTableQuery<Links>("Url", url, "UrlIndex");
+                        if (existingLink.Count == 0)
+                        {
+                            row.DateFirstFound = date;
+                        }
+                        else
+                        {
+                            row = existingLink[0];
+                            row.DateLastFound = date;
+                        }
+
+                        var r = Service.SetTableRow(row).Result;
+                        Console.WriteLine(JsonConvert.SerializeObject(r));
+                    }
                 }
             }
-
-            return ret;
         }
     }
 }

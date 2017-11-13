@@ -1,11 +1,16 @@
 ﻿using Amazon.DynamoDBv2.DocumentModel;
 using SAM.DI;
+using System.Text.RegularExpressions;
 
 namespace SAM.Applications
 {
     public abstract class BaseHandler
     {
         protected ILLCData Service { get; set; }
+
+        protected readonly int MaxUrlLength = 1024;
+
+        protected Regex R = new Regex("<a[^>]* href=\"(http[^\"]*)\">([^<]+)</a>", RegexOptions.IgnoreCase);
 
         protected BaseHandler()
         {

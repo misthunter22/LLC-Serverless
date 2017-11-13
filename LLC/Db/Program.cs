@@ -42,7 +42,7 @@ namespace Db
                 var credentials = new BasicAWSCredentials(aKey, sKey);
                 using (var dynamo = new AmazonDynamoDBClient(credentials, RegionEndpoint.USWest2))
                 {
-                    ConfigureTableMeta(dynamo, env);
+                    //ConfigureTableMeta(dynamo, env);
                     AddLabelToInvalidReports(dynamo, env);
                 }
 

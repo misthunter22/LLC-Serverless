@@ -37,5 +37,7 @@ namespace SAM.Models.Dynamo
 
         [DynamoDBVersion]
         public int? VersionNumber { get; set; }
+
+        public string ReceiptHandle { get; set; }
     }
 }

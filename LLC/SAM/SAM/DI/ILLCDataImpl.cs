@@ -135,7 +135,7 @@ namespace SAM.DI
                     foreach (var m in sources)
                     {
                         // Skip the internal sources
-                        if (StringHelper.ParseInt(m.Id) > 0)
+                        if (m.S3BucketId != null)
                         {
                             m.S3ObjectName = QueryDataAttribute(_bucketTableName, m.S3BucketId.ToString(), "Name").Result.S;
                             m.S3BucketSearchPrefix = QueryDataAttribute(_bucketTableName, m.S3BucketId.ToString(), "SearchPrefix").Result.S;
@@ -235,6 +235,17 @@ namespace SAM.DI
                     {
                         first.Url = r["Url"].S;
                     }
+                }
+            }
+        }
+
+        public void AddLink(Links link)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                using (var ctx = new DynamoDBContext(client))
+                {
+                    
                 }
             }
         }
@@ -369,6 +380,45 @@ namespace SAM.DI
             }
         }
 
+        public List<Objects> DequeueObjects()
+        {
+            using (var sqsClient = new AmazonSQSClient())
+            {
+                var list = new List<Objects>();
+
+                var messages = sqsClient.ReceiveMessageAsync(new ReceiveMessageRequest
+                {
+                    MaxNumberOfMessages = _maxQueue,
+                    QueueUrl = Environment.GetEnvironmentVariable("Queue")
+                });
+
+                foreach (var message in messages.Result.Messages)
+                {
+                    var obj = JsonConvert.DeserializeObject<Objects>(message.Body);
+                    obj.ReceiptHandle = message.ReceiptHandle;
+                    list.Add(obj);
+                }
+
+                return list;
+            }
+        }
+
+        public void RemoveObjectsFromQueue(List<Objects> objects)
+        {
+            using (var sqsClient = new AmazonSQSClient())
+            {
+                sqsClient.DeleteMessageBatchAsync(new DeleteMessageBatchRequest
+                {
+                    Entries = objects.Select(x => new DeleteMessageBatchRequestEntry
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        ReceiptHandle = x.ReceiptHandle
+                    }).ToList(),
+                    QueueUrl = Environment.GetEnvironmentVariable("Queue")
+                });
+            }
+        }
+
         public bool QueueEmpty()
         {
             using (var sqsClient = new AmazonSQSClient())
@@ -416,8 +466,18 @@ namespace SAM.DI
             {
                 using (var ctx = new DynamoDBContext(client))
                 {
-                    await ctx.SaveAsync(row);
-                    return row;
+                    while (true)
+                    {
+                        try
+                        {
+                            await ctx.SaveAsync(row);
+                            return row;
+                        }
+                        catch (ConditionalCheckFailedException)
+                        {
+                            Console.WriteLine("ConditionalCheckFailedException. Retrying again...");
+                        }
+                    }
                 }
             }
         }
