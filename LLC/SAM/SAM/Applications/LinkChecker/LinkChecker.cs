@@ -3,9 +3,9 @@ using Amazon.Lambda.Serialization.Json;
 using System;
 using System.Linq;
 
-namespace SAM.Applications.LinkExtractor
+namespace SAM.Applications.LinkChecker
 {
-    public class Processor : BaseHandler
+    public class LinkChecker : BaseHandler
     {
         [LambdaSerializer(typeof(JsonSerializer))]
         public int Handler(object input, ILambdaContext context)
@@ -14,9 +14,9 @@ namespace SAM.Applications.LinkExtractor
                 return 0;
 
             var capacity = Service.Settings("DynamoDbThroughput");
-            Service.TableCapacity("LLC-Objects", int.Parse(capacity.Value), 0);
+            Service.TableCapacity("LLC-Links", int.Parse(capacity.Value), 0);
 
-            var sources = Service.Sources().Where(x => x.AllowLinkExtractions && x.S3BucketId != null);
+            var sources = Service.Sources().Where(x => x.AllowLinkChecking && x.S3BucketId != null);
             var buckets = Service.Buckets();
             var objects = 0;
 
@@ -31,7 +31,7 @@ namespace SAM.Applications.LinkExtractor
                 }
             }
 
-            Service.TableCapacity("LLC-Objects", 5, 0);
+            Service.TableCapacity("LLC-Links", 5, 0);
             return objects;
         }
     }

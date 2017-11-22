@@ -96,10 +96,28 @@
         }
       }
     },
+	"LinkCheckerProcessor" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.LinkChecker.Processor::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 1024,
+        "Timeout": 300,
+        "Role": null,
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
+			"Queue": { "Ref" : "LinkCheckerQueue" }
+          }
+        }
+      }
+    },
 	"LinkChecker" : {
       "Type" : "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "SAM::SAM.Applications.LinkChecker::Handler",
+        "Handler": "SAM::SAM.Applications.LinkChecker.LinkChecker::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 1024,
@@ -167,6 +185,12 @@
     },
 
 	"LinkExtractorQueue" : {
+		"Type" : "AWS::SQS::Queue",
+		"Properties" : {
+			"VisibilityTimeout": 0
+		}
+	},
+	"LinkCheckerQueue" : {
 		"Type" : "AWS::SQS::Queue",
 		"Properties" : {
 			"VisibilityTimeout": 0

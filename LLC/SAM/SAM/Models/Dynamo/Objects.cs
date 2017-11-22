@@ -3,7 +3,7 @@
 namespace SAM.Models.Dynamo
 {
     [DynamoDBTable("LLC-Objects")]
-    public class Objects
+    public class Objects : ReceiptBase
     {
         [DynamoDBHashKey]
         public string Id { get; set; }
@@ -37,7 +37,5 @@ namespace SAM.Models.Dynamo
 
         [DynamoDBVersion]
         public int? VersionNumber { get; set; }
-
-        public string ReceiptHandle { get; set; }
     }
 }

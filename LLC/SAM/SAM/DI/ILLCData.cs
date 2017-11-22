@@ -37,13 +37,15 @@ namespace SAM.DI
 
         int LinkExtractor(string bucket);
 
+        int LinkChecker(string source);
+
         void AddUrlToWarningLinks(List<WarningLinks> links);
 
-        void EnqueueObjects(List<Objects> objects);
+        void EnqueueObjects<T>(List<T> objects) where T : ReceiptBase;
 
-        List<Objects> DequeueObjects();
+        List<T> DequeueObjects<T>() where T : ReceiptBase;
 
-        void RemoveObjectsFromQueue(List<Objects> objects);
+        void RemoveObjectsFromQueue<T>(List<T> objects) where T : ReceiptBase;
 
         bool QueueEmpty();
 

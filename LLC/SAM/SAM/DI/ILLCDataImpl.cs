@@ -359,7 +359,43 @@ namespace SAM.DI
             }
         }
 
-        public void EnqueueObjects(List<Objects> objects)
+        public int LinkChecker(string source)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                using (var ctx = new DynamoDBContext(client))
+                {
+                    var count = 0;
+                    var completed = false;
+
+                    var row = ctx.FromScanAsync<Links>(new ScanOperationConfig
+                    {
+                        FilterExpression = new Expression
+                        {
+                            ExpressionStatement = "#source = :source",
+                            ExpressionAttributeNames = new Dictionary<string, string> {
+                                { "#source", "Source" },
+                            },
+                            ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry> {
+                                { ":source", source }
+                            }
+                        }
+                    });
+
+                    while (!completed)
+                    {
+                        var objects = row.GetNextSetAsync().Result;
+                        EnqueueObjects(objects);
+                        completed = row.IsDone;
+                        count += objects.Count;
+                    }
+
+                    return count;
+                }
+            }
+        }
+
+        public void EnqueueObjects<T>(List<T> objects) where T : ReceiptBase
         {
             using (var sqsClient = new AmazonSQSClient())
             {
@@ -380,11 +416,11 @@ namespace SAM.DI
             }
         }
 
-        public List<Objects> DequeueObjects()
+        public List<T> DequeueObjects<T>() where T : ReceiptBase
         {
             using (var sqsClient = new AmazonSQSClient())
             {
-                var list = new List<Objects>();
+                var list = new List<T>();
 
                 var messages = sqsClient.ReceiveMessageAsync(new ReceiveMessageRequest
                 {
@@ -394,7 +430,7 @@ namespace SAM.DI
 
                 foreach (var message in messages.Result.Messages)
                 {
-                    var obj = JsonConvert.DeserializeObject<Objects>(message.Body);
+                    var obj = JsonConvert.DeserializeObject<T>(message.Body);
                     obj.ReceiptHandle = message.ReceiptHandle;
                     list.Add(obj);
                 }
@@ -403,7 +439,7 @@ namespace SAM.DI
             }
         }
 
-        public void RemoveObjectsFromQueue(List<Objects> objects)
+        public void RemoveObjectsFromQueue<T>(List<T> objects) where T : ReceiptBase
         {
             using (var sqsClient = new AmazonSQSClient())
             {

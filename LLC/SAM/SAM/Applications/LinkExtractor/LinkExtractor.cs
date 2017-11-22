@@ -1,5 +1,6 @@
 ﻿using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.Json;
+using SAM.Models.Dynamo;
 using System.Linq;
 
 namespace SAM.Applications.LinkExtractor
@@ -9,7 +10,7 @@ namespace SAM.Applications.LinkExtractor
         [LambdaSerializer(typeof(JsonSerializer))]
         public void Handler(object input, ILambdaContext context)
         {
-            var objs = Service.DequeueObjects();
+            var objs = Service.DequeueObjects<Objects>();
             if (objs == null)
                 return;
 

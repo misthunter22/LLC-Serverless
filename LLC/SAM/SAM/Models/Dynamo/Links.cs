@@ -3,7 +3,7 @@
 namespace SAM.Models.Dynamo
 {
     [DynamoDBTable("LLC-Links")]
-    public class Links
+    public class Links : ReceiptBase
     {
         [DynamoDBHashKey]
         public string Id { get; set; }
