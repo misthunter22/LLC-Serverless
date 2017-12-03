@@ -1,0 +1,3 @@
+﻿IF db_id('LLC') IS NULL 
+	CREATE DATABASE LLC
+GO
