@@ -1,9 +1,12 @@
-﻿using System;
+﻿using DbCore.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DbCore.Models
 {
-    public partial class Reports
+    public class ReportsExt
     {
         public string Id { get; set; }
         public long? ContentSize { get; set; }
@@ -13,5 +16,15 @@ namespace DbCore.Models
         public string Link { get; set; }
         public string Stat { get; set; }
         public string ReportType { get; set; }
+
+        public int? AttemptCount { get; set; }
+
+        public DateTime? DateLastChecked { get; set; }
+
+        public DateTime? DateLastFound { get; set; }
+
+        public string Source { get; set; }
+
+        public string Url { get; set; }
     }
 }

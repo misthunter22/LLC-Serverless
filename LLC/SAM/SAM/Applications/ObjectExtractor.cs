@@ -39,12 +39,12 @@ namespace SAM.Applications
                     return;
                 }
 
-                var prefix = source.S3BucketSearchPrefix;
+                var prefix = source.S3bucketSearchPrefix;
                 if (!prefix.EndsWith("/"))
                     prefix = prefix + "/";
 
                 Console.WriteLine($"Found source {source.Name}");
-                Console.WriteLine($"Source prefix is {source.S3BucketSearchPrefix}");
+                Console.WriteLine($"Source prefix is {source.S3bucketSearchPrefix}");
 
                 if (!k.StartsWith(prefix))
                     return;

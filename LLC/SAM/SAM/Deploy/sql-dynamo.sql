@@ -46,6 +46,7 @@ CREATE TABLE [LinkReports-Dynamo] (
     SdMaximum int,
 	Link_LinkId varchar(256),
 	LinkStatId varchar(256) NULL,
+	ReportType varchar(256) NULL,
 	PRIMARY KEY (Id)
 );
 GO

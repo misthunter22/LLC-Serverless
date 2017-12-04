@@ -25,7 +25,7 @@ namespace SAM.Controllers
         public JsonResult Post([FromBody] DataTableRequest m)
         {
             var results = _service.WarningLinks();
-            List<Reports> filter;
+            List<ReportsExt> filter;
 
             // Do the sorting first
             if (m.direction == "asc")
@@ -47,7 +47,7 @@ namespace SAM.Controllers
             var filterCount = filter.Count;
             filter = filter.Skip(m.start).Take(m.length).ToList();
 
-            var model   = new DataTableModel<Reports>
+            var model   = new DataTableModel<ReportsExt>
             {
                 data = filter,
                 draw = m.draw,

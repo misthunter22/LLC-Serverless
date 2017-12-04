@@ -31,9 +31,9 @@ namespace SAM.DI
 
         Links Link(string id);
 
-        List<Reports> InvalidLinks();
+        List<ReportsExt> InvalidLinks();
 
-        List<Reports> WarningLinks();
+        List<ReportsExt> WarningLinks();
 
         Links LinkFromUrl(string url);
 
@@ -43,9 +43,9 @@ namespace SAM.DI
 
         #endregion
 
-        List<Sources> Sources();
+        List<SourcesExt> Sources();
 
-        Sources Source(string id, SourceSearchType type);
+        SourcesExt Source(string id, SourceSearchType type);
 
         List<Buckets> Buckets();
 

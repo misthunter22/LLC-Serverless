@@ -110,7 +110,7 @@ export default function servicesBase(Component) {
 				obj['extracted']    = s.dateLastExtracted;
 				obj['invalid']      = s.invalidLinkCount;
 				obj['checked']      = s.dateLastChecked;
-				obj['s3name']       = s.s3ObjectName;
+				obj['s3name']       = s.s3bucketName;
 				obj['allowlink']    = s.allowLinkChecking;
 				obj['allowextract'] = s.allowLinkExtractions; 
 				obj['created']      = s.dateCreated;

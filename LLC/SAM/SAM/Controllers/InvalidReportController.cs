@@ -25,7 +25,7 @@ namespace SAM.Controllers
         public JsonResult Post([FromBody] DataTableRequest m)
         {
             var results = _service.InvalidLinks();
-            List<Reports> filter;
+            List<ReportsExt> filter;
 
             // Do the sorting first
             if (m.direction == "asc")
@@ -36,19 +36,19 @@ namespace SAM.Controllers
             // Look for any that match the string
             if (!string.IsNullOrEmpty(m.search))
             {
-                filter = filter.Where(x => x.Obj.AttemptCount.ToString().Contains(m.search) ||
-                                            (x.Obj.DateLastChecked == null ? false : x.Obj.DateLastChecked.ToString().Contains(m.search)) ||
-                                            (x.Obj.DateLastFound == null ? false : x.Obj.DateLastFound.ToString().Contains(m.search)) ||
+                filter = filter.Where(x => x.AttemptCount.ToString().Contains(m.search) ||
+                                            (x.DateLastChecked == null ? false : x.DateLastChecked.ToString().Contains(m.search)) ||
+                                            (x.DateLastFound == null ? false : x.DateLastFound.ToString().Contains(m.search)) ||
                                             x.Id.ToString().Contains(m.search) ||
                                             x.Link.ToString().Contains(m.search) ||
-                                            (x.Obj.Source == null ? false : x.Obj.Source.Contains(m.search)) ||
-                                            (x.Obj.Url == null ? false : x.Obj.Url.Contains(m.search))).ToList();
+                                            (x.Source == null ? false : x.Source.Contains(m.search)) ||
+                                            (x.Url == null ? false : x.Url.Contains(m.search))).ToList();
             }
 
             var filterCount = filter.Count;
             filter = filter.Skip(m.start).Take(m.length).ToList();
 
-            var model   = new DataTableModel<Reports>
+            var model   = new DataTableModel<ReportsExt>
             {
                 data = filter,
                 draw = m.draw,

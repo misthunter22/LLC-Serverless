@@ -94,23 +94,53 @@ namespace SAM.DI
             }
         }
 
-        public List<Reports> InvalidLinks()
+        public List<ReportsExt> InvalidLinks()
         {
             using (var client = new LLCContext())
             {
-                var results = client.Reports.Where(x => x.ReportType == "Invalid").ToList();
+                var results = client.Reports.Where(x => x.ReportType == "Invalid")
+                    .Select(x => new ReportsExt
+                    {
+                        ContentSize = x.ContentSize,
+                        Id = x.Id,
+                        Link = x.Link,
+                        Mean = x.Mean,
+                        ReportType = x.ReportType,
+                        SdMaximum = x.SdMaximum,
+                        StandardDeviation = x.StandardDeviation,
+                        Stat = x.Stat
+                    })
+                    .ToList();
+
                 return results;
             }
         }
 
-        public List<Reports> WarningLinks()
+        public List<ReportsExt> WarningLinks()
         {
             using (var client = new LLCContext())
             {
-                var results = client.Reports.Where(x => x.ReportType == "Warning").ToList();
+                var results = client.Reports.Where(x => x.ReportType == "Warning")
+                    .Select(x => new ReportsExt {
+                        ContentSize = x.ContentSize,
+                        Id = x.Id,
+                        Link = x.Link,
+                        Mean = x.Mean,
+                        ReportType = x.ReportType,
+                        SdMaximum = x.SdMaximum,
+                        StandardDeviation = x.StandardDeviation,
+                        Stat = x.Stat
+                    })
+                    .ToList();
+
                 foreach (var r in results)
                 {
-                    r.Obj = Link(r.Link);
+                    var link          = Link(r.Link);
+                    r.AttemptCount    = link.AttemptCount;
+                    r.DateLastChecked = link.DateLastChecked;
+                    r.DateLastFound   = link.DateLastFound;
+                    r.Source          = link.Source;
+                    r.Url             = link.Url;
                 }
 
                 return results;
@@ -148,20 +178,30 @@ namespace SAM.DI
             }
         }
 
-        public List<Sources> Sources()
+        public List<SourcesExt> Sources()
         {
             using (var client = new LLCContext())
             {
-                var sources = client.Sources.ToList();
+                var sources = client.Sources.Select(x => new SourcesExt {
+                        AllowLinkChecking = x.AllowLinkChecking,
+                        AllowLinkExtractions = x.AllowLinkExtractions,
+                        DateCreated = x.DateCreated,
+                        Description = x.Description,
+                        Id = x.Id,
+                        Name = x.Name,
+                        S3bucketId = x.S3bucketId
+                    })
+                    .ToList();
+
                 foreach (var m in sources)
                 {
                     // Skip the internal sources
                     if (m.S3bucketId != null)
                     {
                         var bucket = client.Buckets.FirstOrDefault(x => x.Id == m.S3bucketId);
-                        m.S3ObjectName = bucket.Name;
-                        m.S3BucketSearchPrefix = bucket.SearchPrefix;
-                        Console.WriteLine($"S3 object name is {m.S3ObjectName}");
+                        m.S3bucketName = bucket.Name;
+                        m.S3bucketSearchPrefix = bucket.SearchPrefix;
+                        Console.WriteLine($"S3 object name is {m.S3bucketName}");
                     }
                 }
 
@@ -169,7 +209,7 @@ namespace SAM.DI
             }
         }
 
-        public Sources Source(string id, SourceSearchType type)
+        public SourcesExt Source(string id, SourceSearchType type)
         {
             using (var client = new LLCContext())
             {
@@ -179,7 +219,7 @@ namespace SAM.DI
                     case SourceSearchType.Id:
                         return results.FirstOrDefault(x => x.Id.Equals(id));
                     case SourceSearchType.Name:
-                        return results.FirstOrDefault(x => id.Equals(x.S3ObjectName, StringComparison.CurrentCultureIgnoreCase));
+                        return results.FirstOrDefault(x => id.Equals(x.S3bucketName, StringComparison.CurrentCultureIgnoreCase));
                     default:
                         return null;
                 }

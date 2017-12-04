@@ -21,7 +21,7 @@ namespace DbCore.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(@"Server=drgk6yf55vn8y4.cbl0vtr35mzo.us-west-2.rds.amazonaws.com;Database=LLC;User Id=llcadmin;Password=77zWm!~-twaWuQUS");
+                optionsBuilder.UseSqlServer(@"Server=drgk6yf55vn8y4.cbl0vtr35mzo.us-west-2.rds.amazonaws.com;Database=LLC;User Id=llcadmin;Password=77zWm!~-twaWuQUS;MultipleActiveResultSets=true");
             }
         }
 
