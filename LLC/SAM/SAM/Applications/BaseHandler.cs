@@ -1,7 +1,7 @@
 ﻿using Amazon.DynamoDBv2.DocumentModel;
+using DbCore.Models;
 using Newtonsoft.Json;
 using SAM.DI;
-using SAM.Models.Dynamo;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -44,7 +44,7 @@ namespace SAM.Applications
 
         protected void LinkExtractions(Objects obj, string name, string source)
         {
-            var date = DateTime.Now.ToString();
+            var date = DateTime.Now;
 
             // Peform any link extractions
             var content = Service.ObjectGet(name, obj.Key);
@@ -80,18 +80,18 @@ namespace SAM.Applications
                         Url = url
                     };
 
-                    var existingLink = Service.GetTableQuery<Links>("Url", url, "UrlIndex");
-                    if (existingLink.Count == 0)
+                    var existingLink = Service.LinkFromUrl(url);
+                    if (existingLink == null)
                     {
                         row.DateFirstFound = date;
                     }
                     else
                     {
-                        row = existingLink[0];
+                        row = existingLink;
                         row.DateLastFound = date;
                     }
 
-                    var r = Service.SetTableRow(row).Result;
+                    var r = Service.SetLink(row);
                     Console.WriteLine(JsonConvert.SerializeObject(r));
                 }
             }

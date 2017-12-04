@@ -1,11 +1,9 @@
 ﻿using Amazon;
-using Amazon.DynamoDBv2.Model;
 using Amazon.S3.Model;
+using DbCore.Models;
 using SAM.Models.Admin;
-using SAM.Models.Dynamo;
 using SAM.Models.Reports;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SAM.DI
 {
@@ -13,11 +11,37 @@ namespace SAM.DI
     {
         RegionEndpoint Region();
 
-        long TableCount(string tableName);
+        #region Objects
 
-        void TableCapacity(string tableName, int read, int write);
+        int ObjectsCount();
 
         Objects Object(string id);
+
+        Objects ObjectFromKey(string key);
+
+        Objects SetObject(Objects obj);
+
+        List<Objects> LinkExtractor(string bucket, int offset, int maximum);
+
+        #endregion
+
+        #region Links
+
+        int LinksCount();
+
+        Links Link(string id);
+
+        List<Reports> InvalidLinks();
+
+        List<Reports> WarningLinks();
+
+        Links LinkFromUrl(string url);
+
+        Links SetLink(Links link);
+
+        List<Links> LinkChecker(string source, int offset, int maximum);
+
+        #endregion
 
         List<Sources> Sources();
 
@@ -29,52 +53,10 @@ namespace SAM.DI
 
         Settings Settings(string name);
 
-        List<InvalidLinks> InvalidLinks();
-
-        List<WarningLinks> WarningLinks();
-
-        void AddLink(Links link);
-
-        int LinkExtractor(string bucket);
-
-        int LinkChecker(string source);
-
-        void AddUrlToWarningLinks(List<WarningLinks> links);
-
-        void EnqueueObjects<T>(List<T> objects) where T : ReceiptBase;
-
-        List<T> DequeueObjects<T>() where T : ReceiptBase;
-
-        void RemoveObjectsFromQueue<T>(List<T> objects) where T : ReceiptBase;
-
-        bool QueueEmpty();
-
         List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m);
 
         GetObjectResponse ObjectGet(string bucket, string key);
 
         PutObjectResponse ObjectPut<T>(string bucket, string key, T obj);
-
-        Task<T> SetTableRow<T>(T row);
-
-        List<T> GetTableScan<T>(string column, string id);
-
-        List<T> GetTableQuery<T>(string column, string id, string indexName);
-
-        Task<long> IncrementMetaTableKey(string key, long diff);
-
-        Task<long> SetMetaTableKey(string key, long set);
-
-        Task<string> QueryCountBool(string tableName, string column, bool b);
-
-        Task<AttributeValue> QueryDataAttribute(string tableName, string key, string field);
-
-        Task<Dictionary<string, AttributeValue>> QueryDataAttributes(string tableName, string key);
-
-        Task<Dictionary<string, AttributeValue>> QueryDataAttributes(string tableName, AttributeValue key, string field, string index);
-
-        Task<string> QueryCountContains(string tableName, string column, string s);
-
-        Task<List<Dictionary<string, AttributeValue>>> QueryTableAll(string tableName);
     }
 }

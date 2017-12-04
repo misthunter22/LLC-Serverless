@@ -1,7 +1,7 @@
 ﻿using Amazon.Lambda.Core;
+using DbCore.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SAM.Models.Dynamo;
 using System;
 
 namespace SAM.Applications
@@ -54,23 +54,23 @@ namespace SAM.Applications
                 // Set the object in the table on 
                 // the create action
                 var newId       = Guid.NewGuid();
-                var date        = DateTime.Now.ToString();
+                var date        = DateTime.Now;
                 var keySplit    = k.Split('/');
                 var itemName    = keySplit[keySplit.Length - 1];
-                var existingRow = Service.GetTableQuery<Objects>("Key", k, "KeyIndex");
+                var existingRow = Service.ObjectFromKey(k);
                 Console.WriteLine($"New ID is : {newId}");
                 var newRow      = new Objects
                 {
-                    Bucket = source.S3BucketId,
+                    Bucket = source.S3bucketId,
                     ContentLastModified = date,
                     DateLastFound = date,
-                    ETag = e,
+                    Etag = e,
                     IsFolder = k.EndsWith("/"),
                     ItemName = itemName,
                     Key = k
                 };
 
-                if (existingRow.Count == 0)
+                if (existingRow == null)
                 {
                     newRow.Id = newId.ToString();
                     newRow.DateFirstFound = date;
@@ -78,15 +78,15 @@ namespace SAM.Applications
                 }
                 else
                 {
-                    newRow = Service.Object(existingRow[0].Id);
+                    newRow = Service.Object(existingRow.Id);
                     newRow.ContentLastModified = date;
                     newRow.DateLastFound = date;
-                    newRow.ETag = e;
+                    newRow.Etag = e;
                     Console.WriteLine($"Using existing ID: {newRow.Id}");
                 }
 
                 Console.WriteLine($"Object is: {JsonConvert.SerializeObject(newRow)}");
-                var result = Service.SetTableRow(newRow).Result;
+                var result = Service.SetObject(newRow);
 
                 LinkExtractions(newRow, n, source.Id);
             }

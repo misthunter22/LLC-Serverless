@@ -31,37 +31,30 @@ namespace DbCore.Models
             {
                 entity.Property(e => e.Id)
                     .HasMaxLength(256)
-                    .IsUnicode(false)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.AccessKey)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.DateCreated).HasColumnType("smalldatetime");
 
                 entity.Property(e => e.Name)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.Region)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.SearchPrefix)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.SecretKey)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
             });
 
             modelBuilder.Entity<Links>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasMaxLength(256)
-                    .IsUnicode(false)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.AllTimeStdDevDownloadTime).HasColumnType("decimal(14, 4)");
@@ -77,27 +70,23 @@ namespace DbCore.Models
                 entity.Property(e => e.DisabledDate).HasColumnType("smalldatetime");
 
                 entity.Property(e => e.DisabledUser)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.PastWeekStdDevDownloadTime).HasColumnType("decimal(14, 4)");
 
                 entity.Property(e => e.ReportNotBeforeDate).HasColumnType("date");
 
                 entity.Property(e => e.Source)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.Url)
-                    .HasMaxLength(1024)
-                    .IsUnicode(false);
+                    .HasMaxLength(1024);
             });
 
             modelBuilder.Entity<ObjectLinks>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasMaxLength(256)
-                    .IsUnicode(false)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.DateFirstFound).HasColumnType("smalldatetime");
@@ -107,24 +96,20 @@ namespace DbCore.Models
                 entity.Property(e => e.DateRemoved).HasColumnType("smalldatetime");
 
                 entity.Property(e => e.Link)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.Object)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
             });
 
             modelBuilder.Entity<Objects>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasMaxLength(256)
-                    .IsUnicode(false)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.Bucket)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.ContentLastModified).HasColumnType("datetime");
 
@@ -137,66 +122,57 @@ namespace DbCore.Models
                 entity.Property(e => e.DisabledDate).HasColumnType("smalldatetime");
 
                 entity.Property(e => e.DisabledUser)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.Etag)
                     .HasColumnName("ETag")
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.ItemName)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.Key)
-                    .HasMaxLength(1024)
-                    .IsUnicode(false);
+                    .HasMaxLength(1024);
             });
 
             modelBuilder.Entity<Packages>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasMaxLength(256)
-                    .IsUnicode(false)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.DateUploaded).HasColumnType("datetime");
 
-                entity.Property(e => e.FileName).IsUnicode(false);
+                entity.Property(e => e.FileName);
 
-                entity.Property(e => e.ImsDescription).IsUnicode(false);
+                entity.Property(e => e.ImsDescription);
 
-                entity.Property(e => e.ImsSchema).IsUnicode(false);
+                entity.Property(e => e.ImsSchema);
 
-                entity.Property(e => e.ImsSchemaVersion).IsUnicode(false);
+                entity.Property(e => e.ImsSchemaVersion);
 
-                entity.Property(e => e.ImsTitle).IsUnicode(false);
+                entity.Property(e => e.ImsTitle);
 
-                entity.Property(e => e.Key).IsUnicode(false);
+                entity.Property(e => e.Key);
             });
 
             modelBuilder.Entity<Reports>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasMaxLength(256)
-                    .IsUnicode(false)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.Link)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.Stat)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
             });
 
             modelBuilder.Entity<Settings>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasMaxLength(256)
-                    .IsUnicode(false)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.DateCreated).HasColumnType("datetime");
@@ -204,73 +180,59 @@ namespace DbCore.Models
                 entity.Property(e => e.DateModified).HasColumnType("datetime");
 
                 entity.Property(e => e.Description)
-                    .HasMaxLength(1024)
-                    .IsUnicode(false);
+                    .HasMaxLength(1024);
 
                 entity.Property(e => e.ModifiedUser)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.Name)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.Value)
-                    .HasMaxLength(1024)
-                    .IsUnicode(false);
+                    .HasMaxLength(1024);
             });
 
             modelBuilder.Entity<Sources>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasMaxLength(256)
-                    .IsUnicode(false)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.DateCreated).HasColumnType("smalldatetime");
 
                 entity.Property(e => e.Description)
-                    .HasMaxLength(1024)
-                    .IsUnicode(false);
+                    .HasMaxLength(1024);
 
                 entity.Property(e => e.Name)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.S3bucketId)
                     .HasColumnName("S3BucketId")
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
             });
 
             modelBuilder.Entity<Stats>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasMaxLength(256)
-                    .IsUnicode(false)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.ContentType)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.DateChecked).HasColumnType("datetime");
 
                 entity.Property(e => e.Error)
-                    .HasMaxLength(512)
-                    .IsUnicode(false);
+                    .HasMaxLength(512);
 
                 entity.Property(e => e.Link)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.StatusCode)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.StatusDescription)
-                    .HasMaxLength(2048)
-                    .IsUnicode(false);
+                    .HasMaxLength(2048);
             });
         }
     }

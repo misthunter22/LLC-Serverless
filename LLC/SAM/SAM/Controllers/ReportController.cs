@@ -17,10 +17,10 @@ namespace SAM.Controllers
 
         // GET api/report
         [HttpGet]
-        public ActionResult Get(int id)
+        public ActionResult Get(string id)
         {
-            var url = _service.QueryDataAttribute("LLC-Links", id.ToString(), "Url");
-            return Redirect(url.Result.S);
+            var url = _service.Link(id);
+            return Redirect(url.Url);
         }
     }
 }
