@@ -19,5 +19,13 @@ namespace DbCore.Models
         public string S3bucketSearchPrefix { get; set; }
 
         public string S3bucketName { get; set; }
+
+        public string Region { get; set; }
+
+        public string AccessKey { get; set; }
+
+        public string SecretKey { get; set; }
+
+        public bool Delete { get; set; }
     }
 }

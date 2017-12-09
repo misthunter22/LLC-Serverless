@@ -2,6 +2,7 @@
 using Amazon.S3.Model;
 using DbCore.Models;
 using SAM.Models.Admin;
+using SAM.Models.EF;
 using SAM.Models.Reports;
 using System.Collections.Generic;
 
@@ -46,6 +47,10 @@ namespace SAM.DI
         List<SourcesExt> Sources();
 
         SourcesExt Source(string id, SourceSearchType type);
+
+        Save SaveSource(SourcesExt source);
+
+        Save DeleteSource(SourcesExt source);
 
         List<Buckets> Buckets();
 

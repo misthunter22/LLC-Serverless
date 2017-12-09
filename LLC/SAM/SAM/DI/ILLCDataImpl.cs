@@ -12,6 +12,7 @@ using System.Text;
 using SAM.Models.Reports;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using SAM.Models.EF;
 
 namespace SAM.DI
 {
@@ -222,6 +223,118 @@ namespace SAM.DI
                         return results.FirstOrDefault(x => id.Equals(x.S3bucketName, StringComparison.CurrentCultureIgnoreCase));
                     default:
                         return null;
+                }
+            }
+        }
+
+        public Save SaveSource(SourcesExt source)
+        {
+            Console.WriteLine($"ID is {source.Id} and Bucket ID is {source.S3bucketId}");
+            Console.WriteLine($"ID is null ? {string.IsNullOrEmpty(source.Id)} and Bucket ID is null? {string.IsNullOrEmpty(source.S3bucketId)}");
+            Console.WriteLine($"Check is {source.AllowLinkChecking} and Extractions is {source.AllowLinkExtractions}");
+
+            // If Id or S3BucketId are both not null or occupied, error!
+            if ((string.IsNullOrEmpty(source.Id) && !string.IsNullOrEmpty(source.S3bucketId)) ||
+                (!string.IsNullOrEmpty(source.Id) && string.IsNullOrEmpty(source.S3bucketId))) {
+                return new Save { Status = false };
+            }
+
+            using (var client = new LLCContext())
+            {
+                if (string.IsNullOrEmpty(source.Id) && string.IsNullOrEmpty(source.S3bucketId))
+                {
+                    Console.WriteLine("Adding source");
+
+                    var bucket = Guid.NewGuid().ToString();
+                    var sid    = Guid.NewGuid().ToString();
+                    var now    = DateTime.Now;
+                    client.Buckets.Add(new Buckets
+                    {
+                        AccessKey = source.AccessKey,
+                        DateCreated = now,
+                        Id = bucket,
+                        Name = source.S3bucketName,
+                        Region = source.Region,
+                        SearchPrefix = source.S3bucketSearchPrefix,
+                        SecretKey = source.SecretKey
+                    });
+
+                    client.Sources.Add(new Sources
+                    {
+                        AllowLinkChecking = source.AllowLinkChecking == null ? false : source.AllowLinkChecking,
+                        AllowLinkExtractions = source.AllowLinkExtractions == null ? false : source.AllowLinkExtractions,
+                        Id = sid,
+                        DateCreated = now,
+                        Description = source.Description,
+                        Name = source.Name,
+                        S3bucketId = bucket
+                    });
+                }
+                else
+                {
+                    Console.WriteLine("Update source");
+
+                    client.Buckets.Update(new Buckets
+                    {
+                        AccessKey = source.AccessKey,
+                        Id = source.S3bucketId,
+                        Name = source.S3bucketName,
+                        Region = source.Region,
+                        SearchPrefix = source.S3bucketSearchPrefix,
+                        SecretKey = source.SecretKey
+                    });
+
+                    client.Sources.Update(new Sources
+                    {
+                        AllowLinkChecking = source.AllowLinkChecking,
+                        AllowLinkExtractions = source.AllowLinkExtractions,
+                        Id = source.Id,
+                        Description = source.Description,
+                        Name = source.Name,
+                        S3bucketId = source.S3bucketId
+                    });
+                }
+
+                try
+                {
+                    client.SaveChanges();
+                    return new Save { Status = true };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return new Save { Status = false };
+                }
+            }
+        }
+
+        public Save DeleteSource(SourcesExt source)
+        {
+            using (var client = new LLCContext())
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(source));
+
+                var obj = Source(source.Id, SourceSearchType.Id);
+                client.Buckets.Remove(new Buckets
+                {
+                    Id = obj.S3bucketId
+                });
+
+                client.Sources.Remove(new Sources
+                {
+                    Id = source.Id,
+                    S3bucketId = obj.S3bucketId
+                });
+
+                try
+                {
+                    client.SaveChanges();
+                    return new Save { Status = true };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return new Save { Status = false };
                 }
             }
         }

@@ -1,4 +1,4 @@
-import { Route, BrowserRouter } from 'react-router-dom';
+import { Route, Router } from 'react-router-dom';
 import React        from 'react';
 import App          from './App';
 import Home         from './Home/Home';
@@ -7,8 +7,7 @@ import InvalidLinks from './Report/InvalidLinks';
 import WarningLinks from './Report/WarningLinks';
 import Admin        from './Admin/Admin';
 import Sources      from './Admin/Sources/Sources';
-import CreateSource from './Admin/Sources/CreateSource';
-import EditSource   from './Admin/Sources/EditSource';
+import ManageSource from './Admin/Sources/ManageSource';
 import DeleteSource from './Admin/Sources/DeleteSource';
 import Settings     from './Admin/Settings/Settings';
 import Logs         from './Admin/Logs';
@@ -29,7 +28,7 @@ const handleAuthentication = (nextState, replace) => {
 
 export const makeMainRoutes = () => {
   return (
-      <BrowserRouter history={history} component={App}>
+      <Router history={history} component={App}>
         <div>
           <Route       path="/"                               render={(props) => <App          auth={auth} {...props} />} />
           <Route exact path="/home"                           render={(props) => <Home         auth={auth} {...props} />} />
@@ -38,9 +37,9 @@ export const makeMainRoutes = () => {
 		  <Route exact path="/report/warninglinks"            render={(props) => <WarningLinks auth={auth} {...props} />} />
 		  <Route exact path="/admin"                          render={(props) => <Admin        auth={auth} {...props} />} />
 		  <Route exact path="/admin/sources"                  render={(props) => <Sources      auth={auth} {...props} />} />
-		  <Route exact path="/admin/sources/createsource"     render={(props) => <CreateSource auth={auth} {...props} />} />
-		  <Route exact path="/admin/sources/editsource/:id"   render={(props) => <EditSource   auth={auth} {...props} />} />
-		  <Route exact path="/admin/sources/deletesource/:id" render={(props) => <DeleteSource auth={auth} {...props} />} />
+		  <Route exact path="/admin/sources/manage"           render={(props) => <ManageSource auth={auth} {...props} />} />
+		  <Route exact path="/admin/sources/manage/:id"       render={(props) => <ManageSource auth={auth} {...props} />} />
+		  <Route exact path="/admin/sources/delete/:id"       render={(props) => <DeleteSource auth={auth} {...props} />} />
 		  <Route exact path="/admin/settings"                 render={(props) => <Settings     auth={auth} {...props} />} />
 		  <Route exact path="/admin/logs"                     render={(props) => <Logs         auth={auth} {...props} />} />
 		  <Route exact path="/admin/users"                    render={(props) => <Users        auth={auth} {...props} />} />
@@ -51,6 +50,6 @@ export const makeMainRoutes = () => {
             return <Callback {...props} /> 
           }}/>
         </div>
-      </BrowserRouter>
+      </Router>
   );
 }

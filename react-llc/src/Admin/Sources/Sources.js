@@ -50,7 +50,7 @@ class Sources extends Component {
   }
   
   componentDidMount() {
-    this.sources(true);
+    this.sources();
 	$(this.refs.main).DataTable({
       dom: '<"data-table-wrapper"t>',
       data: this.state.sources,
@@ -59,8 +59,8 @@ class Sources extends Component {
 	  columnDefs: [
 	  {
         "render": function (data, type, row) {
-		  if (row["source"] > 0) {
-		    return '<a href="/admin/sources/editsource/' + data +'" title="Edit this source.">' +
+		  if (row["s3name"]) {
+		    return '<a href="/admin/sources/manage/' + data +'" title="Edit this source.">' +
                      '<i class="glyphicon glyphicon-pencil"></i>' +
                      '<span class="sr-only">Edit</span>' +
                    '</a>';
@@ -73,7 +73,7 @@ class Sources extends Component {
       {
         "render": function (data, type, row) {
 	      return '<span onclick="return confirm(\'Are you sure you wish to delete this source? There is no undo.\')">' +
-                   '<a href="/admin/sources/deletesource/' + data + '" title="Remove this source.">' +
+                   '<a href="/admin/sources/delete/' + data + '" title="Remove this source.">' +
                      '<i class="glyphicon glyphicon-remove" style="color: red;"></i>' +
                      '<span class="sr-only">Remove</span>' +
                    '</a>' +
@@ -116,7 +116,7 @@ class Sources extends Component {
 		    <div className="container body-content">
               <h2 className="bottom-20">Sources</h2>
               <p>
-                <a href="/admin/sources/createsource">Create New</a>
+                <a href="/admin/sources/manage">Create New</a>
               </p>
 			  {spinner}
 			  <table className="table" ref="main" />

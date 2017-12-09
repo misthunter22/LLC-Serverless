@@ -55,8 +55,9 @@ class Settings extends Component {
       columnDefs: [
       {
         "render": function (data, type, row) {
-	      return '<span class="badge">' + data + '</span>';
+	      return '<a title="' + data + '"><span class="badge truncate">' + data + '</span></a>';
         },
+		"width": "100px",
         "targets": 0
       },
       {

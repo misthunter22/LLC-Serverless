@@ -152,3 +152,10 @@ table.dataTable.display tbody tr.odd.selected {
 .errors {
 	color: red;
 }
+
+.truncate {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
