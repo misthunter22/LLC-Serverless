@@ -48,26 +48,6 @@ export default function servicesBase(Component) {
 		$('#loading_spinner').hide();
 	}
 	
-	applySources(that, a) {
-	  var array = that.state.sources; 
-	  for (var i = 0; i < a.length; i++) {
-	    array.push(a[i]);
-	  }
-      that.setState({sources:array})
-	}
-	
-	applySource(that, a, func) {
-      that.setState({source:a}, func)
-	}
-	
-	applySetting(that, a) {
-	  var array = that.state.settings; 
-	  for (var i = 0; i < a.length; i++) {
-	    array.push(a[i]);
-	  }
-      that.setState({settings:array})
-	}
-	
 	applyInvalidLinks(that, a) {
       that.setState({invalidLinks:a})
 	}
@@ -77,48 +57,51 @@ export default function servicesBase(Component) {
 	}
 		
 	sources() {
-	  var that = this;
-	  AWS.config.credentials.get(function(){
+	  return new Promise(function (fulfill, reject) {
+	    AWS.config.credentials.get(function(){
 
-		// Credentials will be available when this function is called.
-		var accessKeyId = AWS.config.credentials.accessKeyId;
-		var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		var sessionToken = AWS.config.credentials.sessionToken;
+		  // Credentials will be available when this function is called.
+		  var accessKeyId = AWS.config.credentials.accessKeyId;
+		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
+		  var sessionToken = AWS.config.credentials.sessionToken;
 
-		var apigClient = Client.newClient({
-		  invokeUrl: AwsConstants.invokeUrl,
-		  accessKey: accessKeyId,
-		  secretKey: secretAccessKey,
-		  sessionToken: sessionToken,
-		  region: AwsConstants.region
-		});
+		  var apigClient = Client.newClient({
+		    invokeUrl: AwsConstants.invokeUrl,
+		    accessKey: accessKeyId,
+		    secretKey: secretAccessKey,
+		    sessionToken: sessionToken,
+		    region: AwsConstants.region
+		  });
 		
-		var pathTemplate     = AwsConstants.environment + '/api/sources';
-		var params           = {};
-		var additionalParams = {};
-		var body             = {};
-		var method           = 'GET';
+		  var pathTemplate     = AwsConstants.environment + '/api/sources';
+		  var params           = {};
+		  var additionalParams = {};
+		  var body             = {};
+		  var method           = 'GET';
 		
-		apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		  .then(function(result) {
-			var push = [];
-		  	for (var i = 0; i < result.data.length; i++) {
-			  var s = result.data[i];
-			  var obj  = {};
-			  obj['source']       = s.id;
-			  obj['title']        = s.name;
-			  obj['description']  = s.description;
-			  obj['s3name']       = s.s3bucketName;
-			  obj['allowlink']    = s.allowLinkChecking;
-			  obj['allowextract'] = s.allowLinkExtractions; 
-			  obj['created']      = s.dateCreated;
+		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
+		    .then(function(result) {
+			  var push = [];
+		  	  for (var i = 0; i < result.data.length; i++) {
+			    var s = result.data[i];
+			    var obj  = {};
+			    obj['source']       = s.id;
+			    obj['title']        = s.name;
+			    obj['description']  = s.description;
+			    obj['s3name']       = s.s3bucketName;
+			    obj['allowlink']    = s.allowLinkChecking;
+			    obj['allowextract'] = s.allowLinkExtractions; 
+			    obj['created']      = s.dateCreated;
 				  
-			  push.push(obj);
-			}
+			    push.push(obj);
+			  }
 			
-			that.applySources(that, push);
-		  }).catch(function(result){
-		  console.log(result);
+			  fulfill(push);
+		    })
+	      .catch(function(result){
+		    console.log(result);
+			reject(result);
+	      });
 	    });
 	  });
 	}
@@ -164,9 +147,7 @@ export default function servicesBase(Component) {
 			  obj['prefix']       = s.s3bucketSearchPrefix;
 			  obj['bucket']       = s.s3bucketId;
 			
-			  that.applySource(that, obj, function() {
-				fulfill(obj);
-			  });
+			  fulfill(obj);
 		    })
 		  .catch(function(result) {
 		    console.log(result);
@@ -247,48 +228,94 @@ export default function servicesBase(Component) {
 	}
 	
 	settings() {
+	  return new Promise(function (fulfill, reject) {
+	    AWS.config.credentials.get(function(){
+
+		  // Credentials will be available when this function is called.
+		  var accessKeyId = AWS.config.credentials.accessKeyId;
+		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
+		  var sessionToken = AWS.config.credentials.sessionToken;
+
+		  var apigClient = Client.newClient({
+		    invokeUrl: AwsConstants.invokeUrl,
+		    accessKey: accessKeyId,
+		    secretKey: secretAccessKey,
+		    sessionToken: sessionToken,
+		    region: AwsConstants.region
+		  });
+		
+		  var pathTemplate     = AwsConstants.environment + '/api/settings';
+		  var params           = {};
+		  var additionalParams = {};
+		  var body             = {};
+		  var method           = 'GET';
+		
+		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
+		    .then(function(result) {
+			  var push = [];
+		  	  for (var i = 0; i < result.data.length; i++) {
+			    var s = result.data[i];
+			    var obj  = {};
+			    obj['id']          = s.id;
+			    obj['created']     = s.dateCreated;
+			    obj['modified']    = s.dateModified;
+			    obj['description'] = s.description;
+			    obj['user']        = s.modifiedUser;
+			    obj['name']        = s.name;
+			    obj['value']       = s.value;
+				  
+			    push.push(obj);
+			  }
+			
+			  fulfill(push);
+		    })
+		  .catch(function(result){
+		    console.log(result);
+			reject(result);
+	      });
+	    });
+	  });
+	}
+	
+	setting(id) {
 	  var that = this;
-	  AWS.config.credentials.get(function(){
+	  return new Promise(function (fulfill, reject) {
+	    AWS.config.credentials.get(function(){
 
-		// Credentials will be available when this function is called.
-		var accessKeyId = AWS.config.credentials.accessKeyId;
-		var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		var sessionToken = AWS.config.credentials.sessionToken;
+		  // Credentials will be available when this function is called.
+		  var accessKeyId = AWS.config.credentials.accessKeyId;
+		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
+		  var sessionToken = AWS.config.credentials.sessionToken;
 
-		var apigClient = Client.newClient({
-		  invokeUrl: AwsConstants.invokeUrl,
-		  accessKey: accessKeyId,
-		  secretKey: secretAccessKey,
-		  sessionToken: sessionToken,
-		  region: AwsConstants.region
-		});
+		  var apigClient = Client.newClient({
+		    invokeUrl: AwsConstants.invokeUrl,
+		    accessKey: accessKeyId,
+		    secretKey: secretAccessKey,
+		    sessionToken: sessionToken,
+		    region: AwsConstants.region
+		  });
 		
-		var pathTemplate     = AwsConstants.environment + '/api/settings';
-		var params           = {};
-		var additionalParams = {};
-		var body             = {};
-		var method           = 'GET';
+		  var pathTemplate     = AwsConstants.environment + '/api/settings/' + id;
+		  var params           = {};
+		  var additionalParams = {};
+		  var body             = {};
+		  var method           = 'GET';
 		
-		apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		  .then(function(result) {
-			var push = [];
-		  	for (var i = 0; i < result.data.length; i++) {
-			  var s = result.data[i];
+		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
+		    .then(function(result) {
+			  var s = result.data;
 			  var obj  = {};
 			  obj['id']          = s.id;
-			  obj['created']     = s.dateCreated;
-			  obj['modified']    = s.dateModified;
-			  obj['description'] = s.description;
-			  obj['user']        = s.modifiedUser;
 			  obj['name']        = s.name;
-			  obj['value']       = s.value;
-				  
-			  push.push(obj);
-			}
+			  obj['value']       = s.name;
+			  obj['description'] = s.description;
 			
-			that.applySetting(that, push);
-		  }).catch(function(result){
-		  console.log(result);
+			  fulfill(obj);
+		    })
+		  .catch(function(result) {
+		    console.log(result);
+			reject(result);
+	      });
 	    });
 	  });
 	}
@@ -327,7 +354,6 @@ export default function servicesBase(Component) {
 		
 		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
 		    .then(function(result) {
-			  that.applyInvalidLinks(that, result.data);
 			  fulfill(result);
 		    }).catch(function(result){
 		    console.log(result);
@@ -371,7 +397,6 @@ export default function servicesBase(Component) {
 		
 		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
 		    .then(function(result) {
-			  that.applyWarningLinks(that, result.data);
 			  fulfill(result);
 		    }).catch(function(result){
 		    console.log(result);

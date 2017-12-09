@@ -105,10 +105,9 @@ class CreateSource extends Component {
 	  SecretKey:            this.state.secret
 	};
 	
-    console.log('-->', formData);
 	this.saveSource(formData)
 	  .then(function(result) {
-		if (result.status) {
+		if (result.status === true) {
 	      window.location = "/admin/sources"
 		}
 	  })

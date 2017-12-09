@@ -50,39 +50,45 @@ class Sources extends Component {
   }
   
   componentDidMount() {
-    this.sources();
-	$(this.refs.main).DataTable({
-      dom: '<"data-table-wrapper"t>',
-      data: this.state.sources,
-      columns,
-      ordering: false,
-	  columnDefs: [
-	  {
-        "render": function (data, type, row) {
-		  if (row["s3name"]) {
-		    return '<a href="/admin/sources/manage/' + data +'" title="Edit this source.">' +
-                     '<i class="glyphicon glyphicon-pencil"></i>' +
-                     '<span class="sr-only">Edit</span>' +
-                   '</a>';
-		  }
+	var that = this;
+    this.sources()
+	  .then(function(sources) {
+		that.setState({sources: sources});
+		that.changeSpinner(that, false);
+		
+	    $(that.refs.main).DataTable({
+          dom: '<"data-table-wrapper"t>',
+          data: sources,
+          columns,
+          ordering: false,
+	      columnDefs: [
+	      {
+            "render": function (data, type, row) {
+		      if (row["s3name"]) {
+		        return '<a href="/admin/sources/manage/' + data +'" title="Edit this source.">' +
+                         '<i class="glyphicon glyphicon-pencil"></i>' +
+                         '<span class="sr-only">Edit</span>' +
+                       '</a>';
+		      }
 		  
-		  return '<span></span>';
-        },
-        "targets": 5
-      },
-      {
-        "render": function (data, type, row) {
-	      return '<span onclick="return confirm(\'Are you sure you wish to delete this source? There is no undo.\')">' +
-                   '<a href="/admin/sources/delete/' + data + '" title="Remove this source.">' +
-                     '<i class="glyphicon glyphicon-remove" style="color: red;"></i>' +
-                     '<span class="sr-only">Remove</span>' +
-                   '</a>' +
-                 '</span>';
-        },
-        "targets": 7
-      }
-      ]
-    });
+		      return '<span></span>';
+            },
+            "targets": 5
+          },
+          {
+            "render": function (data, type, row) {
+	          return '<span onclick="return confirm(\'Are you sure you wish to delete this source? There is no undo.\')">' +
+                       '<a href="/admin/sources/delete/' + data + '" title="Remove this source.">' +
+                         '<i class="glyphicon glyphicon-remove" style="color: red;"></i>' +
+                         '<span class="sr-only">Remove</span>' +
+                       '</a>' +
+                     '</span>';
+            },
+            "targets": 7
+          }
+          ]
+        });
+	  });
   }
   
   componentWillUnmount(){

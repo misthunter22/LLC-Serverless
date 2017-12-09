@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SAM.Models.Admin
 {
-    public enum SourceSearchType
+    public enum SearchType
     {
         Id,
         Name

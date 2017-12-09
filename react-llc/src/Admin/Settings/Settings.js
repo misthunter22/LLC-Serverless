@@ -46,42 +46,48 @@ class Settings extends Component {
   }
   
   componentDidMount() {
-    this.settings();
-	$(this.refs.main).DataTable({
-      dom: '<"data-table-wrapper"t>',
-      data: this.state.settings,
-      columns,
-      ordering: false,
-      columnDefs: [
-      {
-        "render": function (data, type, row) {
-	      return '<a title="' + data + '"><span class="badge truncate">' + data + '</span></a>';
-        },
-		"width": "100px",
-        "targets": 0
-      },
-      {
-        "render": function (data, type, row) {
-          return '<a href="/admin/settings/editsetting/' + data +'" title="Edit this setting.">' +
-                   '<i class="glyphicon glyphicon-pencil"></i>' +
-                     '<span class="sr-only">Edit</span>' +
-                 '</a>';
+	var that = this;
+    this.settings()
+	  .then(function(settings) {
+		that.setState({settings: settings});
+		that.changeSpinner(that, false);
+		
+		$(that.refs.main).DataTable({
+          dom: '<"data-table-wrapper"t>',
+          data: settings,
+          columns,
+          ordering: false,
+          columnDefs: [
+          {
+            "render": function (data, type, row) {
+	          return '<a title="' + data + '"><span class="badge truncate">' + data + '</span></a>';
+            },
+		    "width": "100px",
+            "targets": 0
           },
-          "targets": 3
-      },
-      {
-	    "render": function (data, type, row) {
-	      return '<span onclick="return confirm(\'Are you sure you wish to delete this setting? There is no undo.\')">' +
-				   '<a href="/admin/settings/deletesetting/' + data + '" title="Remove this setting.">' +
-				     '<i class="glyphicon glyphicon-remove" style="color: red;"></i>' +
-				     '<span class="sr-only">Remove</span>' +
-				   '</a>' +
-			     '</span>';
-	    },
-	    "targets": 6
-      }
-	  ]
-    });
+          {
+            "render": function (data, type, row) {
+              return '<a href="/admin/settings/manage/' + data +'" title="Edit this setting.">' +
+                       '<i class="glyphicon glyphicon-pencil"></i>' +
+                         '<span class="sr-only">Edit</span>' +
+                     '</a>';
+              },
+              "targets": 3
+          },
+          {
+	        "render": function (data, type, row) {
+	          return '<span onclick="return confirm(\'Are you sure you wish to delete this setting? There is no undo.\')">' +
+				       '<a href="/admin/settings/delete/' + data + '" title="Remove this setting.">' +
+				         '<i class="glyphicon glyphicon-remove" style="color: red;"></i>' +
+				         '<span class="sr-only">Remove</span>' +
+				       '</a>' +
+			         '</span>';
+	        },
+	        "targets": 6
+          }
+	      ]
+        });
+	  });
   }
   
   componentWillUnmount(){
@@ -115,7 +121,7 @@ class Settings extends Component {
 		    <div className="container body-content">
               <h2 className="bottom-20">Settings</h2>
               <p>
-                <a href="/admin/settings/createsetting">Create New</a>
+                <a href="/admin/settings/manage">Create New</a>
               </p>
 			  {spinner}
 			  <table className="table" ref="main" />

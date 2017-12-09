@@ -210,20 +210,17 @@ namespace SAM.DI
             }
         }
 
-        public SourcesExt Source(string id, SourceSearchType type)
+        public SourcesExt Source(string id, SearchType type)
         {
-            using (var client = new LLCContext())
+            var results = Sources();
+            switch (type)
             {
-                var results = Sources();
-                switch (type)
-                {
-                    case SourceSearchType.Id:
-                        return results.FirstOrDefault(x => x.Id.Equals(id));
-                    case SourceSearchType.Name:
-                        return results.FirstOrDefault(x => id.Equals(x.S3bucketName, StringComparison.CurrentCultureIgnoreCase));
-                    default:
-                        return null;
-                }
+                case SearchType.Id:
+                    return results.FirstOrDefault(x => x.Id.Equals(id));
+                case SearchType.Name:
+                    return results.FirstOrDefault(x => id.Equals(x.S3bucketName, StringComparison.CurrentCultureIgnoreCase));
+                default:
+                    return null;
             }
         }
 
@@ -314,7 +311,7 @@ namespace SAM.DI
             {
                 Console.WriteLine(JsonConvert.SerializeObject(source));
 
-                var obj = Source(source.Id, SourceSearchType.Id);
+                var obj = Source(source.Id, SearchType.Id);
                 client.Buckets.Remove(new Buckets
                 {
                     Id = obj.S3bucketId
@@ -348,19 +345,39 @@ namespace SAM.DI
             }
         }
 
-        public List<Settings> Settings()
+        public List<SettingsExt> Settings()
         {
             using (var client = new LLCContext())
             {
-                var settings = client.Settings.ToList();
+                var settings = client.Settings
+                    .Select(x => new SettingsExt
+                    {
+                        DateCreated = x.DateCreated,
+                        DateModified = x.DateModified,
+                        Description = x.Description,
+                        Id = x.Id,
+                        ModifiedUser = x.ModifiedUser,
+                        Name = x.Name,
+                        Value = x.Value
+                    })
+                    .ToList();
+
                 return settings.OrderBy(x => x.Name).ToList();
             }
         }
 
-        public Settings Settings(string name)
+        public SettingsExt Setting(string id, SearchType type)
         {
-            var settings = Settings();
-            return settings.FirstOrDefault(x => x.Name == name);
+            var results = Settings();
+            switch (type)
+            {
+                case SearchType.Id:
+                    return results.FirstOrDefault(x => x.Id.Equals(id));
+                case SearchType.Name:
+                    return results.FirstOrDefault(x => id.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase));
+                default:
+                    return null;
+            }
         }
 
         public List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m)
@@ -415,6 +432,81 @@ namespace SAM.DI
                 }
 
                 return resp;
+            }
+        }
+
+        public Save SaveSetting(SettingsExt setting)
+        {
+            Console.WriteLine($"ID is {setting.Id}");
+            Console.WriteLine($"ID is null ? {string.IsNullOrEmpty(setting.Id)}");
+
+            var now = DateTime.Now;
+            using (var client = new LLCContext())
+            {
+                if (string.IsNullOrEmpty(setting.Id))
+                {
+                    Console.WriteLine("Adding setting");
+
+                    var id = Guid.NewGuid().ToString();
+                    client.Settings.Add(new Settings
+                    {
+                        DateCreated = now,
+                        DateModified = now,
+                        Description = setting.Description,
+                        Id = id,
+                        ModifiedUser = "",
+                        Name = setting.Name,
+                        Value = setting.Value
+                    });
+                }
+                else
+                {
+                    Console.WriteLine("Update setting");
+
+                    client.Settings.Update(new Settings
+                    {
+                        DateModified = now,
+                        Description = setting.Description,
+                        ModifiedUser = "",
+                        Name = setting.Name,
+                        Value = setting.Value
+                    });
+                }
+
+                try
+                {
+                    client.SaveChanges();
+                    return new Save { Status = true };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return new Save { Status = false };
+                }
+            }
+        }
+
+        public Save DeleteSetting(SettingsExt setting)
+        {
+            using (var client = new LLCContext())
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(setting));
+
+                client.Settings.Remove(new Settings
+                {
+                    Id = setting.Id
+                });
+
+                try
+                {
+                    client.SaveChanges();
+                    return new Save { Status = true };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return new Save { Status = false };
+                }
             }
         }
 

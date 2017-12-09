@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Cors;
 using SAM.DI;
 using System.Linq;
 using DbCore.Models;
+using SAM.Models.EF;
 
 namespace SAM.Controllers
 {
@@ -25,10 +26,10 @@ namespace SAM.Controllers
         }
 
         // GET api/sources/{id}
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public JsonResult GetId(string id)
         {
-            var source = _service.Source(id, Models.Admin.SourceSearchType.Id);
+            var source = _service.Source(id, Models.Admin.SearchType.Id);
             var bucket = _service.Buckets().FirstOrDefault(x => x.Id == source.S3bucketId);
             source.S3bucketName         = bucket.Name;
             source.S3bucketSearchPrefix = bucket.SearchPrefix;
@@ -42,10 +43,15 @@ namespace SAM.Controllers
         [HttpPost]
         public JsonResult Post([FromBody] SourcesExt source)
         {
-            if (source.Delete)
-                return Json(_service.DeleteSource(source));
-            else
-                return Json(_service.SaveSource(source));
+            if (ModelState.IsValid)
+            {
+                if (source.Delete)
+                    return Json(_service.DeleteSource(source));
+                else
+                    return Json(_service.SaveSource(source));
+            }
+
+            return Json(new Save { Status = false });
         }
     }
 }

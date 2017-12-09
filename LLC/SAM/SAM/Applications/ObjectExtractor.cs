@@ -32,7 +32,7 @@ namespace SAM.Applications
                 var e = record["s3"]["object"]["eTag"].ToString();
                 var n = record["s3"]["bucket"]["name"].ToString();
 
-                var source = Service.Source(n, Models.Admin.SourceSearchType.Name);
+                var source = Service.Source(n, Models.Admin.SearchType.Name);
                 if (source == null)
                 {
                     Console.WriteLine($"Could not find source {n} by name");

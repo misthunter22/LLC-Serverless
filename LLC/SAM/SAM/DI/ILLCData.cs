@@ -46,7 +46,7 @@ namespace SAM.DI
 
         List<SourcesExt> Sources();
 
-        SourcesExt Source(string id, SourceSearchType type);
+        SourcesExt Source(string id, SearchType type);
 
         Save SaveSource(SourcesExt source);
 
@@ -54,9 +54,13 @@ namespace SAM.DI
 
         List<Buckets> Buckets();
 
-        List<Settings> Settings();
+        List<SettingsExt> Settings();
 
-        Settings Settings(string name);
+        SettingsExt Setting(string id, SearchType type);
+
+        Save SaveSetting(SettingsExt setting);
+
+        Save DeleteSetting(SettingsExt setting);
 
         List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m);
 
