@@ -1,8 +1,13 @@
-import history from '../history';
-import auth0 from 'auth0-js';
+import history         from '../history';
+import auth0           from 'auth0-js';
 import { AUTH_CONFIG } from './auth0-variables';
 
 var jwt_decode = require('jwt-decode');
+
+export function idToken() {
+  var token = localStorage.getItem('id_token');
+  return token;
+}
 
 export default class Auth {
   auth0 = new auth0.WebAuth({
@@ -27,7 +32,7 @@ export default class Auth {
   }
   
   idTokenData(field) {
-	var token   = localStorage.getItem('id_token');
+	var token = localStorage.getItem('id_token');
 	if (token) {
 	  var decoded = jwt_decode(token);
 	  return decoded[field];

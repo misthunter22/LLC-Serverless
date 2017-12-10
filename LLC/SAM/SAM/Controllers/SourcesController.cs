@@ -4,11 +4,13 @@ using SAM.DI;
 using System.Linq;
 using DbCore.Models;
 using SAM.Models.EF;
+using SAM.Models.Auth;
 
 namespace SAM.Controllers
 {
     [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
+    [CustomAuthorize(Access = "Admin")]
     public class SourcesController : Controller
     {
         private ILLCData _service;
@@ -43,12 +45,13 @@ namespace SAM.Controllers
         [HttpPost]
         public JsonResult Post([FromBody] SourcesExt source)
         {
-            if (ModelState.IsValid)
+            if (source.Delete && !string.IsNullOrEmpty(source.Id))
             {
-                if (source.Delete)
-                    return Json(_service.DeleteSource(source));
-                else
-                    return Json(_service.SaveSource(source));
+                return Json(_service.DeleteSource(source));
+            }
+            else if (ModelState.IsValid)
+            {
+                return Json(_service.SaveSource(source));
             }
 
             return Json(new Save { Status = false });

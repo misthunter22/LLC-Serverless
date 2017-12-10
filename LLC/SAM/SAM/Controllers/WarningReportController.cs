@@ -6,11 +6,13 @@ using SAM.Models.Reports;
 using System.Collections.Generic;
 using System.Linq;
 using DbCore.Models;
+using SAM.Models.Auth;
 
 namespace SAM.Controllers
 {
     [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
+    [CustomAuthorize(Access = "Report")]
     public class WarningReportController : Controller
     {
         private ILLCData _service;

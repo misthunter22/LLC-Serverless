@@ -12,17 +12,17 @@ class DeleteSetting extends Component {
   componentDidMount() {
 	if (this.props.match.params.id) {
 	  var that = this;
-	  this.deleteSource(
+	  this.changeSetting(
 	    {
 		  Id: this.props.match.params.id,
 		  Delete: true
 		})
 	    .then(function(result) {
-		  if (result.data.status) {
-	        window.location = "/admin/sources"
+		  if (result.status) {
+	        window.location = "/admin/settings"
 		  }
 		  else {
-			that.setState({message: "Delete Source Error!"});
+			that.setState({message: "Delete Settings Error!"});
 		  }
 	  });
 	}

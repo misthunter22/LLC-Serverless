@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using SAM.Models;
 
 namespace SAM
 {
@@ -14,7 +10,7 @@ namespace SAM
     /// 
     /// SAM::SAM.LambdaEntryPoint::FunctionHandlerAsync
     /// </summary>
-    public class LambdaEntryPoint : Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction
+    public class LambdaEntryPoint : APIGatewayAuthorizerProxyFunction
     {
         protected override void Init(IWebHostBuilder builder)
         {

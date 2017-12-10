@@ -12,18 +12,18 @@ class DeleteSource extends Component {
   componentDidMount() {
 	if (this.props.match.params.id) {
 	  var that = this;
-	  this.deleteSource(
-	    {
-		  Id: this.props.match.params.id,
-		  Delete: true
-		})
-	    .then(function(result) {
-		  if (result.data.status) {
-	        window.location = "/admin/sources"
-		  }
-		  else {
-			that.setState({message: "Delete Source Error!"});
-		  }
+	  this.changeSource(
+	  {
+		Id: this.props.match.params.id,
+		Delete: true
+      })
+	  .then(function(result) {
+		if (result.status) {
+	      window.location = "/admin/sources"
+		}
+		else {
+		  that.setState({message: "Delete Source Error!"});
+		}
 	  });
 	}
   }

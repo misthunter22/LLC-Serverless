@@ -1,15 +1,13 @@
 import React            from 'react';
 import { PacmanLoader } from 'react-spinners';
+import { idToken }      from '../Auth/Auth';
 
 var AWS    = require('aws-sdk');
 var Client = require('aws-api-gateway-client').default;
 const $    = require('jquery');
 
 export const AwsConstants = {
-    region: 'us-west-2',
-    invokeUrl: 'https://j6nbqh9lm5.execute-api.us-west-2.amazonaws.com',
-    identityPoolId: 'us-west-2:b4c04701-3f71-4618-8a18-c9a72742dc7b',
-	environment: '/Prod'
+  invokeUrl: 'https://j6nbqh9lm5.execute-api.us-west-2.amazonaws.com/Prod',
 };
 
 export default function servicesBase(Component) {
@@ -18,15 +16,6 @@ export default function servicesBase(Component) {
 
     constructor(props) {
       super(props);
-
-      // Initialize the Amazon Cognito credentials provider
-      AWS.config.region = AwsConstants.region; // Region
-      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: AwsConstants.identityPoolId,
-        Logins: {
-          'idla-auth.auth0.com': localStorage.getItem('id_token')
-        }
-      });
     }
 	
 	spinnerMarkup() {
@@ -47,92 +36,28 @@ export default function servicesBase(Component) {
 	  else
 		$('#loading_spinner').hide();
 	}
-	
-	applyInvalidLinks(that, a) {
-      that.setState({invalidLinks:a})
-	}
-	
-	applyWarningLinks(that, a) {
-      that.setState({warningLinks:a})
-	}
 		
 	sources() {
 	  return new Promise(function (fulfill, reject) {
-	    AWS.config.credentials.get(function(){
-
-		  // Credentials will be available when this function is called.
-		  var accessKeyId = AWS.config.credentials.accessKeyId;
-		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		  var sessionToken = AWS.config.credentials.sessionToken;
-
-		  var apigClient = Client.newClient({
-		    invokeUrl: AwsConstants.invokeUrl,
-		    accessKey: accessKeyId,
-		    secretKey: secretAccessKey,
-		    sessionToken: sessionToken,
-		    region: AwsConstants.region
-		  });
-		
-		  var pathTemplate     = AwsConstants.environment + '/api/sources';
-		  var params           = {};
-		  var additionalParams = {};
-		  var body             = {};
-		  var method           = 'GET';
-		
-		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		    .then(function(result) {
-			  var push = [];
-		  	  for (var i = 0; i < result.data.length; i++) {
-			    var s = result.data[i];
-			    var obj  = {};
-			    obj['source']       = s.id;
-			    obj['title']        = s.name;
-			    obj['description']  = s.description;
-			    obj['s3name']       = s.s3bucketName;
-			    obj['allowlink']    = s.allowLinkChecking;
-			    obj['allowextract'] = s.allowLinkExtractions; 
-			    obj['created']      = s.dateCreated;
-				  
-			    push.push(obj);
-			  }
-			
-			  fulfill(push);
-		    })
-	      .catch(function(result){
-		    console.log(result);
-			reject(result);
-	      });
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/sources';
+		var method       = 'GET';
+		  
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method
 	    });
-	  });
-	}
-	
-	source(id) {
-	  var that = this;
-	  return new Promise(function (fulfill, reject) {
-	    AWS.config.credentials.get(function(){
-
-		  // Credentials will be available when this function is called.
-		  var accessKeyId = AWS.config.credentials.accessKeyId;
-		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		  var sessionToken = AWS.config.credentials.sessionToken;
-
-		  var apigClient = Client.newClient({
-		    invokeUrl: AwsConstants.invokeUrl,
-		    accessKey: accessKeyId,
-		    secretKey: secretAccessKey,
-		    sessionToken: sessionToken,
-		    region: AwsConstants.region
-		  });
 		
-		  var pathTemplate     = AwsConstants.environment + '/api/sources/' + id;
-		  var params           = {};
-		  var additionalParams = {};
-		  var body             = {};
-		  var method           = 'GET';
-		
-		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		    .then(function(result) {
-			  var s = result.data;
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+            var push = [];
+		  	for (var i = 0; i < result.length; i++) {
+			  var s = result[i];
 			  var obj  = {};
 			  obj['source']       = s.id;
 			  obj['title']        = s.name;
@@ -141,182 +66,190 @@ export default function servicesBase(Component) {
 			  obj['allowlink']    = s.allowLinkChecking;
 			  obj['allowextract'] = s.allowLinkExtractions; 
 			  obj['created']      = s.dateCreated;
-			  obj['access']       = s.accessKey;
-			  obj['secret']       = s.secretKey;
-			  obj['region']       = s.region;
-			  obj['prefix']       = s.s3bucketSearchPrefix;
-			  obj['bucket']       = s.s3bucketId;
-			
-			  fulfill(obj);
-		    })
-		  .catch(function(result) {
-		    console.log(result);
-			reject(result);
-	      });
-	    });
-	  });
-	}
-	
-	saveSource(source) {
-	  return new Promise(function (fulfill, reject) {
-	    AWS.config.credentials.get(function(){
-
-		  // Credentials will be available when this function is called.
-		  var accessKeyId     = AWS.config.credentials.accessKeyId;
-		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		  var sessionToken    = AWS.config.credentials.sessionToken;
-
-		  var apigClient = Client.newClient({
-		    invokeUrl: AwsConstants.invokeUrl,
-		    accessKey: accessKeyId,
-		    secretKey: secretAccessKey,
-		    sessionToken: sessionToken,
-		    region: AwsConstants.region
-		  });
-		
-		  var pathTemplate     = AwsConstants.environment + '/api/sources';
-		  var body             = source;
-		  var additionalParams = {};
-		  var params           = {};
-		  var method           = 'POST';
-		
-		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		    .then(function(result) {
-			  fulfill(result);
-		    })
-			.catch(function(result) {
-		      console.log(result);
-			  reject(result);
-	      });
-	    });
-	  });
-	}
-	
-	deleteSource(source) {
-	  return new Promise(function (fulfill, reject) {
-	    AWS.config.credentials.get(function(){
-
-		  // Credentials will be available when this function is called.
-		  var accessKeyId     = AWS.config.credentials.accessKeyId;
-		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		  var sessionToken    = AWS.config.credentials.sessionToken;
-
-		  var apigClient = Client.newClient({
-		    invokeUrl: AwsConstants.invokeUrl,
-		    accessKey: accessKeyId,
-		    secretKey: secretAccessKey,
-		    sessionToken: sessionToken,
-		    region: AwsConstants.region
-		  });
-		
-		  var pathTemplate     = AwsConstants.environment + '/api/sources';
-		  var body             = source;
-		  var additionalParams = {};
-		  var params           = {};
-		  var method           = 'POST';
-		
-		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		    .then(function(result) {
-			  fulfill(result);
-		    })
-			.catch(function(result) {
-		      console.log(result);
-			  reject(result);
-	      });
-	    });
-	  });
-	}
-	
-	settings() {
-	  return new Promise(function (fulfill, reject) {
-	    AWS.config.credentials.get(function(){
-
-		  // Credentials will be available when this function is called.
-		  var accessKeyId = AWS.config.credentials.accessKeyId;
-		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		  var sessionToken = AWS.config.credentials.sessionToken;
-
-		  var apigClient = Client.newClient({
-		    invokeUrl: AwsConstants.invokeUrl,
-		    accessKey: accessKeyId,
-		    secretKey: secretAccessKey,
-		    sessionToken: sessionToken,
-		    region: AwsConstants.region
-		  });
-		
-		  var pathTemplate     = AwsConstants.environment + '/api/settings';
-		  var params           = {};
-		  var additionalParams = {};
-		  var body             = {};
-		  var method           = 'GET';
-		
-		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		    .then(function(result) {
-			  var push = [];
-		  	  for (var i = 0; i < result.data.length; i++) {
-			    var s = result.data[i];
-			    var obj  = {};
-			    obj['id']          = s.id;
-			    obj['created']     = s.dateCreated;
-			    obj['modified']    = s.dateModified;
-			    obj['description'] = s.description;
-			    obj['user']        = s.modifiedUser;
-			    obj['name']        = s.name;
-			    obj['value']       = s.value;
 				  
-			    push.push(obj);
-			  }
+			  push.push(obj);
+			}
 			
-			  fulfill(push);
-		    })
-		  .catch(function(result){
+			fulfill(push);
+          })
+		 .catch(function(result) {
 		    console.log(result);
 			reject(result);
-	      });
-	    });
+         });
 	  });
 	}
 	
-	setting(id) {
-	  var that = this;
+	source(id) {	  
 	  return new Promise(function (fulfill, reject) {
-	    AWS.config.credentials.get(function(){
-
-		  // Credentials will be available when this function is called.
-		  var accessKeyId = AWS.config.credentials.accessKeyId;
-		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		  var sessionToken = AWS.config.credentials.sessionToken;
-
-		  var apigClient = Client.newClient({
-		    invokeUrl: AwsConstants.invokeUrl,
-		    accessKey: accessKeyId,
-		    secretKey: secretAccessKey,
-		    sessionToken: sessionToken,
-		    region: AwsConstants.region
-		  });
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/sources/' + id;
+		var method       = 'GET';
+		  
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method
+	    });
 		
-		  var pathTemplate     = AwsConstants.environment + '/api/settings/' + id;
-		  var params           = {};
-		  var additionalParams = {};
-		  var body             = {};
-		  var method           = 'GET';
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			var s = result;
+			var obj  = {};
+			obj['source']       = s.id;
+			obj['title']        = s.name;
+			obj['description']  = s.description;
+			obj['s3name']       = s.s3bucketName;
+			obj['allowlink']    = s.allowLinkChecking;
+			obj['allowextract'] = s.allowLinkExtractions; 
+			obj['created']      = s.dateCreated;
+			obj['access']       = s.accessKey;
+			obj['secret']       = s.secretKey;
+			obj['region']       = s.region;
+			obj['prefix']       = s.s3bucketSearchPrefix;
+			obj['bucket']       = s.s3bucketId;
+			
+			fulfill(obj);
+          })
+		 .catch(function(result) {
+		    console.log(result);
+			reject(result);
+         });
+	  });
+	}
+	
+	changeSource(source) {
+	  return new Promise(function (fulfill, reject) {
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/sources';
+		var method       = 'POST';
+		  
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method,
+		  body: JSON.stringify(source)
+	    });
 		
-		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		    .then(function(result) {
-			  var s = result.data;
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			fulfill(result);
+          })
+		 .catch(function(result) {
+		    console.log(result);
+			reject(result);
+         });
+	  });
+	}
+	
+	settings() {	  
+	  return new Promise(function (fulfill, reject) {
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/settings';
+		var method       = 'GET';
+		  
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method
+	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			var push = [];
+		  	for (var i = 0; i < result.length; i++) {
+			  var s = result[i];
 			  var obj  = {};
 			  obj['id']          = s.id;
-			  obj['name']        = s.name;
-			  obj['value']       = s.name;
+			  obj['created']     = s.dateCreated;
+			  obj['modified']    = s.dateModified;
 			  obj['description'] = s.description;
+			  obj['user']        = s.modifiedUser;
+			  obj['name']        = s.name;
+			  obj['value']       = s.value;
+				  
+			  push.push(obj);
+			}
 			
-			  fulfill(obj);
-		    })
-		  .catch(function(result) {
+			fulfill(push);
+          })
+		 .catch(function(result) {
 		    console.log(result);
 			reject(result);
-	      });
+         });
+	  });
+	}
+	
+	setting(id) {  
+	  return new Promise(function (fulfill, reject) {
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/settings/' + id;
+		var method       = 'GET';
+		  
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method
 	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			var s = result;
+			var obj  = {};
+			obj['id']          = s.id;
+			obj['name']        = s.name;
+			obj['value']       = s.value;
+			obj['description'] = s.description;
+			
+			fulfill(obj);
+          })
+		 .catch(function(result) {
+		    console.log(result);
+			reject(result);
+         });
+	  });
+	}
+	
+	changeSetting(setting) {
+	  return new Promise(function (fulfill, reject) {
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/settings';
+		var method       = 'POST';
+		  
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method,
+		  body: JSON.stringify(setting)
+	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			fulfill(result);
+          })
+		 .catch(function(result) {
+		    console.log(result);
+			reject(result);
+         });
 	  });
 	}
 	
@@ -423,8 +356,8 @@ export default function servicesBase(Component) {
 		    region: AwsConstants.region
 		  });
 		
-		  var pathTemplate     = AwsConstants.environment + '/api/bucketLocations';
-		  var body             = {
+		  var pathTemplate = AwsConstants.environment + '/api/bucketLocations';
+		  var body         = {
 			  id: data,
 			  type: type
 	      };

@@ -4,11 +4,15 @@ using SAM.DI;
 using System.Linq;
 using DbCore.Models;
 using SAM.Models.EF;
+using Newtonsoft.Json;
+using System;
+using SAM.Models.Auth;
 
 namespace SAM.Controllers
 {
     [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
+    [CustomAuthorize(Access = "Admin")]
     public class SettingsController : Controller
     {
         private ILLCData _service;
@@ -20,6 +24,7 @@ namespace SAM.Controllers
 
         // GET api/settings
         [HttpGet]
+        
         public JsonResult Get()
         {
             var results = _service.Settings();
@@ -37,12 +42,14 @@ namespace SAM.Controllers
         [HttpPost]
         public JsonResult Post([FromBody] SettingsExt setting)
         {
-            if (ModelState.IsValid)
+            if (setting.Delete && !string.IsNullOrEmpty(setting.Id))
             {
-                if (setting.Delete)
-                    return Json(_service.DeleteSetting(setting));
-                else
-                    return Json(_service.SaveSetting(setting));
+                return Json(_service.DeleteSetting(setting));
+            }
+            else if (ModelState.IsValid)
+            {
+                var user = new User(HttpContext.User.Claims);
+                return Json(_service.SaveSetting(setting, user));
             }
 
             return Json(new Save { Status = false });

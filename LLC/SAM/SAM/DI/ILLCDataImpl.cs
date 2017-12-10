@@ -13,6 +13,8 @@ using SAM.Models.Reports;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using SAM.Models.EF;
+using SAM.Models.Auth;
+using System.Security.Claims;
 
 namespace SAM.DI
 {
@@ -23,6 +25,11 @@ namespace SAM.DI
         public RegionEndpoint Region()
         {
             return _region;
+        }
+
+        public User User(IEnumerable<Claim> claims)
+        {
+            return new User(claims);
         }
 
         public int ObjectsCount()
@@ -435,7 +442,7 @@ namespace SAM.DI
             }
         }
 
-        public Save SaveSetting(SettingsExt setting)
+        public Save SaveSetting(SettingsExt setting, User user)
         {
             Console.WriteLine($"ID is {setting.Id}");
             Console.WriteLine($"ID is null ? {string.IsNullOrEmpty(setting.Id)}");
@@ -454,7 +461,7 @@ namespace SAM.DI
                         DateModified = now,
                         Description = setting.Description,
                         Id = id,
-                        ModifiedUser = "",
+                        ModifiedUser = user.Email,
                         Name = setting.Name,
                         Value = setting.Value
                     });
@@ -467,7 +474,8 @@ namespace SAM.DI
                     {
                         DateModified = now,
                         Description = setting.Description,
-                        ModifiedUser = "",
+                        Id = setting.Id,
+                        ModifiedUser = user.Email,
                         Name = setting.Name,
                         Value = setting.Value
                     });

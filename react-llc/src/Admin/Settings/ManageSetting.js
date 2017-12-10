@@ -22,7 +22,7 @@ class ManageSetting extends Component {
   componentDidMount() {
 	if (this.props.match.params.id) {
 	  var that = this;
-	  this.source(this.props.match.params.id)
+	  this.setting(this.props.match.params.id)
 	    .then(function(source) {
 	      that.setState({id:          source.id});
 	      that.setState({name:        source.name});
@@ -54,7 +54,7 @@ class ManageSetting extends Component {
 	  Description: this.state.description
 	};
 	
-	this.saveSource(formData)
+	this.changeSetting(formData)
 	  .then(function(result) {
 		if (result.status === true) {
 	      window.location = "/admin/settings"

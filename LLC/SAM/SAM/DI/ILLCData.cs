@@ -1,16 +1,20 @@
 ﻿using Amazon;
 using Amazon.S3.Model;
 using DbCore.Models;
+using SAM.Models.Auth;
 using SAM.Models.Admin;
 using SAM.Models.EF;
 using SAM.Models.Reports;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace SAM.DI
 {
     public interface ILLCData
     {
         RegionEndpoint Region();
+
+        User User(IEnumerable<Claim> claim);
 
         #region Objects
 
@@ -58,7 +62,7 @@ namespace SAM.DI
 
         SettingsExt Setting(string id, SearchType type);
 
-        Save SaveSetting(SettingsExt setting);
+        Save SaveSetting(SettingsExt setting, User user);
 
         Save DeleteSetting(SettingsExt setting);
 
