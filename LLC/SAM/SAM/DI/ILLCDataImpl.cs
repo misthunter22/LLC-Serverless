@@ -32,6 +32,59 @@ namespace SAM.DI
             return new User(claims);
         }
 
+        public List<StatsExt> Stats()
+        {
+            using (var client = new LLCContext())
+            {
+                var stats = new List<StatsExt>();
+                var sources = Sources();
+                foreach (var s in sources)
+                {
+                    if (s.S3bucketId == null)
+                        continue;
+
+                    var html = (from m in client.Objects
+                                where m.Bucket == s.S3bucketId && m.ItemName.Contains(".htm")
+                                select m).Count();
+
+                    var objects = (from m in client.Objects
+                                   where m.Bucket == s.S3bucketId
+                                   select m).Count();
+
+                    var extracted = (from m in client.Objects
+                                     where m.Bucket == s.S3bucketId
+                                     select m).Max(x => x.DateLinksLastExtracted);
+
+                    var invalid = (from m in client.Links
+                                   where m.Source == s.Id && m.Valid == false
+                                   select m).Count();
+
+                    var total = (from m in client.Links
+                                 where m.Source == s.Id
+                                 select m).Count();
+
+                    var chked = (from m in client.Links
+                                 where m.Source == s.Id
+                                 select m).Max(x => x.DateLastChecked);
+
+                    var ext = new StatsExt
+                    {
+                        HtmlFiles = html,
+                        InvalidLinks = invalid,
+                        LastChecked = chked,
+                        LastExtracted = extracted,
+                        Objects = objects,
+                        Source = s.Name,
+                        TotalLinks = total
+                    };
+
+                    stats.Add(ext);
+                }
+
+                return stats;
+            }
+        }
+
         public int ObjectsCount()
         {
             using (var client = new LLCContext())

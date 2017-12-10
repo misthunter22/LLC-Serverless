@@ -364,6 +364,48 @@ export default function servicesBase(Component) {
 	  });
 	}
 	
+	stats() {
+	  return new Promise(function (fulfill, reject) {
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/stats';
+		var method       = 'GET';
+		  
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method
+	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			var push = [];
+		  	for (var i = 0; i < result.length; i++) {
+			  var s = result[i];
+			  var obj  = {};
+			  obj['title']     = s.source;
+			  obj['objects']   = s.objects;
+			  obj['links']     = s.totalLinks;
+			  obj['invalid']   = s.invalidLinks;
+			  obj['html']      = s.htmlFiles;
+			  obj['extracted'] = s.lastExtracted;
+			  obj['checked']   = s.lastChecked;
+				  
+			  push.push(obj);
+			}
+			
+			fulfill(push);
+          })
+		 .catch(function(result) {
+		    console.log(result);
+			reject(result);
+         });
+	  });
+	}
+	
 	configureScrenshotLinks() {
 		
 	  var that = this;

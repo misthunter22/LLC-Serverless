@@ -5,10 +5,10 @@ import servicesBase from '../Services/ServicesBase';
 class Dashboard extends Component {
 
     constructor(props) {
-        super(props);
-		this.state = {
-		  sources: []
-		}
+      super(props);
+	  this.state = {
+		stats: []
+	  }
     }
 	
 	goTo(route) {
@@ -16,60 +16,62 @@ class Dashboard extends Component {
     }
 
     componentDidMount() {
-	  this.sources();
+      var that = this;
+	  this.stats()
+	    .then(function(stats) {
+		  that.setState({stats: stats});
+		});
     }
   
     render() {
-	  let sources = [];
-	  if (this.state.sources.length > 0) {
-	    for (var i = 0; i < this.state.sources.length; i++) {
-		  var source = this.state.sources[i];
+	  let stats = [];
+	  if (this.state.stats.length > 0) {
+	    for (var i = 0; i < this.state.stats.length; i++) {
+		  var stat = this.state.stats[i];
 		  let s = <div className="col-md-5 label-default dash-div">
-            <h3 className="label-default dash-h3-label">{source.title}</h3>
+            <h3 className="label-default dash-h3-label">{stat.title}</h3>
 
             <div className="label label-default dash-title">Total S3 Objects: </div>
             <div className="label label-primary dash-value">
-			  {source.objects}
+			  {stat.objects}
             </div>
 			
             <div className="dash-title-odd"> </div>
 			
             <div className="label label-default dash-title">HTML Files: </div>
             <div className="label label-info dash-value">
-              {source.html}
+              {stat.html}
             </div>
 
             <div className="dash-title-even"> </div>
 
             <div className="label label-default dash-title">Total Links: </div>
             <div className="label label-success dash-value">
-              {source.links}
+              {stat.links}
             </div>
 			
             <div className="dash-title-odd"> </div>
 			
             <div className="label label-default dash-title">Last Extracted: </div>
-            <div className="label label-info dash-value"
-                 title="Links were last extracted  @source.LinksLastExtracted.ToString()">
-              {source.extracted}
+            <div className="label label-info dash-value">
+              {stat.extracted}
             </div>
 
             <div className="dash-title-even"></div>
 
             <div className="label label-default dash-title">Invalid Links: </div>
             <div className="label label-danger dash-value">
-              {source.invalid}
+              {stat.invalid}
             </div>
 			
             <div className="dash-title-odd"> </div>
 			
             <div className="label label-default dash-title">Last Checked: </div>
-            <div className="label label-info dash-value"
-                 title="Links were last checked  @source.LinksLastChecked.ToString()">
-              {source.checked}
+            <div className="label label-info dash-value">
+              {stat.checked}
             </div>
           </div>;
-		  sources.push(s);  
+		  stats.push(s);  
 	    }
 	  }
 	  
@@ -107,7 +109,7 @@ class Dashboard extends Component {
 			Roles
 		  </Button>
 	    </div>
-		{sources}
+		{stats}
       </div>;
     }
 }

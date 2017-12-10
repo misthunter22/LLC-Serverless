@@ -16,6 +16,8 @@ namespace SAM.DI
 
         User User(IEnumerable<Claim> claim);
 
+        List<StatsExt> Stats();
+
         #region Objects
 
         int ObjectsCount();
