@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SAM.DI;
+using System;
 
 namespace SAM.Models.Auth
 {
@@ -14,6 +15,7 @@ namespace SAM.Models.Auth
             var user = service.User(context.HttpContext.User.Claims);
             if (!user.ContainsRole(Access))
             {
+                Console.WriteLine($"{Access} is not contained in {user.ToRoleList()}");
                 context.Result = new JsonResult("error authorizing API");
             }
         }

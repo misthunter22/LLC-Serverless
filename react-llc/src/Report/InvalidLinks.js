@@ -72,15 +72,16 @@ class InvalidLinks extends Component {
       info: true,
 	  ajax: function(data, callback, settings) {
 		that.changeSpinner(that, true);
-	    that.invalidLinks(data).then(function(r) {
-		  that.changeSpinner(that, false);
-		  var h = {};
-		  h.draw = data.draw;  
-          h.data = r.data.data;
-          h.recordsTotal = r.data.recordsTotal;
-          h.recordsFiltered = r.data.recordsFiltered;
-		  callback(h);
-		});
+	    that.invalidLinks(data)
+		  .then(function(r) {
+		    that.changeSpinner(that, false);
+		    var h = {};
+		    h.draw = data.draw;  
+            h.data = r.data;
+            h.recordsTotal = r.recordsTotal;
+            h.recordsFiltered = r.recordsFiltered;
+		    callback(h);
+		  });
 	  },
 	  columnDefs: [
 	  {

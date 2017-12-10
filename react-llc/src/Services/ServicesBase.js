@@ -254,88 +254,76 @@ export default function servicesBase(Component) {
 	}
 	
 	invalidLinks(settings) {
-	  var that = this;
-	  return new Promise(function (fulfill, reject) {
-	    AWS.config.credentials.get(function(){
-
-		  // Credentials will be available when this function is called.
-		  var accessKeyId = AWS.config.credentials.accessKeyId;
-		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		  var sessionToken = AWS.config.credentials.sessionToken;
-
-		  var apigClient = Client.newClient({
-		    invokeUrl: AwsConstants.invokeUrl,
-		    accessKey: accessKeyId,
-		    secretKey: secretAccessKey,
-		    sessionToken: sessionToken,
-		    region: AwsConstants.region
-		  });
-		
-		  var pathTemplate     = AwsConstants.environment + '/api/invalidReport';
-		  var body             = {
-			  draw:       settings.draw, 
-			  start:      settings.start, 
-			  length:     settings.length,
-			  column:     settings.order[0].column,
-			  columnName: settings.columns[settings.order[0].column].data,
-			  direction:  settings.order[0].dir,
-			  search:     settings.search.value
-	      };
-		  var additionalParams = {};
-		  var params           = {};
-		  var method           = 'POST';
-		
-		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		    .then(function(result) {
-			  fulfill(result);
-		    }).catch(function(result){
-		    console.log(result);
-			reject(result);
-	      });
+	  return new Promise(function (fulfill, reject) {		
+		var pathTemplate = AwsConstants.invokeUrl + '/api/invalidReport';
+		var body         = {
+	      draw:       settings.draw, 
+		  start:      settings.start, 
+		  length:     settings.length,
+		  column:     settings.order[0].column,
+		  columnName: settings.columns[settings.order[0].column].data,
+		  direction:  settings.order[0].dir,
+		  search:     settings.search.value
+	    };
+		  
+		var method = 'POST';
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method,
+		  body: JSON.stringify(body)
 	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			fulfill(result);
+          })
+		  .catch(function(result) {
+		    console.log(result);
+		    reject(result);
+          });
 	  });
 	}
 	
 	warningLinks(settings) {
-	  var that = this;
-	  return new Promise(function (fulfill, reject) {
-	    AWS.config.credentials.get(function(){
-
-		  // Credentials will be available when this function is called.
-		  var accessKeyId = AWS.config.credentials.accessKeyId;
-		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		  var sessionToken = AWS.config.credentials.sessionToken;
-
-		  var apigClient = Client.newClient({
-		    invokeUrl: AwsConstants.invokeUrl,
-		    accessKey: accessKeyId,
-		    secretKey: secretAccessKey,
-		    sessionToken: sessionToken,
-		    region: AwsConstants.region
-		  });
-		
-		  var pathTemplate     = AwsConstants.environment + '/api/warningReport';
-		  var body             = {
-			  draw:       settings.draw, 
-			  start:      settings.start, 
-			  length:     settings.length,
-			  column:     settings.order[0].column,
-			  columnName: settings.columns[settings.order[0].column].data,
-			  direction:  settings.order[0].dir,
-			  search:     settings.search.value
-	      };
-		  var additionalParams = {};
-		  var params           = {};
-		  var method           = 'POST';
-		
-		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		    .then(function(result) {
-			  fulfill(result);
-		    }).catch(function(result){
-		    console.log(result);
-			reject(result);
-	      });
+	  return new Promise(function (fulfill, reject) {		
+		var pathTemplate = AwsConstants.invokeUrl + '/api/warningReport';
+		var body         = {
+	      draw:       settings.draw, 
+		  start:      settings.start, 
+		  length:     settings.length,
+		  column:     settings.order[0].column,
+		  columnName: settings.columns[settings.order[0].column].data,
+		  direction:  settings.order[0].dir,
+		  search:     settings.search.value
+	    };
+		  
+		var method = 'POST';
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method,
+		  body: JSON.stringify(body)
 	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			fulfill(result);
+          })
+		  .catch(function(result) {
+		    console.log(result);
+		    reject(result);
+          });
 	  });
 	}
 	

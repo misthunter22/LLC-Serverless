@@ -19,7 +19,7 @@ class Roles extends Component {
 				  The current roles that exist in the application are:
 				  <ul>
 				    <li>Admin</li>
-					<li>ReportUser</li>
+					<li>Report</li>
 				  </ul>
 				</p>
 			  </div>

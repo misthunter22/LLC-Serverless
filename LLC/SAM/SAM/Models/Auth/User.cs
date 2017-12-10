@@ -51,5 +51,10 @@ namespace SAM.Models.Auth
         {
             return Roles.Contains(role);
         }
+
+        public string ToRoleList()
+        {
+            return string.Join(",", Roles);
+        }
     }
 }
