@@ -16,6 +16,8 @@ namespace SAM.Applications
 
         protected Regex R = new Regex("<a[^>]* href=\"(http[^\"]*)\">([^<]+)</a>", RegexOptions.IgnoreCase);
 
+        protected int MAX = 40000;
+
         protected BaseHandler()
         {
             Service = new ILLCDataImpl();
@@ -91,7 +93,10 @@ namespace SAM.Applications
                         row.DateLastFound = date;
                     }
 
+                    obj.DateLinksLastExtracted = date;
+                    var o = Service.SetObject(obj);
                     var r = Service.SetLink(row);
+                    Console.WriteLine(JsonConvert.SerializeObject(o));
                     Console.WriteLine(JsonConvert.SerializeObject(r));
                 }
             }

@@ -16,8 +16,14 @@ namespace SAM.Applications.LinkChecker
             foreach (var source in sources)
             {
                 Console.WriteLine($"Working on source {source.Id}");
-                //var objs = Service.LinkChecker(source.Id);
-                //objects += objs;
+                var count = Service.LinksCount(source.Id);
+                var loop = count < MAX ? 1 : Math.Ceiling(((double)count) / ((double)MAX));
+                for (var i = 0; i < loop; i++)
+                {
+                    var objs = Service.LinkChecker(source.Id, i * MAX, MAX);
+                    Service.EnqueueObjects(objs);
+                    objects += objs.Count;
+                }
             }
 
             return objects;

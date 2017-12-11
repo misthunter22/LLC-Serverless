@@ -1,5 +1,6 @@
 ﻿using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.Json;
+using DbCore.Models;
 using System;
 using System.Linq;
 
@@ -8,24 +9,18 @@ namespace SAM.Applications.LinkChecker
     public class LinkChecker : BaseHandler
     {
         [LambdaSerializer(typeof(JsonSerializer))]
-        public int Handler(object input, ILambdaContext context)
+        public void Handler(object input, ILambdaContext context)
         {
-            var sources = Service.Sources().Where(x => x.AllowLinkChecking != null && (bool)x.AllowLinkChecking && x.S3bucketId != null);
-            var buckets = Service.Buckets();
-            var objects = 0;
+            var objs = Service.DequeueObjects<LinksExt>();
+            if (objs == null)
+                return;
 
-            foreach (var source in sources)
+            foreach (var obj in objs)
             {
-                var bucket = buckets.FirstOrDefault(x => x.Id == source.S3bucketId);
-                if (bucket != null)
-                {
-                    Console.WriteLine($"Working on bucket {bucket.Id}");
-                    //var objs = Service.LinkExtractor(bucket.Id);
-                    //objects += objs;
-                }
+                
             }
 
-            return objects;
+            Service.RemoveObjectsFromQueue(objs);
         }
     }
 }

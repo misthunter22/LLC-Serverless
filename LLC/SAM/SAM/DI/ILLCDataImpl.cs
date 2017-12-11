@@ -15,12 +15,16 @@ using Amazon.DynamoDBv2.Model;
 using SAM.Models.EF;
 using SAM.Models.Auth;
 using System.Security.Claims;
+using Amazon.SQS;
+using Amazon.SQS.Model;
 
 namespace SAM.DI
 {
     public class ILLCDataImpl : ILLCData
     {
         protected RegionEndpoint _region = RegionEndpoint.USWest2;
+
+        private int _maxQueue = 10;
 
         public RegionEndpoint Region()
         {
@@ -85,11 +89,16 @@ namespace SAM.DI
             }
         }
 
-        public int ObjectsCount()
+        public int ObjectsCount(string bucket)
         {
             using (var client = new LLCContext())
             {
-                var count = client.Objects.Count();
+                var count = client.Objects.Where(
+                    x => x.Bucket == bucket &&
+                    x.DisabledDate == null &&
+                    x.Key.Contains(".htm") &&
+                    x.IsFolder == false).Count();
+
                 return count;
             }
         }
@@ -120,7 +129,7 @@ namespace SAM.DI
             }
         }
 
-        public List<Objects> LinkExtractor(string bucket, int offset, int maximum)
+        public List<ObjectsExt> LinkExtractor(string bucket, int offset, int maximum)
         {
             using (var client = new LLCContext())
             {
@@ -128,21 +137,35 @@ namespace SAM.DI
                     x => x.Bucket == bucket &&
                     x.DisabledDate == null &&
                     x.Key.Contains(".htm") &&
-                    x.IsFolder == false &&
-                    (x.DateLinksLastExtracted == null || x.DateLinksLastExtracted < x.ContentLastModified))
+                    x.IsFolder == false)
                   .Skip(offset)
                   .Take(maximum)
+                  .Select(x => new ObjectsExt
+                  {
+                      Bucket = x.Bucket,
+                      ContentLastModified = x.ContentLastModified,
+                      DateFirstFound = x.DateFirstFound,
+                      DateLastFound = x.DateLastFound,
+                      DateLinksLastExtracted = x.DateLinksLastExtracted,
+                      DisabledDate = x.DisabledDate,
+                      DisabledUser = x.DisabledUser,
+                      Etag = x.Etag,
+                      Id = x.Id,
+                      IsFolder = x.IsFolder,
+                      ItemName = x.ItemName,
+                      Key = x.Key
+                  })
                   .ToList();
 
                 return result;
             }
         }
 
-        public int LinksCount()
+        public int LinksCount(string source)
         {
             using (var client = new LLCContext())
             {
-                var count = client.Links.Count();
+                var count = client.Links.Where(x => x.Source == source).Count();
                 return count;
             }
         }
@@ -226,13 +249,34 @@ namespace SAM.DI
             }
         }
 
-        public List<Links> LinkChecker(string source, int offset, int maximum)
+        public List<LinksExt> LinkChecker(string source, int offset, int maximum)
         {
             using (var client = new LLCContext())
             {
                 var result = client.Links.Where(x => x.Source == source)
                     .Skip(offset)
                     .Take(maximum)
+                    .Select(x => new LinksExt
+                    {
+                        AllTimeMaxDownloadTime = x.AllTimeMaxDownloadTime,
+                        AllTimeMinDownloadTime = x.AllTimeMinDownloadTime,
+                        AllTimeStdDevDownloadTime = x.AllTimeStdDevDownloadTime,
+                        AttemptCount = x.AttemptCount,
+                        DateFirstFound = x.DateFirstFound,
+                        DateLastChecked = x.DateLastChecked,
+                        DateLastFound = x.DateLastFound,
+                        DateUpdated = x.DateUpdated,
+                        DisabledDate = x.DisabledDate,
+                        DisabledUser = x.DisabledUser,
+                        Id = x.Id,
+                        PastWeekMaxDownloadTime = x.PastWeekMaxDownloadTime,
+                        PastWeekMinDownloadTime = x.PastWeekMinDownloadTime,
+                        PastWeekStdDevDownloadTime = x.PastWeekStdDevDownloadTime,
+                        ReportNotBeforeDate = x.ReportNotBeforeDate,
+                        Source = x.Source,
+                        Url = x.Url,
+                        Valid = x.Valid
+                    })
                     .ToList();
 
                 return result;
@@ -393,15 +437,6 @@ namespace SAM.DI
                     Console.WriteLine(e.Message);
                     return new Save { Status = false };
                 }
-            }
-        }
-
-        public List<Buckets> Buckets()
-        {
-            using (var client = new LLCContext())
-            {
-                var buckets = client.Buckets.ToList();
-                return buckets;
             }
         }
 
@@ -568,6 +603,101 @@ namespace SAM.DI
                     Console.WriteLine(e.Message);
                     return new Save { Status = false };
                 }
+            }
+        }
+
+        public void EnqueueObjects<T>(List<T> objects) where T : Models.Dynamo.ReceiptBase
+        {
+            if (objects.Count == 0)
+                return;
+
+            using (var sqsClient = new AmazonSQSClient())
+            {
+                var success = 0;
+                var failed  = 0;
+                var count   = objects.Count < _maxQueue ? 1 : (int)Math.Ceiling(((double)objects.Count) / ((double)_maxQueue));
+                for (var i = 0; i < count; i++)
+                {
+                    var result = sqsClient.SendMessageBatchAsync(new SendMessageBatchRequest
+                    {
+                        Entries = objects.Skip(i * _maxQueue).Take(_maxQueue).Select(x => new SendMessageBatchRequestEntry
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            MessageBody = JsonConvert.SerializeObject(x)
+                        })
+                        .ToList(),
+                        QueueUrl = Environment.GetEnvironmentVariable("Queue")
+                    }).Result;
+
+                    success += result.Successful.Count;
+                    failed += result.Failed.Count;
+                }
+
+                Console.WriteLine($"Successful message count is {success}");
+                Console.WriteLine($"Failed message count is {failed}");
+            }
+        }
+
+        public List<T> DequeueObjects<T>() where T : Models.Dynamo.ReceiptBase
+        {
+            using (var sqsClient = new AmazonSQSClient())
+            {
+                var list = new List<T>();
+
+                var messages = sqsClient.ReceiveMessageAsync(new ReceiveMessageRequest
+                {
+                    MaxNumberOfMessages = _maxQueue,
+                    QueueUrl = Environment.GetEnvironmentVariable("Queue")
+                });
+
+                foreach (var message in messages.Result.Messages)
+                {
+                    var obj = JsonConvert.DeserializeObject<T>(message.Body);
+                    obj.ReceiptHandle = message.ReceiptHandle;
+                    list.Add(obj);
+                }
+
+                return list;
+            }
+        }
+
+        public void RemoveObjectsFromQueue<T>(List<T> objects) where T : Models.Dynamo.ReceiptBase
+        {
+            using (var sqsClient = new AmazonSQSClient())
+            {
+                sqsClient.DeleteMessageBatchAsync(new DeleteMessageBatchRequest
+                {
+                    Entries = objects.Select(x => new DeleteMessageBatchRequestEntry
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        ReceiptHandle = x.ReceiptHandle
+                    }).ToList(),
+                    QueueUrl = Environment.GetEnvironmentVariable("Queue")
+                });
+            }
+        }
+
+        public bool QueueEmpty()
+        {
+            using (var sqsClient = new AmazonSQSClient())
+            {
+                var attr = sqsClient.GetQueueAttributesAsync(new GetQueueAttributesRequest
+                {
+                    AttributeNames = new List<string> { "ApproximateNumberOfMessages" },
+                    QueueUrl = Environment.GetEnvironmentVariable("Queue")
+                });
+
+                Console.WriteLine($"Queue count: {0}", attr.Result.ApproximateNumberOfMessages);
+                return attr.Result.ApproximateNumberOfMessages == 0;
+            }
+        }
+
+        public List<Buckets> Buckets()
+        {
+            using (var client = new LLCContext())
+            {
+                var buckets = client.Buckets.ToList();
+                return buckets;
             }
         }
 

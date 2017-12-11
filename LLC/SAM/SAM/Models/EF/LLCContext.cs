@@ -16,6 +16,11 @@ namespace DbCore.Models
         public virtual DbSet<Sources> Sources { get; set; }
         public virtual DbSet<Stats> Stats { get; set; }
 
+        public LLCContext()
+        {
+            Database.SetCommandTimeout(5 * 60);
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

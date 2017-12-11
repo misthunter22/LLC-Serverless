@@ -80,6 +80,25 @@
         "MemorySize": 1024,
         "Timeout": 300,
         "Role": null,
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSNSFullAccess", "AmazonSQSFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
+			"Topic": { "Ref" : "LinkExtractorTopic" },
+			"Queue": { "Ref" : "LinkExtractorQueue" }
+          }
+        }
+      }
+    },
+	"LinkExtractorFunction" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.LinkExtractor.Queue::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 1024,
+        "Timeout": 300,
+        "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
           "Variables" : {
@@ -98,10 +117,11 @@
         "MemorySize": 1024,
         "Timeout": 30,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
           "Variables" : {
-            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
+			"Queue": { "Ref" : "LinkExtractorQueue" }
           }
         }
       }
@@ -115,7 +135,7 @@
         "MemorySize": 1024,
         "Timeout": 300,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess" ],
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
@@ -204,6 +224,32 @@
 		"Type" : "AWS::SQS::Queue",
 		"Properties" : {
 			"VisibilityTimeout": 0
+		}
+	},
+
+	"LinkExtractorTopic" : {
+		"Type" : "AWS::SNS::Topic",
+		"Properties" : {
+			"Subscription" : [ 
+			{
+				"Endpoint": {
+					"Fn::GetAtt": [ "LinkExtractorFunction", "Arn" ]
+				},
+				"Protocol": "lambda"
+			} ]
+		}
+	},
+	"LinkExtractorTopicPermissions" : {
+		"Type": "AWS::Lambda::Permission",
+		"Properties": {
+			"Action": "lambda:InvokeFunction",
+			"Principal": "sns.amazonaws.com",
+			"SourceArn": {
+				"Ref" : "LinkExtractorTopic"
+			},
+			"FunctionName": {
+				"Fn::GetAtt": [ "LinkExtractorFunction", "Arn" ]
+			}
 		}
 	},
 

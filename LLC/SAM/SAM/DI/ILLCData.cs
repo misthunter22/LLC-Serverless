@@ -20,7 +20,7 @@ namespace SAM.DI
 
         #region Objects
 
-        int ObjectsCount();
+        int ObjectsCount(string bucket);
 
         Objects Object(string id);
 
@@ -28,13 +28,13 @@ namespace SAM.DI
 
         Objects SetObject(Objects obj);
 
-        List<Objects> LinkExtractor(string bucket, int offset, int maximum);
+        List<ObjectsExt> LinkExtractor(string bucket, int offset, int maximum);
 
         #endregion
 
         #region Links
 
-        int LinksCount();
+        int LinksCount(string source);
 
         Links Link(string id);
 
@@ -46,9 +46,11 @@ namespace SAM.DI
 
         Links SetLink(Links link);
 
-        List<Links> LinkChecker(string source, int offset, int maximum);
+        List<LinksExt> LinkChecker(string source, int offset, int maximum);
 
         #endregion
+
+        #region Sources
 
         List<SourcesExt> Sources();
 
@@ -58,7 +60,9 @@ namespace SAM.DI
 
         Save DeleteSource(SourcesExt source);
 
-        List<Buckets> Buckets();
+        #endregion
+
+        #region Settings
 
         List<SettingsExt> Settings();
 
@@ -67,6 +71,22 @@ namespace SAM.DI
         Save SaveSetting(SettingsExt setting, User user);
 
         Save DeleteSetting(SettingsExt setting);
+
+        #endregion
+
+        #region Queue
+
+        void EnqueueObjects<T>(List<T> objects) where T : Models.Dynamo.ReceiptBase;
+
+        List<T> DequeueObjects<T>() where T : Models.Dynamo.ReceiptBase;
+
+        void RemoveObjectsFromQueue<T>(List<T> objects) where T : Models.Dynamo.ReceiptBase;
+
+        bool QueueEmpty();
+
+        #endregion
+
+        List<Buckets> Buckets();
 
         List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m);
 
