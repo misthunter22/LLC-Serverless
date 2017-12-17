@@ -74,6 +74,18 @@ namespace SAM.DI
 
         #endregion
 
+        #region Packages
+
+        List<PackagesExt> Packages();
+
+        PackagesExt Package(string id);
+
+        Save SavePackage(PackagesExt package, User user);
+
+        Save DeletePackage(PackagesExt setting);
+
+        #endregion
+
         #region Queue
 
         void EnqueueObjects<T>(List<T> objects) where T : Models.Dynamo.ReceiptBase;

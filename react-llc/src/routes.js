@@ -15,7 +15,7 @@ import DeleteSetting     from './Admin/Settings/DeleteSetting';
 import Logs              from './Admin/Logs';
 import Users             from './Admin/Users';
 import Roles             from './Admin/Roles';
-import Upload            from './Upload/Upload';
+import Upload            from './Admin/Upload/Upload';
 import Callback          from './Callback/Callback';
 import Auth              from './Auth/Auth';
 import history           from './history';

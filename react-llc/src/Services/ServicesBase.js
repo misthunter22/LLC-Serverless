@@ -253,6 +253,48 @@ export default function servicesBase(Component) {
 	  });
 	}
 	
+	packages() {
+	  return new Promise(function (fulfill, reject) {
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/uploads';
+		var method       = 'GET';
+		  
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method
+	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+            var push = [];
+		  	for (var i = 0; i < result.length; i++) {
+			  var s = result[i];
+			  var obj  = {};
+			  obj['source']       = s.id;
+			  obj['title']        = s.name;
+			  obj['description']  = s.description;
+			  obj['s3name']       = s.s3bucketName;
+			  obj['allowlink']    = s.allowLinkChecking;
+			  obj['allowextract'] = s.allowLinkExtractions; 
+			  obj['created']      = s.dateCreated;
+				  
+			  push.push(obj);
+			}
+			
+			fulfill(push);
+          })
+		 .catch(function(result) {
+		    console.log(result);
+			reject(result);
+         });
+	  });
+	}
+	
 	invalidLinks(settings) {
 	  return new Promise(function (fulfill, reject) {		
 		var pathTemplate = AwsConstants.invokeUrl + '/api/invalidReport';

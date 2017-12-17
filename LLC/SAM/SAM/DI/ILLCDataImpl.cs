@@ -97,6 +97,7 @@ namespace SAM.DI
                     x => x.Bucket == bucket &&
                     x.DisabledDate == null &&
                     x.Key.Contains(".htm") &&
+                    (x.DateLinksLastExtracted == null || x.DateLinksLastExtracted < x.ContentLastModified) &&
                     x.IsFolder == false).Count();
 
                 return count;
@@ -137,6 +138,7 @@ namespace SAM.DI
                     x => x.Bucket == bucket &&
                     x.DisabledDate == null &&
                     x.Key.Contains(".htm") &&
+                    (x.DateLinksLastExtracted == null || x.DateLinksLastExtracted < x.ContentLastModified) &&
                     x.IsFolder == false)
                   .Skip(offset)
                   .Take(maximum)
@@ -475,61 +477,6 @@ namespace SAM.DI
             }
         }
 
-        public List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m)
-        {
-            using (var client = new AmazonDynamoDBClient(_region))
-            {
-                var buckets = Buckets();
-
-                var id = m.id;
-                if ("stat".Equals(m.type))
-                {
-                    //id = QueryDataAttribute("LLC-Stats", id, "Link").Result.S;
-                }
-
-                var ret = new List<string>();
-                var last = new Dictionary<string, AttributeValue>();
-                last["Link"] = new AttributeValue { S = "0" };
-
-                while (last.ContainsKey("Link"))
-                {
-                    var rows = client.ScanAsync(new ScanRequest
-                    {
-                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                            { ":val",  new AttributeValue { S = id } }
-                        },
-                        FilterExpression = "Link = :val",
-                        TableName = "LLC-ObjectLinks",
-                        ExclusiveStartKey = last["Link"].S == "0" ? null : last
-                    }).Result;
-
-                    last = rows.LastEvaluatedKey;
-                    ret.AddRange(rows.Items.Select(x => x.ContainsKey("Object") ? x["Object"].S : "").ToList());
-                }
-
-                var resp = new List<BucketLocationsModel>();
-                foreach (var o in ret)
-                {
-                    var obj = client.QueryAsync(new QueryRequest
-                    {
-                        TableName = "LLC-Objects",
-                        KeyConditionExpression = "Id = :v_Id",
-                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                            { ":v_Id", new AttributeValue { S =  o }}
-                        }
-                    });
-
-                    var item = obj.Result.Items.FirstOrDefault();
-                    resp.Add(new BucketLocationsModel
-                    {
-                        data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == item["Bucket"].S).Name, item["Key"].S)
-                    });
-                }
-
-                return resp;
-            }
-        }
-
         public Save SaveSetting(SettingsExt setting, User user)
         {
             Console.WriteLine($"ID is {setting.Id}");
@@ -603,6 +550,122 @@ namespace SAM.DI
                     Console.WriteLine(e.Message);
                     return new Save { Status = false };
                 }
+            }
+        }
+
+        public List<PackagesExt> Packages()
+        {
+            using (var client = new LLCContext())
+            {
+                var packages = client.Packages
+                    .Select(x => new PackagesExt
+                    {
+                        DateUploaded = x.DateUploaded,
+                        Delete = false,
+                        Description = x.Description,
+                        FileName = x.FileName,
+                        Id = x.Id,
+                        ImsDescription = x.ImsDescription,
+                        ImsSchema = x.ImsSchema,
+                        ImsSchemaVersion = x.ImsSchemaVersion,
+                        ImsTitle = x.ImsTitle,
+                        Key = x.Key,
+                        Name = x.Name,
+                        PackageProcessed = x.PackageProcessed,
+                        UploadedBy = x.UploadedBy
+                    })
+                    .ToList();
+
+                return packages.ToList();
+            }
+        }
+
+        public PackagesExt Package(string id)
+        {
+            using (var client = new LLCContext())
+            {
+                var package = client.Packages.FirstOrDefault(x => x.Id == id);
+                return  new PackagesExt
+                {
+                    DateUploaded = package.DateUploaded,
+                    Delete = false,
+                    Description = package.Description,
+                    FileName = package.FileName,
+                    Id = package.Id,
+                    ImsDescription = package.ImsDescription,
+                    ImsSchema = package.ImsSchema,
+                    ImsSchemaVersion = package.ImsSchemaVersion,
+                    ImsTitle = package.ImsTitle,
+                    Key = package.Key,
+                    Name = package.Name,
+                    PackageProcessed = package.PackageProcessed,
+                    UploadedBy = package.UploadedBy
+                };
+            }
+        }
+
+        public Save SavePackage(PackagesExt package, User user)
+        {
+            return null;
+        }
+
+        public Save DeletePackage(PackagesExt setting)
+        {
+            return null;
+        }
+
+        public List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m)
+        {
+            using (var client = new AmazonDynamoDBClient(_region))
+            {
+                var buckets = Buckets();
+
+                var id = m.id;
+                if ("stat".Equals(m.type))
+                {
+                    //id = QueryDataAttribute("LLC-Stats", id, "Link").Result.S;
+                }
+
+                var ret = new List<string>();
+                var last = new Dictionary<string, AttributeValue>();
+                last["Link"] = new AttributeValue { S = "0" };
+
+                while (last.ContainsKey("Link"))
+                {
+                    var rows = client.ScanAsync(new ScanRequest
+                    {
+                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                            { ":val",  new AttributeValue { S = id } }
+                        },
+                        FilterExpression = "Link = :val",
+                        TableName = "LLC-ObjectLinks",
+                        ExclusiveStartKey = last["Link"].S == "0" ? null : last
+                    }).Result;
+
+                    last = rows.LastEvaluatedKey;
+                    ret.AddRange(rows.Items.Select(x => x.ContainsKey("Object") ? x["Object"].S : "").ToList());
+                }
+
+                var resp = new List<BucketLocationsModel>();
+                foreach (var o in ret)
+                {
+                    var obj = client.QueryAsync(new QueryRequest
+                    {
+                        TableName = "LLC-Objects",
+                        KeyConditionExpression = "Id = :v_Id",
+                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                            { ":v_Id", new AttributeValue { S =  o }}
+                        }
+                    });
+
+                    var item = obj.Result.Items.FirstOrDefault();
+                    resp.Add(new BucketLocationsModel
+                    {
+                        data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == item["Bucket"].S).Name, item["Key"].S)
+                    });
+                }
+
+                return resp;
             }
         }
 
