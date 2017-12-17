@@ -15,19 +15,19 @@ const columns = [
   },
   {
 	title: 'File Name',
-	data: 'value'
+	data: 'fileName'
   },
   {
 	title: 'Uploaded By',
-	data: 'id'
+	data: 'uploadedBy'
   },
   {
 	title: 'Date Uploaded',
-	data: 'modified'
+	data: 'dateUploaded'
   },
   {
 	title: 'Package Processed',
-	data: 'user'
+	data: 'packageProcessed'
   }
 ];
 
@@ -36,7 +36,7 @@ class Upload extends Component {
   constructor(props) {
     super(props);
 	this.state = {
-      packages: [],
+      pckgs: [],
       loading: true
 	}
   }
@@ -44,40 +44,36 @@ class Upload extends Component {
   componentDidMount() {
 	var that = this;
     this.packages()
-	  .then(function(packages) {
-		that.setState({packages: packages});
+	  .then(function(pckgs) {
+		that.setState({pckgs: pckgs});
 		that.changeSpinner(that, false);
 		
 		$(that.refs.main).DataTable({
           dom: '<"data-table-wrapper"t>',
-          data: packages,
+          data: pckgs,
           columns,
           ordering: false,
           columnDefs: [
           {
             "render": function (data, type, row) {
-	          return '<a title="' + data + '"><span class="badge truncate">' + data + '</span></a>';
+	          return '<a target="_blank" href="/admin/upload/file/' + data + '" title="' + data + '"><span class="badge truncate">' + data + '</span></a>';
             },
 		    "width": "100px",
             "targets": 0
           },
           {
             "render": function (data, type, row) {
-              return '<a href="/admin/upload/manage/' + data +'" title="Edit this setting.">' +
-                       '<i class="glyphicon glyphicon-pencil"></i>' +
-                         '<span class="sr-only">Edit</span>' +
-                     '</a>';
+              return data + '&nbsp;' +
+                '<i class="glyphicon glyphicon-info-sign" title="' + row['description'] + '"></i>';
               },
               "targets": 1
           },
           {
 	        "render": function (data, type, row) {
-	          return '<span onclick="return confirm(\'Are you sure you wish to delete this setting? There is no undo.\')">' +
-				       '<a href="/admin/upload/delete/' + data + '" title="Remove this setting.">' +
-				         '<i class="glyphicon glyphicon-remove" style="color: red;"></i>' +
-				         '<span class="sr-only">Remove</span>' +
-				       '</a>' +
-			         '</span>';
+	          return data + '&nbsp;' +
+                '<a href="' + row['key'] + '" target="_blank">' +
+                    '<i class="glyphicon glyphicon-info-sign" title="' + row['key'] + '"></i>' +
+                '</a>';
 	        },
 	        "targets": 2
           }
@@ -94,13 +90,13 @@ class Upload extends Component {
   }
   
   shouldComponentUpdate() {
-	if (this.state.packages.length > 0) {
+	if (this.state.pckgs.length > 0) {
 	  const table = $('.data-table-wrapper')
                       .find('table')
                       .DataTable();
 					
       table.clear();
-      table.rows.add(this.state.packages);
+      table.rows.add(this.state.pckgs);
 	  table.columns.adjust();
       table.draw();
 	  

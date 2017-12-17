@@ -606,7 +606,39 @@ namespace SAM.DI
 
         public Save SavePackage(PackagesExt package, User user)
         {
-            return null;
+            Console.WriteLine($"ID is {package.Id}");
+            Console.WriteLine($"ID is null ? {string.IsNullOrEmpty(package.Id)}");
+
+            var now = DateTime.Now;
+            using (var client = new LLCContext())
+            {
+                if (!string.IsNullOrEmpty(package.Id))
+                {
+                    Console.WriteLine("Adding package");
+                    client.Packages.Add(new Packages
+                    {
+                        DateUploaded = now,
+                        Description = package.Description,
+                        FileName = package.FileName,
+                        Id = package.Id,
+                        Key = package.Key,
+                        Name = package.Name,
+                        PackageProcessed = false,
+                        UploadedBy = user.Name
+                    });
+                }
+
+                try
+                {
+                    client.SaveChanges();
+                    return new Save { Status = true };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return new Save { Status = false };
+                }
+            }
         }
 
         public Save DeletePackage(PackagesExt setting)
@@ -786,6 +818,19 @@ namespace SAM.DI
                     Key = key,
                     ContentType = "application/json",
                     InputStream = new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(obj)))
+                }).Result;
+            }
+        }
+
+        public PutObjectResponse FilePut(string bucket, string key, Stream stream)
+        {
+            using (var client = new AmazonS3Client(_region))
+            {
+                return client.PutObjectAsync(new PutObjectRequest
+                {
+                    BucketName = bucket,
+                    Key = key,
+                    InputStream = stream
                 }).Result;
             }
         }

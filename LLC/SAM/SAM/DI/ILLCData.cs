@@ -7,6 +7,7 @@ using SAM.Models.EF;
 using SAM.Models.Reports;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.IO;
 
 namespace SAM.DI
 {
@@ -105,5 +106,7 @@ namespace SAM.DI
         GetObjectResponse ObjectGet(string bucket, string key);
 
         PutObjectResponse ObjectPut<T>(string bucket, string key, T obj);
+
+        PutObjectResponse FilePut(string bucket, string key, Stream stream);
     }
 }

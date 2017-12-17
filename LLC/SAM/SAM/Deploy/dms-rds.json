@@ -1,527 +1,575 @@
 ﻿{
-	"rules": [
-		{
-			"rule-type": "selection",
-			"rule-id": "1",
-			"rule-name": "1",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Links-Dynamo"
-			},
-			"rule-action": "include"
-		},
-		{
-			"rule-type": "selection",
-			"rule-id": "2",
-			"rule-name": "2",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "LinkReports-Dynamo"
-			},
-			"rule-action": "include"
-		},
-		{
-			"rule-type": "selection",
-			"rule-id": "3",
-			"rule-name": "3",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "LinkStats-Dynamo"
-			},
-			"rule-action": "include"
-		},
-		{
-			"rule-type": "selection",
-			"rule-id": "4",
-			"rule-name": "4",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "PackageUploads-Dynamo"
-			},
-			"rule-action": "include"
-		},
-		{
-			"rule-type": "selection",
-			"rule-id": "5",
-			"rule-name": "5",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Buckets-Dynamo"
-			},
-			"rule-action": "include"
-		},
-		{
-			"rule-type": "selection",
-			"rule-id": "6",
-			"rule-name": "6",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Objects-Dynamo"
-			},
-			"rule-action": "include"
-		},
-		{
-			"rule-type": "selection",
-			"rule-id": "7",
-			"rule-name": "7",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Settings-Dynamo"
-			},
-			"rule-action": "include"
-		},
-		{
-			"rule-type": "selection",
-			"rule-id": "8",
-			"rule-name": "8",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Sources-Dynamo"
-			},
-			"rule-action": "include"
-		},
-		{
-			"rule-type": "selection",
-			"rule-id": "9",
-			"rule-name": "9",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Objects_Links-Dynamo"
-			},
-			"rule-action": "include"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "10",
-			"rule-name": "10",
-			"rule-target": "table",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "LinkReports-Dynamo"
-			},
-			"rule-action": "rename",
-			"value": "Reports"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "11",
-			"rule-name": "11",
-			"rule-target": "table",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Links-Dynamo"
-			},
-			"rule-action": "rename",
-			"value": "Links"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "12",
-			"rule-name": "12",
-			"rule-target": "table",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "LinkStats-Dynamo"
-			},
-			"rule-action": "rename",
-			"value": "Stats"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "13",
-			"rule-name": "13",
-			"rule-target": "table",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "PackageUploads-Dynamo"
-			},
-			"rule-action": "rename",
-			"value": "Packages"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "14",
-			"rule-name": "14",
-			"rule-target": "table",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Buckets-Dynamo"
-			},
-			"rule-action": "rename",
-			"value": "Buckets"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "15",
-			"rule-name": "15",
-			"rule-target": "table",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Objects-Dynamo"
-			},
-			"rule-action": "rename",
-			"value": "Objects"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "16",
-			"rule-name": "16",
-			"rule-target": "table",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Settings-Dynamo"
-			},
-			"rule-action": "rename",
-			"value": "Settings"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "17",
-			"rule-name": "17",
-			"rule-target": "table",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Sources-Dynamo"
-			},
-			"rule-action": "rename",
-			"value": "Sources"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "18",
-			"rule-name": "18",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "LinkReports-Dynamo",
-				"column-name": "Link_LinkId"
-			},
-			"rule-action": "rename",
-			"value": "Link"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "19",
-			"rule-name": "19",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "LinkReports-Dynamo",
-				"column-name": "LinkStatId"
-			},
-			"rule-action": "rename",
-			"value": "Stat"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "20",
-			"rule-name": "20",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Links-Dynamo",
-				"column-name": "LinkId"
-			},
-			"rule-action": "rename",
-			"value": "Id"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "21",
-			"rule-name": "21",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Links-Dynamo",
-				"column-name": "LinkUrl"
-			},
-			"rule-action": "rename",
-			"value": "Url"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "22",
-			"rule-name": "22",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Links-Dynamo",
-				"column-name": "LinkCheckDisabledUser"
-			},
-			"rule-action": "rename",
-			"value": "DisabledUser"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "23",
-			"rule-name": "23",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Links-Dynamo",
-				"column-name": "SourceId"
-			},
-			"rule-action": "rename",
-			"value": "Source"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "24",
-			"rule-name": "24",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Links-Dynamo",
-				"column-name": "LinkCheckDisabledDate"
-			},
-			"rule-action": "rename",
-			"value": "DisabledDate"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "25",
-			"rule-name": "25",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Links-Dynamo",
-				"column-name": "IsValid"
-			},
-			"rule-action": "rename",
-			"value": "Valid"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "26",
-			"rule-name": "26",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Links-Dynamo",
-				"column-name": "DateStatsUpdated"
-			},
-			"rule-action": "rename",
-			"value": "DateUpdated"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "27",
-			"rule-name": "27",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "LinkStats-Dynamo",
-				"column-name": "LinkStatId"
-			},
-			"rule-action": "rename",
-			"value": "Id"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "28",
-			"rule-name": "28",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "LinkStats-Dynamo",
-				"column-name": "LinkId"
-			},
-			"rule-action": "rename",
-			"value": "Link"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "29",
-			"rule-name": "29",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "LinkStats-Dynamo",
-				"column-name": "ErrorMessage"
-			},
-			"rule-action": "rename",
-			"value": "Error"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "30",
-			"rule-name": "30",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "LinkStats-Dynamo",
-				"column-name": "StatusDesc"
-			},
-			"rule-action": "rename",
-			"value": "StatusDescription"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "31",
-			"rule-name": "31",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Buckets-Dynamo",
-				"column-name": "S3BucketId"
-			},
-			"rule-action": "rename",
-			"value": "Id"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "32",
-			"rule-name": "32",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Objects-Dynamo",
-				"column-name": "S3ObjectId"
-			},
-			"rule-action": "rename",
-			"value": "Id"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "33",
-			"rule-name": "33",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Objects-Dynamo",
-				"column-name": "S3BucketId"
-			},
-			"rule-action": "rename",
-			"value": "Bucket"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "34",
-			"rule-name": "34",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Objects-Dynamo",
-				"column-name": "LinkCheckDisabledUser"
-			},
-			"rule-action": "rename",
-			"value": "DisabledUser"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "35",
-			"rule-name": "35",
-			"rule-target": "column",
+  "rules": [
+    {
+      "rule-type": "selection",
+      "rule-id": "1",
+      "rule-name": "1",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "2",
+      "rule-name": "2",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkReports-Dynamo"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "3",
+      "rule-name": "3",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkStats-Dynamo"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "4",
+      "rule-name": "4",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "PackageUploads-Dynamo"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "5",
+      "rule-name": "5",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Buckets-Dynamo"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "6",
+      "rule-name": "6",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Objects-Dynamo"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "7",
+      "rule-name": "7",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Settings-Dynamo"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "8",
+      "rule-name": "8",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Sources-Dynamo"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "9",
+      "rule-name": "9",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Objects_Links-Dynamo"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "47",
+      "rule-name": "47",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "PackageUploadFiles-Dynamo"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "10",
+      "rule-name": "10",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkReports-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "Reports"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "11",
+      "rule-name": "11",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "Links"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "12",
+      "rule-name": "12",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkStats-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "Stats"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "13",
+      "rule-name": "13",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "PackageUploads-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "Packages"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "14",
+      "rule-name": "14",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Buckets-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "Buckets"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "15",
+      "rule-name": "15",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Objects-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "Objects"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "16",
+      "rule-name": "16",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Settings-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "Settings"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "17",
+      "rule-name": "17",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Sources-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "Sources"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "18",
+      "rule-name": "18",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkReports-Dynamo",
+        "column-name": "Link_LinkId"
+      },
+      "rule-action": "rename",
+      "value": "Link"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "19",
+      "rule-name": "19",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkReports-Dynamo",
+        "column-name": "LinkStatId"
+      },
+      "rule-action": "rename",
+      "value": "Stat"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "20",
+      "rule-name": "20",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo",
+        "column-name": "LinkId"
+      },
+      "rule-action": "rename",
+      "value": "Id"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "21",
+      "rule-name": "21",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo",
+        "column-name": "LinkUrl"
+      },
+      "rule-action": "rename",
+      "value": "Url"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "22",
+      "rule-name": "22",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo",
+        "column-name": "LinkCheckDisabledUser"
+      },
+      "rule-action": "rename",
+      "value": "DisabledUser"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "23",
+      "rule-name": "23",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo",
+        "column-name": "SourceId"
+      },
+      "rule-action": "rename",
+      "value": "Source"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "24",
+      "rule-name": "24",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo",
+        "column-name": "LinkCheckDisabledDate"
+      },
+      "rule-action": "rename",
+      "value": "DisabledDate"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "25",
+      "rule-name": "25",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo",
+        "column-name": "IsValid"
+      },
+      "rule-action": "rename",
+      "value": "Valid"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "26",
+      "rule-name": "26",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo",
+        "column-name": "DateStatsUpdated"
+      },
+      "rule-action": "rename",
+      "value": "DateUpdated"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "27",
+      "rule-name": "27",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkStats-Dynamo",
+        "column-name": "LinkStatId"
+      },
+      "rule-action": "rename",
+      "value": "Id"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "28",
+      "rule-name": "28",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkStats-Dynamo",
+        "column-name": "LinkId"
+      },
+      "rule-action": "rename",
+      "value": "Link"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "29",
+      "rule-name": "29",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkStats-Dynamo",
+        "column-name": "ErrorMessage"
+      },
+      "rule-action": "rename",
+      "value": "Error"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "30",
+      "rule-name": "30",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "LinkStats-Dynamo",
+        "column-name": "StatusDesc"
+      },
+      "rule-action": "rename",
+      "value": "StatusDescription"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "31",
+      "rule-name": "31",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Buckets-Dynamo",
+        "column-name": "S3BucketId"
+      },
+      "rule-action": "rename",
+      "value": "Id"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "32",
+      "rule-name": "32",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Objects-Dynamo",
+        "column-name": "S3ObjectId"
+      },
+      "rule-action": "rename",
+      "value": "Id"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "33",
+      "rule-name": "33",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Objects-Dynamo",
+        "column-name": "S3BucketId"
+      },
+      "rule-action": "rename",
+      "value": "Bucket"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "34",
+      "rule-name": "34",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Objects-Dynamo",
+        "column-name": "LinkCheckDisabledUser"
+      },
+      "rule-action": "rename",
+      "value": "DisabledUser"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "35",
+      "rule-name": "35",
+      "rule-target": "column",
       "object-locator": {
         "schema-name": "dbo",
         "table-name": "S3Objects-Dynamo",
         "column-name": "LinkCheckDisabledDate"
       },
-			"rule-action": "rename",
-			"value": "DisabledDate"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "36",
-			"rule-name": "36",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Settings-Dynamo",
-				"column-name": "SettingId"
-			},
-			"rule-action": "rename",
-			"value": "Id"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "37",
-			"rule-name": "37",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Sources-Dynamo",
-				"column-name": "SourceId"
-			},
-			"rule-action": "rename",
-			"value": "Id"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "38",
-			"rule-name": "38",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Settings-Dynamo",
-				"column-name": "S3BucketId"
-			},
-			"rule-action": "rename",
-			"value": "Bucket"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "39",
-			"rule-name": "39",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "Links-Dynamo",
-				"column-name": "ObjectId"
-			},
-			"rule-action": "rename",
-			"value": "Object"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "40",
-			"rule-name": "40",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Objects_Links-Dynamo",
-				"column-name": "S3ObjectLinkId"
-			},
-			"rule-action": "rename",
-			"value": "Id"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "41",
-			"rule-name": "41",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Objects_Links-Dynamo",
-				"column-name": "S3ObjectId"
-			},
-			"rule-action": "rename",
-			"value": "Object"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "42",
-			"rule-name": "42",
-			"rule-target": "column",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Objects_Links-Dynamo",
-				"column-name": "LinkId"
-			},
-			"rule-action": "rename",
-			"value": "Link"
-		},
-		{
-			"rule-type": "transformation",
-			"rule-id": "43",
-			"rule-name": "43",
-			"rule-target": "table",
-			"object-locator": {
-				"schema-name": "dbo",
-				"table-name": "S3Objects_Links-Dynamo"
-			},
-			"rule-action": "rename",
-			"value": "ObjectLinks"
-		}
-	]
+      "rule-action": "rename",
+      "value": "DisabledDate"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "36",
+      "rule-name": "36",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Settings-Dynamo",
+        "column-name": "SettingId"
+      },
+      "rule-action": "rename",
+      "value": "Id"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "37",
+      "rule-name": "37",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Sources-Dynamo",
+        "column-name": "SourceId"
+      },
+      "rule-action": "rename",
+      "value": "Id"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "38",
+      "rule-name": "38",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Settings-Dynamo",
+        "column-name": "S3BucketId"
+      },
+      "rule-action": "rename",
+      "value": "Bucket"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "39",
+      "rule-name": "39",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "Links-Dynamo",
+        "column-name": "ObjectId"
+      },
+      "rule-action": "rename",
+      "value": "Object"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "40",
+      "rule-name": "40",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Objects_Links-Dynamo",
+        "column-name": "S3ObjectLinkId"
+      },
+      "rule-action": "rename",
+      "value": "Id"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "41",
+      "rule-name": "41",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Objects_Links-Dynamo",
+        "column-name": "S3ObjectId"
+      },
+      "rule-action": "rename",
+      "value": "Object"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "42",
+      "rule-name": "42",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Objects_Links-Dynamo",
+        "column-name": "LinkId"
+      },
+      "rule-action": "rename",
+      "value": "Link"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "43",
+      "rule-name": "43",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "S3Objects_Links-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "ObjectLinks"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "44",
+      "rule-name": "44",
+      "rule-target": "table",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "PackageUploadFiles-Dynamo"
+      },
+      "rule-action": "rename",
+      "value": "PackageFiles"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "45",
+      "rule-name": "45",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "PackageUploadFiles-Dynamo",
+        "column-name": "Link_LinkId"
+      },
+      "rule-action": "rename",
+      "value": "Link"
+    },
+    {
+      "rule-type": "transformation",
+      "rule-id": "46",
+      "rule-name": "46",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "dbo",
+        "table-name": "PackageUploadFiles-Dynamo",
+        "column-name": "PackageUploadId"
+      },
+      "rule-action": "rename",
+      "value": "PackageId"
+    }
+  ]
 }

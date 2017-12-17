@@ -1,9 +1,6 @@
-﻿using DbCore.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DbCore.Models
 {
@@ -34,5 +31,14 @@ namespace DbCore.Models
         public string ImsDescription { get; set; }
 
         public bool Delete { get; set; }
+
+        [BindNever]
+        public IFormFile File { get; set; }
+
+        public bool CanCreate()
+        {
+            return !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Description) &&
+                !string.IsNullOrEmpty(FileName);
+        }
     }
 }

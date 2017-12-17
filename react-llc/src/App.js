@@ -78,7 +78,7 @@ class App extends Component {
 		      <Button
                 bsStyle="primary"
                 className="btn-margin"
-                onClick={this.goTo.bind(this, 'upload')}
+                onClick={this.goTo.bind(this, 'admin/upload')}
               >
                 Upload
               </Button>

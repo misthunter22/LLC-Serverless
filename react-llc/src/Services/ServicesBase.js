@@ -13,10 +13,6 @@ export const AwsConstants = {
 export default function servicesBase(Component) {
 
   class ServicesBase extends Component {
-
-    constructor(props) {
-      super(props);
-    }
 	
 	spinnerMarkup() {
 	  let spinner = 
@@ -275,18 +271,55 @@ export default function servicesBase(Component) {
 		  	for (var i = 0; i < result.length; i++) {
 			  var s = result[i];
 			  var obj  = {};
-			  obj['source']       = s.id;
-			  obj['title']        = s.name;
-			  obj['description']  = s.description;
-			  obj['s3name']       = s.s3bucketName;
-			  obj['allowlink']    = s.allowLinkChecking;
-			  obj['allowextract'] = s.allowLinkExtractions; 
-			  obj['created']      = s.dateCreated;
+			  obj['id']               = s.id;
+			  obj['name']             = s.name;
+			  obj['description']      = s.description;
+			  obj['uploadedBy']       = s.uploadedBy;
+			  obj['dateUploaded']     = s.dateUploaded;
+			  obj['key']              = s.key; 
+			  obj['packageProcessed'] = s.packageProcessed;
+			  obj['fileName']         = s.fileName;
+			  obj['imsSchema']        = s.imsSchema;
+			  obj['imsSchemaVersion'] = s.imsSchemaVersion;
+			  obj['imsTitle']         = s.imsTitle;
 				  
 			  push.push(obj);
 			}
 			
 			fulfill(push);
+          })
+		 .catch(function(result) {
+		    console.log(result);
+			reject(result);
+         });
+	  });
+	}
+	
+	createPackage(pckg) {
+	  return new Promise(function (fulfill, reject) {
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/uploads';
+		var method       = 'POST';
+		
+		var fd = new FormData();
+		fd.append('name', pckg.Name);
+		fd.append('fileName', pckg.FileName);
+		fd.append('file', pckg.FileContents);
+		fd.append('description', pckg.Description);
+
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Authorization': idToken()
+	      }),
+		  method: method,
+		  body: fd
+	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			fulfill(result);
           })
 		 .catch(function(result) {
 		    console.log(result);

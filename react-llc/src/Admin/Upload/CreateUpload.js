@@ -1,35 +1,21 @@
 import React, { Component } from 'react';
 import servicesBase         from '../../Services/ServicesBase';
 
-class ManageUpload extends Component {
+class CreateUpload extends Component {
 	
   constructor(props) {
     super(props);
 	this.state = {
-      setting     : null,
-	  id          : "",
-	  name        : "",
-	  value       : "",
-	  description : ""
+	  name         : "",
+	  fileName     : "",
+	  fileContents : null,
+	  description  : ""
 	}
 	
 	this.updateName        = this.updateName.bind(this);
 	this.updateDescription = this.updateDescription.bind(this);
-	this.updateValue       = this.updateValue.bind(this);
+	this.updateFile        = this.updateFile.bind(this);
 	this.handleSubmit      = this.handleSubmit.bind(this);
-  }
-  
-  componentDidMount() {
-	if (this.props.match.params.id) {
-	  var that = this;
-	  this.setting(this.props.match.params.id)
-	    .then(function(source) {
-	      that.setState({id:          source.id});
-	      that.setState({name:        source.name});
-		  that.setState({value:       source.value});
-	      that.setState({description: source.description});
-	  });
-	}
   }
   
   updateName(event) {
@@ -40,24 +26,26 @@ class ManageUpload extends Component {
     this.setState({description: event.target.value})
   }
   
-  updateValue(event) {
-    this.setState({value: event.target.value})
+  updateFile(event) {
+	var caller = event.target || event.srcElement;
+	var file   = caller.files[0];
+	this.setState({ fileName: file.name, fileContents: file });
   }
   
   handleSubmit(e) {
 	e.preventDefault();
 	
     const formData = {
-	  Id:          this.state.id,
-	  Name:        this.state.name,
-	  Value:       this.state.value,
-	  Description: this.state.description
+	  Name         : this.state.name,
+	  FileName     : this.state.fileName,
+	  FileContents : this.state.fileContents,
+	  Description  : this.state.description
 	};
 	
-	this.changeSetting(formData)
+	this.createPackage(formData)
 	  .then(function(result) {
 		if (result.status === true) {
-	      window.location = "/admin/settings"
+	      window.location = "/admin/upload"
 		}
 	  })
 	  .catch(function(result) {
@@ -71,8 +59,8 @@ class ManageUpload extends Component {
       <div className="container body-content">
         {
           isAuthenticated() && (
-		  <form onSubmit={this.handleSubmit}>
-            <h4 style={{"color": "#0ce3ac"}}>Source</h4><hr />
+		  <form onSubmit={this.handleSubmit} ref="createUpload"  encType="multipart/form-data">
+            <h4 style={{"color": "#0ce3ac"}}>Create Upload</h4><hr />
             <div className="form-horizontal">
 	          <div className="form-group">
 		        <label className="control-label col-md-2">Name</label>
@@ -80,24 +68,24 @@ class ManageUpload extends Component {
 				  <input type="text" value={this.state.name} onChange={this.updateName} className="form-control text-box single-line" />
 		        </div>
 	          </div>
-			  
-			  <div className="form-group">
-		        <label className="control-label col-md-2">Value</label>
-		        <div className="col-md-10">
-				  <input type="text" value={this.state.value} onChange={this.updateValue} className="form-control text-box single-line" />
-		        </div>
-	          </div>
 
 	          <div className="form-group">
 		        <label className="control-label col-md-2">Description</label>
 		        <div className="col-md-10">
-				  <input type="text" value={this.state.description} onChange={this.updateDescription} className="form-control text-box single-line" />
+				  <textarea cols="50" rows="4" value={this.state.description} onChange={this.updateDescription} className="form-control text-box single-line" />
+		        </div>
+	          </div>
+			  
+              <div className="form-group">
+		        <label className="control-label col-md-2">File</label>
+		        <div className="col-md-10">
+				  <input type="file" onChange={this.updateFile} />
 		        </div>
 	          </div>
 
 	          <div className="form-group">
 		        <div className="col-md-offset-2 col-md-10">
-			      <input type="submit" value="Save" className="btn btn-default" />
+			      <input type="submit" value="Create" className="btn btn-default" />
 		        </div>
 	          </div>
             </div>
@@ -109,4 +97,4 @@ class ManageUpload extends Component {
   }
 }
 
-export default servicesBase(ManageUpload);
+export default servicesBase(CreateUpload);

@@ -186,7 +186,6 @@
             "BucketName" : { "Fn::If" : ["BucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "BucketName" } ] }
         }
     },
-
 	"ObjectBucket" : {
         "Type" : "AWS::S3::Bucket",
         "Condition" : "CreateS3ObjectBucket",
