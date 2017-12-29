@@ -37,7 +37,7 @@ namespace SAM.Applications.LinkExtractor
                         {
                             var message = Newtonsoft.Json.JsonConvert.SerializeObject(new Iteration
                             {
-                                Bucket = bucket.Id,
+                                Id = bucket.Id,
                                 Loop = i
                             });
 

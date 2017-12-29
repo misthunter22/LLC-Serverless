@@ -9,6 +9,6 @@ namespace SAM.Applications
     {
         public int Loop { get; set; }
 
-        public string Bucket { get; set; }
+        public string Id { get; set; }
     }
 }

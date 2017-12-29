@@ -7,6 +7,8 @@ namespace SAM.Models.Dynamo
 {
     public abstract class ReceiptBase
     {
+        public string Id { get; set; }
+
         public string ReceiptHandle { get; set; }
     }
 }

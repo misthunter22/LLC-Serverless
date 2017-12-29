@@ -3,7 +3,7 @@ using Amazon.Lambda.Serialization.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace SAM.Applications.LinkExtractor
+namespace SAM.Applications.LinkChecker
 {
     public class Queue : BaseHandler
     {
@@ -17,7 +17,7 @@ namespace SAM.Applications.LinkExtractor
             var iteration = Newtonsoft.Json.JsonConvert.DeserializeObject<Iteration>(message);
             Console.WriteLine($"Processing Loop {iteration.Loop} for ID {iteration.Id}");
 
-            var objs = Service.LinkExtractor(iteration.Id, iteration.Loop * MAX, MAX);
+            var objs = Service.LinkChecker(iteration.Id, iteration.Loop * MAX, MAX);
             Console.WriteLine($"Iteration {iteration.Loop} count is {objs.Count}");
             Service.EnqueueObjects(objs);
         }

@@ -115,7 +115,7 @@
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 1024,
-        "Timeout": 30,
+        "Timeout": 300,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
@@ -135,7 +135,26 @@
         "MemorySize": 1024,
         "Timeout": 300,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSNSFullAccess", "AmazonSQSFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
+			"Topic": { "Ref" : "LinkCheckerTopic" },
+			"Queue": { "Ref" : "LinkCheckerQueue" }
+          }
+        }
+      }
+    },
+	"LinkCheckerFunction" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.LinkChecker.Queue::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 1024,
+        "Timeout": 300,
+        "Role": null,
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
@@ -151,12 +170,13 @@
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 1024,
-        "Timeout": 30,
+        "Timeout": 300,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
           "Variables" : {
-            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
+			"Queue": { "Ref" : "LinkCheckerQueue" }
           }
         }
       }
@@ -248,6 +268,32 @@
 			},
 			"FunctionName": {
 				"Fn::GetAtt": [ "LinkExtractorFunction", "Arn" ]
+			}
+		}
+	},
+
+	"LinkCheckerTopic" : {
+		"Type" : "AWS::SNS::Topic",
+		"Properties" : {
+			"Subscription" : [ 
+			{
+				"Endpoint": {
+					"Fn::GetAtt": [ "LinkCheckerFunction", "Arn" ]
+				},
+				"Protocol": "lambda"
+			} ]
+		}
+	},
+	"LinkCheckerTopicPermissions" : {
+		"Type": "AWS::Lambda::Permission",
+		"Properties": {
+			"Action": "lambda:InvokeFunction",
+			"Principal": "sns.amazonaws.com",
+			"SourceArn": {
+				"Ref" : "LinkCheckerTopic"
+			},
+			"FunctionName": {
+				"Fn::GetAtt": [ "LinkCheckerFunction", "Arn" ]
 			}
 		}
 	},

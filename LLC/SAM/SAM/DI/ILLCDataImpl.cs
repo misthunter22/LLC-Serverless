@@ -251,6 +251,16 @@ namespace SAM.DI
             }
         }
 
+        public Links AddLink(Links link)
+        {
+            using (var client = new LLCContext())
+            {
+                var update = client.Links.Add(link);
+                client.SaveChanges();
+                return link;
+            }
+        }
+
         public List<LinksExt> LinkChecker(string source, int offset, int maximum)
         {
             using (var client = new LLCContext())
@@ -758,9 +768,10 @@ namespace SAM.DI
 
         public void RemoveObjectsFromQueue<T>(List<T> objects) where T : Models.Dynamo.ReceiptBase
         {
+            Console.WriteLine($"Removing list {JsonConvert.SerializeObject(objects)}");
             using (var sqsClient = new AmazonSQSClient())
             {
-                sqsClient.DeleteMessageBatchAsync(new DeleteMessageBatchRequest
+                var result = sqsClient.DeleteMessageBatchAsync(new DeleteMessageBatchRequest
                 {
                     Entries = objects.Select(x => new DeleteMessageBatchRequestEntry
                     {
@@ -768,7 +779,7 @@ namespace SAM.DI
                         ReceiptHandle = x.ReceiptHandle
                     }).ToList(),
                     QueueUrl = Environment.GetEnvironmentVariable("Queue")
-                });
+                }).Result;
             }
         }
 

@@ -20,7 +20,7 @@ namespace SAM.Applications.LinkExtractor
             foreach (var obj in objs)
             {
                 // Get the object's file contents
-                var bucket  = buckets.FirstOrDefault(x => x.Id == obj.Id);
+                var bucket  = buckets.FirstOrDefault(x => x.Id == obj.Bucket);
                 var source  = sources.FirstOrDefault(x => x.S3bucketId == bucket.Id);
 
                 LinkExtractions(obj.ToObject(), bucket.Name, source.Id);

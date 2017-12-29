@@ -86,18 +86,19 @@ namespace SAM.Applications
                     if (existingLink == null)
                     {
                         row.DateFirstFound = date;
+                        Service.AddLink(row);
                     }
                     else
                     {
                         row = existingLink;
                         row.DateLastFound = date;
+                        Service.SetLink(row);
                     }
 
                     obj.DateLinksLastExtracted = date;
                     var o = Service.SetObject(obj);
-                    var r = Service.SetLink(row);
                     Console.WriteLine(JsonConvert.SerializeObject(o));
-                    Console.WriteLine(JsonConvert.SerializeObject(r));
+                    Console.WriteLine(JsonConvert.SerializeObject(row));
                 }
             }
         }

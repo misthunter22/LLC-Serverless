@@ -47,6 +47,8 @@ namespace SAM.DI
 
         Links SetLink(Links link);
 
+        Links AddLink(Links link);
+
         List<LinksExt> LinkChecker(string source, int offset, int maximum);
 
         #endregion
