@@ -77,6 +77,9 @@ namespace SAM.Applications.LinkChecker
                     StatusCode = statusCode,
                     StatusDescription = statusDesc
                 };
+
+                if (!"OK".Equals(statusCode, StringComparison.CurrentCultureIgnoreCase))
+                    linkValid = false;
             }
             catch (HttpRequestException ex)
             {
@@ -192,7 +195,7 @@ namespace SAM.Applications.LinkChecker
                 Console.WriteLine($"Existing screenshot? {screenshotData}");
 
                 // Check to see if no screenshots exist
-                if (screenshotExists == null)
+                if (screenshotExists.s_original == null)
                 {
                     takeScreenshot = true;
                 }

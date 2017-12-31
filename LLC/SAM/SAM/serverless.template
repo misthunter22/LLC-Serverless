@@ -338,7 +338,95 @@
                }
             ]
          }
-      }
+      },
+
+	"LinkCheckerScheduledRule": {
+		"Type": "AWS::Events::Rule",
+		"Properties": {
+			"Description": "LinkCheckerScheduledRule",
+			"ScheduleExpression": "rate(1 minute)",
+			"State": "ENABLED",
+			"Targets": [{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV1"
+			}]
+		}
+	},
+	"PermissionForLinkCheckerToInvokeLambda": {
+		"Type": "AWS::Lambda::Permission",
+		"Properties": {
+			"FunctionName": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+			"Action": "lambda:InvokeFunction",
+			"Principal": "events.amazonaws.com",
+			"SourceArn": { "Fn::GetAtt": ["LinkCheckerScheduledRule", "Arn"] }
+		}
+	},
+
+	"LinkCheckerProcessorScheduledRule": {
+		"Type": "AWS::Events::Rule",
+		"Properties": {
+			"Description": "LinkCheckerProcessorScheduledRule",
+			"ScheduleExpression": "rate(8 hours)",
+			"State": "ENABLED",
+			"Targets": [{
+				"Arn": { "Fn::GetAtt": ["LinkCheckerProcessor", "Arn"] },
+				"Id": "LinkCheckerProcessorV1"
+			}]
+		}
+	},
+	"PermissionForLinkCheckerProcessorToInvokeLambda": {
+		"Type": "AWS::Lambda::Permission",
+		"Properties": {
+			"FunctionName": { "Fn::GetAtt": ["LinkCheckerProcessor", "Arn"] },
+			"Action": "lambda:InvokeFunction",
+			"Principal": "events.amazonaws.com",
+			"SourceArn": { "Fn::GetAtt": ["LinkCheckerProcessorScheduledRule", "Arn"] }
+		}
+	},
+
+	"LinkExtractorScheduledRule": {
+		"Type": "AWS::Events::Rule",
+		"Properties": {
+			"Description": "LinkExtractorScheduledRule",
+			"ScheduleExpression": "rate(1 minute)",
+			"State": "ENABLED",
+			"Targets": [{
+				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
+				"Id": "LinkExtractorV1"
+			}]
+		}
+	},
+	"PermissionForLinkExtractorToInvokeLambda": {
+		"Type": "AWS::Lambda::Permission",
+		"Properties": {
+			"FunctionName": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
+			"Action": "lambda:InvokeFunction",
+			"Principal": "events.amazonaws.com",
+			"SourceArn": { "Fn::GetAtt": ["LinkExtractorScheduledRule", "Arn"] }
+		}
+	},
+
+	"LinkExtractorProcessorScheduledRule": {
+		"Type": "AWS::Events::Rule",
+		"Properties": {
+			"Description": "LinkExtractorProcessorScheduledRule",
+			"ScheduleExpression": "rate(8 hours)",
+			"State": "ENABLED",
+			"Targets": [{
+				"Arn": { "Fn::GetAtt": ["LinkExtractorProcessor", "Arn"] },
+				"Id": "LinkExtractorProcessorV1"
+			}]
+		}
+	},
+	"PermissionForLinkExtractorProcessorToInvokeLambda": {
+		"Type": "AWS::Lambda::Permission",
+		"Properties": {
+			"FunctionName": { "Fn::GetAtt": ["LinkExtractorProcessor", "Arn"] },
+			"Action": "lambda:InvokeFunction",
+			"Principal": "events.amazonaws.com",
+			"SourceArn": { "Fn::GetAtt": ["LinkExtractorProcessorScheduledRule", "Arn"] }
+		}
+	}
   },
 
   "Outputs" : {
