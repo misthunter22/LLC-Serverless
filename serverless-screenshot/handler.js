@@ -93,12 +93,14 @@ module.exports.list_screenshot = (event, context, cb) => {
     if (err) {
       cb(err);
     } else {
-      const urls = {};
+      const urls = [];
       // for each key, get the image width and add it to the output object
       data.Contents.forEach((content) => {
         const parts = content.Key.split('/');
         const size = parts.pop().split('.')[0];
-        urls[size] = `${event.stageVariables.endpoint}${content.Key}`;
+		const url  = {};
+        url[size]  = `${event.stageVariables.endpoint}${content.Key}`;
+		urls.push(url);
       });
       cb(null, {
 		  "statusCode": 200, 

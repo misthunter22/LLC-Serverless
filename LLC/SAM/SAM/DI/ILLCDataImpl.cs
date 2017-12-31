@@ -180,59 +180,6 @@ namespace SAM.DI
             }
         }
 
-        public List<ReportsExt> InvalidLinks()
-        {
-            using (var client = new LLCContext())
-            {
-                var results = client.Reports.Where(x => x.ReportType == "Invalid")
-                    .Select(x => new ReportsExt
-                    {
-                        ContentSize = x.ContentSize,
-                        Id = x.Id,
-                        Link = x.Link,
-                        Mean = x.Mean,
-                        ReportType = x.ReportType,
-                        SdMaximum = x.SdMaximum,
-                        StandardDeviation = x.StandardDeviation,
-                        Stat = x.Stat
-                    })
-                    .ToList();
-
-                return results;
-            }
-        }
-
-        public List<ReportsExt> WarningLinks()
-        {
-            using (var client = new LLCContext())
-            {
-                var results = client.Reports.Where(x => x.ReportType == "Warning")
-                    .Select(x => new ReportsExt {
-                        ContentSize = x.ContentSize,
-                        Id = x.Id,
-                        Link = x.Link,
-                        Mean = x.Mean,
-                        ReportType = x.ReportType,
-                        SdMaximum = x.SdMaximum,
-                        StandardDeviation = x.StandardDeviation,
-                        Stat = x.Stat
-                    })
-                    .ToList();
-
-                foreach (var r in results)
-                {
-                    var link          = Link(r.Link);
-                    r.AttemptCount    = link.AttemptCount;
-                    r.DateLastChecked = link.DateLastChecked;
-                    r.DateLastFound   = link.DateLastFound;
-                    r.Source          = link.Source;
-                    r.Url             = link.Url;
-                }
-
-                return results;
-            }
-        }
-
         public Links LinkFromUrl(string url)
         {
             using (var client = new LLCContext())
@@ -258,6 +205,31 @@ namespace SAM.DI
                 var update = client.Links.Add(link);
                 client.SaveChanges();
                 return link;
+            }
+        }
+
+        public Stats AddStat(Stats stat)
+        {
+            using (var client = new LLCContext())
+            {
+                var update = client.Stats.Add(stat);
+                client.SaveChanges();
+                return stat;
+            }
+        }
+
+        public List<Stats> LinkStats(LinksExt link)
+        {
+            using (var client = new LLCContext())
+            {
+                var stats = 
+                    (from stat in client.Stats
+                     join l in client.Links on stat.Link equals l.Id
+                     where l.Id == link.Id && (l.ReportNotBeforeDate == null || stat.DateChecked >= l.ReportNotBeforeDate)
+                     select stat)
+                    .ToList();
+
+                return stats;
             }
         }
 
@@ -292,6 +264,109 @@ namespace SAM.DI
                     .ToList();
 
                 return result;
+            }
+        }
+
+        public List<ReportsExt> InvalidLinks()
+        {
+            using (var client = new LLCContext())
+            {
+                var results = client.Reports.Where(x => x.ReportType == "Invalid")
+                    .Select(x => new ReportsExt
+                    {
+                        ContentSize = x.ContentSize,
+                        Id = x.Id,
+                        Link = x.Link,
+                        Mean = x.Mean,
+                        ReportType = x.ReportType,
+                        SdMaximum = x.SdMaximum,
+                        StandardDeviation = x.StandardDeviation,
+                        Stat = x.Stat
+                    })
+                    .ToList();
+
+                return results;
+            }
+        }
+
+        public List<ReportsExt> WarningLinks()
+        {
+            using (var client = new LLCContext())
+            {
+                var results = client.Reports.Where(x => x.ReportType == "Warning")
+                    .Select(x => new ReportsExt
+                    {
+                        ContentSize = x.ContentSize,
+                        Id = x.Id,
+                        Link = x.Link,
+                        Mean = x.Mean,
+                        ReportType = x.ReportType,
+                        SdMaximum = x.SdMaximum,
+                        StandardDeviation = x.StandardDeviation,
+                        Stat = x.Stat
+                    })
+                    .ToList();
+
+                foreach (var r in results)
+                {
+                    var link = Link(r.Link);
+                    r.AttemptCount = link.AttemptCount;
+                    r.DateLastChecked = link.DateLastChecked;
+                    r.DateLastFound = link.DateLastFound;
+                    r.Source = link.Source;
+                    r.Url = link.Url;
+                }
+
+                return results;
+            }
+        }
+
+        public Reports Report(string id)
+        {
+            using (var client = new LLCContext())
+            {
+                return client.Reports.FirstOrDefault(x => x.Link == id);
+            }
+        }
+
+        public void AddReport(Reports report)
+        {
+            using (var client = new LLCContext())
+            {
+                client.Reports.Add(report);
+                client.SaveChanges();
+            }
+        }
+
+        public void RemoveReport(Reports report)
+        {
+            using (var client = new LLCContext())
+            {
+                client.Reports.Remove(report);
+                client.SaveChanges();
+            }
+        }
+
+        public void RemoveReport(string link)
+        {
+            using (var client = new LLCContext())
+            {
+                var report = client.Reports.FirstOrDefault(x => x.Link == link);
+                if (report != null)
+                {
+                    client.Reports.Remove(report);
+                    client.SaveChanges();
+                }
+            }
+        }
+
+        public Reports SetReport(Reports report)
+        {
+            using (var client = new LLCContext())
+            {
+                var update = client.Reports.Update(report);
+                client.SaveChanges();
+                return report;
             }
         }
 

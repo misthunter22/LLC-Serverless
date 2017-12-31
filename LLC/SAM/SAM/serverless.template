@@ -24,6 +24,16 @@
         "Description" : "Name of S3 bucket that will be used for object extraction. If left blank a new bucket will be created.",
         "MinLength" : "0"
 	},
+	"ScreenshotServiceUrl" : {
+		"Type" : "String",
+        "Description" : "URL of the screenshot service to use",
+        "MinLength" : "1"
+	},
+	"ScreenshotApiKey" : {
+		"Type" : "String",
+        "Description" : "API Key of the screenshot service to use",
+        "MinLength" : "1"
+	},
 	"DbUsername" : {
 		"Type" : "String",
         "Description" : "The DB Username",
@@ -176,7 +186,9 @@
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
-			"Queue": { "Ref" : "LinkCheckerQueue" }
+			"Queue": { "Ref" : "LinkCheckerQueue" },
+			"Screenshot" : { "Ref" : "ScreenshotServiceUrl" },
+			"ApiKey" : { "Ref" : "ScreenshotApiKey" }
           }
         }
       }

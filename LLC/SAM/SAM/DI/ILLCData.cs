@@ -39,17 +39,35 @@ namespace SAM.DI
 
         Links Link(string id);
 
-        List<ReportsExt> InvalidLinks();
-
-        List<ReportsExt> WarningLinks();
-
         Links LinkFromUrl(string url);
 
         Links SetLink(Links link);
 
         Links AddLink(Links link);
 
+        Stats AddStat(Stats stat);
+
+        List<Stats> LinkStats(LinksExt link);
+
         List<LinksExt> LinkChecker(string source, int offset, int maximum);
+
+        #endregion
+
+        #region Reports
+
+        List<ReportsExt> InvalidLinks();
+
+        List<ReportsExt> WarningLinks();
+
+        Reports Report(string id);
+
+        void AddReport(Reports report);
+
+        void RemoveReport(Reports report);
+
+        void RemoveReport(string link);
+
+        Reports SetReport(Reports report);
 
         #endregion
 
@@ -101,6 +119,8 @@ namespace SAM.DI
 
         #endregion
 
+        #region Buckets
+
         List<Buckets> Buckets();
 
         List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m);
@@ -110,5 +130,7 @@ namespace SAM.DI
         PutObjectResponse ObjectPut<T>(string bucket, string key, T obj);
 
         PutObjectResponse FilePut(string bucket, string key, Stream stream);
+
+        #endregion
     }
 }

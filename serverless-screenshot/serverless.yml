@@ -12,6 +12,7 @@ custom:
 
 provider:
   name: aws
+  versionLambda: false
   runtime: nodejs6.10
   memorySize: 512
   region: us-west-2
