@@ -828,7 +828,7 @@ namespace SAM.DI
                         ReceiptHandle = x.ReceiptHandle
                     }).ToList(),
                     QueueUrl = Environment.GetEnvironmentVariable("Queue")
-                }).Result;
+                }).Result.Successful;
             }
         }
 

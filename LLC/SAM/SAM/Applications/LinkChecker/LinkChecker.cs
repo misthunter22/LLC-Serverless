@@ -43,9 +43,6 @@ namespace SAM.Applications.LinkChecker
 
             try
             {
-                // Start timing the response
-                var downloadStart = DateTime.Now;
-
                 // Setup the web request and execute the get
                 var url     = link.Url;
                 var request = new HttpClient
@@ -53,7 +50,9 @@ namespace SAM.Applications.LinkChecker
                     Timeout = TimeSpan.FromMinutes(1)
                 };
 
-                var response = request.GetAsync(new Uri(url)).Result;
+                // Start timing the response
+                var downloadStart = DateTime.Now;
+                var response      = request.GetAsync(new Uri(url)).Result;
 
                 // Extract the status information
                 var statusCode  = response.StatusCode.ToString();
@@ -65,7 +64,9 @@ namespace SAM.Applications.LinkChecker
 
                 // Stop timing the response
                 var downloadDuration = DateTime.Now.Subtract(downloadStart);
-                newStat              = new Stats
+
+                // Create new stat
+                newStat = new Stats
                 {
                     ContentSize = pageContents == null ? (long?)null : pageContents.Length,
                     ContentType = contentType,
@@ -121,15 +122,14 @@ namespace SAM.Applications.LinkChecker
             }
 
             var report = Service.Report(link.Id);
+            var l      = Service.Link(link.Id);
 
             // Update the link if it's not valid
             if (!linkValid)
             {
                 Console.WriteLine($"Found invalid link {link.Id}");
-                var l = Service.Link(link.Id);
                 l.Valid = false;
                 l.AttemptCount += 1;
-                Service.SetLink(l);
 
                 if (report == null)
                 {
@@ -156,6 +156,30 @@ namespace SAM.Applications.LinkChecker
                 Console.WriteLine("Removing invalid report");
                 Service.RemoveReport(link.Id);
             }
+
+            // Compute stats
+            var stats = Service.LinkStats(link);
+            var sum   = stats.Sum(x => x.DownloadTime);
+            var mean  = sum / stats.Count;
+            var sd    = sum / mean;
+
+            var week  = stats.Where(x => x.DateChecked > DateTime.Now.AddDays(-7)).ToList();
+            var wsum  = week.Sum(x => x.DownloadTime);
+            var wmean = wsum / week.Count;
+            var wsd   = wsum / wmean;
+
+            l.DateLastChecked = now;
+            l.DateUpdated     = now;
+
+            l.AllTimeMaxDownloadTime    = stats.Max(x => x.DownloadTime);
+            l.AllTimeMinDownloadTime    = stats.Min(x => x.DownloadTime);
+            l.AllTimeStdDevDownloadTime = sd;
+
+            l.PastWeekMaxDownloadTime    = week.Max(x => x.DownloadTime);
+            l.PastWeekMinDownloadTime    = week.Min(x => x.DownloadTime);
+            l.PastWeekStdDevDownloadTime = wsd;
+
+            Service.SetLink(l);
         }
 
         private void ComputeScreenshot(LinksExt link, List<Reports> reports)
