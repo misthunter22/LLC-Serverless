@@ -271,19 +271,27 @@ namespace SAM.DI
         {
             using (var client = new LLCContext())
             {
-                var results = client.Reports.Where(x => x.ReportType == "Invalid")
-                    .Select(x => new ReportsExt
-                    {
-                        ContentSize = x.ContentSize,
-                        Id = x.Id,
-                        Link = x.Link,
-                        Mean = x.Mean,
-                        ReportType = x.ReportType,
-                        SdMaximum = x.SdMaximum,
-                        StandardDeviation = x.StandardDeviation,
-                        Stat = x.Stat
-                    })
-                    .ToList();
+                var results =
+                    (from reports in client.Reports
+                     join link in client.Links on reports.Link equals link.Id
+                     where reports.ReportType == "Invalid"
+                     select new ReportsExt
+                     {
+                        AttemptCount = link.AttemptCount,
+                        ContentSize = reports.ContentSize,
+                        DateLastChecked = link.DateLastChecked,
+                        DateLastFound = link.DateLastFound,
+                        Id = reports.Id,
+                        Link = link.Id,
+                        Mean = reports.Mean,
+                        ReportType = reports.ReportType,
+                        SdMaximum = reports.SdMaximum,
+                        Source = link.Source,
+                        StandardDeviation = reports.StandardDeviation,
+                        Stat = reports.Stat,
+                        Url = link.Url
+                     })
+                     .ToList();
 
                 return results;
             }
@@ -293,29 +301,27 @@ namespace SAM.DI
         {
             using (var client = new LLCContext())
             {
-                var results = client.Reports.Where(x => x.ReportType == "Warning")
-                    .Select(x => new ReportsExt
-                    {
-                        ContentSize = x.ContentSize,
-                        Id = x.Id,
-                        Link = x.Link,
-                        Mean = x.Mean,
-                        ReportType = x.ReportType,
-                        SdMaximum = x.SdMaximum,
-                        StandardDeviation = x.StandardDeviation,
-                        Stat = x.Stat
-                    })
-                    .ToList();
-
-                foreach (var r in results)
-                {
-                    var link = Link(r.Link);
-                    r.AttemptCount = link.AttemptCount;
-                    r.DateLastChecked = link.DateLastChecked;
-                    r.DateLastFound = link.DateLastFound;
-                    r.Source = link.Source;
-                    r.Url = link.Url;
-                }
+                var results =
+                    (from reports in client.Reports
+                     join link in client.Links on reports.Link equals link.Id
+                     where reports.ReportType == "Warning"
+                     select new ReportsExt
+                     {
+                         AttemptCount = link.AttemptCount,
+                         ContentSize = reports.ContentSize,
+                         DateLastChecked = link.DateLastChecked,
+                         DateLastFound = link.DateLastFound,
+                         Id = reports.Id,
+                         Link = link.Id,
+                         Mean = reports.Mean,
+                         ReportType = reports.ReportType,
+                         SdMaximum = reports.SdMaximum,
+                         Source = link.Source,
+                         StandardDeviation = reports.StandardDeviation,
+                         Stat = reports.Stat,
+                         Url = link.Url
+                     })
+                     .ToList();
 
                 return results;
             }
@@ -733,56 +739,24 @@ namespace SAM.DI
 
         public List<BucketLocationsModel> BucketLocations(BucketLocationsRequest m)
         {
-            using (var client = new AmazonDynamoDBClient(_region))
+            using (var client = new LLCContext())
             {
-                var buckets = Buckets();
-
-                var id = m.id;
-                if ("stat".Equals(m.type))
+                var buckets  = Buckets();
+                var response = new List<BucketLocationsModel>();
+                var links    = client.ObjectLinks.Where(x => x.Link == m.id);
+                if (links != null)
                 {
-                    //id = QueryDataAttribute("LLC-Stats", id, "Link").Result.S;
+                    foreach (var link in links)
+                    {
+                        var obj = client.Objects.FirstOrDefault(x => x.Id == link.Object);
+                        response.Add(new BucketLocationsModel
+                        {
+                            data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == obj.Bucket).Name, obj.Key)
+                        });
+                    }
                 }
 
-                var ret = new List<string>();
-                var last = new Dictionary<string, AttributeValue>();
-                last["Link"] = new AttributeValue { S = "0" };
-
-                while (last.ContainsKey("Link"))
-                {
-                    var rows = client.ScanAsync(new ScanRequest
-                    {
-                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                            { ":val",  new AttributeValue { S = id } }
-                        },
-                        FilterExpression = "Link = :val",
-                        TableName = "LLC-ObjectLinks",
-                        ExclusiveStartKey = last["Link"].S == "0" ? null : last
-                    }).Result;
-
-                    last = rows.LastEvaluatedKey;
-                    ret.AddRange(rows.Items.Select(x => x.ContainsKey("Object") ? x["Object"].S : "").ToList());
-                }
-
-                var resp = new List<BucketLocationsModel>();
-                foreach (var o in ret)
-                {
-                    var obj = client.QueryAsync(new QueryRequest
-                    {
-                        TableName = "LLC-Objects",
-                        KeyConditionExpression = "Id = :v_Id",
-                        ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                            { ":v_Id", new AttributeValue { S =  o }}
-                        }
-                    });
-
-                    var item = obj.Result.Items.FirstOrDefault();
-                    resp.Add(new BucketLocationsModel
-                    {
-                        data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == item["Bucket"].S).Name, item["Key"].S)
-                    });
-                }
-
-                return resp;
+                return response;
             }
         }
 

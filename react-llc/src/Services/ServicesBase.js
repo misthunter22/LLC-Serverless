@@ -403,39 +403,34 @@ export default function servicesBase(Component) {
 	}
 	
     bucketLocations(data, type) {
-	  return new Promise(function (fulfill, reject) {
-	    AWS.config.credentials.get(function(){
-
-		  // Credentials will be available when this function is called.
-		  var accessKeyId = AWS.config.credentials.accessKeyId;
-		  var secretAccessKey = AWS.config.credentials.secretAccessKey;
-		  var sessionToken = AWS.config.credentials.sessionToken;
-
-		  var apigClient = Client.newClient({
-		    invokeUrl: AwsConstants.invokeUrl,
-		    accessKey: accessKeyId,
-		    secretKey: secretAccessKey,
-		    sessionToken: sessionToken,
-		    region: AwsConstants.region
-		  });
-		
-		  var pathTemplate = AwsConstants.environment + '/api/bucketLocations';
-		  var body         = {
-			  id: data,
-			  type: type
-	      };
-		  var additionalParams = {};
-		  var params           = {};
-		  var method           = 'POST';
-		
-		  apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
-		    .then(function(result) {
-			  fulfill(result);
-		    }).catch(function(result){
-		    console.log(result);
-			reject(result);
-	      });
+	  return new Promise(function (fulfill, reject) {		
+		var pathTemplate = AwsConstants.invokeUrl + '/api/bucketLocations';
+		var body         = {
+	      id: data,
+		  type: type
+	    };
+		  
+		var method = 'POST';
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method,
+		  body: JSON.stringify(body)
 	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			fulfill(result);
+          })
+		  .catch(function(result) {
+		    console.log(result);
+		    reject(result);
+          });
 	  });
 	}
 	
@@ -524,11 +519,11 @@ export default function servicesBase(Component) {
 				// use your remote content URL to load the modal body
 				that.bucketLocations(remote_content, remote_type).then(function(d) {
 				  var str = '<ul>';
-				  $.each( d.data, function( key, value ) {
+				  $.each( d, function( key, value ) {
 					str += '<li><a href="' + value.data + '" target="_blank">' + value.data + '</a></li>';
                   });
 				  str += '</ul>';
-				  if (d.data.length === 0) {
+				  if (d.length === 0) {
 				    str = 'No Results';
 				  }
 				  $modalBody.html(str);

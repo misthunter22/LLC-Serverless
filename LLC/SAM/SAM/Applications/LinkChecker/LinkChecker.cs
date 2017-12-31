@@ -89,7 +89,7 @@ namespace SAM.Applications.LinkChecker
                     Id = Guid.NewGuid().ToString(),
                     Link = link.Id,
                     StatusCode = "500",
-                    StatusDescription = ex.InnerException.Message,
+                    StatusDescription = ex.InnerException != null ? ex.InnerException.Message : string.Empty
                 };
 
                 linkValid = false;
@@ -105,7 +105,7 @@ namespace SAM.Applications.LinkChecker
                     Id = Guid.NewGuid().ToString(),
                     Link = link.Id,
                     StatusCode = "500",
-                    StatusDescription = ex.InnerException.Message,
+                    StatusDescription = ex.InnerException != null ? ex.InnerException.Message : string.Empty
                 };
 
                 linkValid = false;
@@ -122,6 +122,7 @@ namespace SAM.Applications.LinkChecker
             // Update the link if it's not valid
             if (!linkValid)
             {
+                Console.WriteLine($"Found invalid link {link.Id}");
                 var l = Service.Link(link.Id);
                 l.Valid = false;
                 l.AttemptCount += 1;
@@ -129,6 +130,7 @@ namespace SAM.Applications.LinkChecker
 
                 if (report == null)
                 {
+                    Console.WriteLine("Adding invalid report");
                     report = new Reports
                     {
                         Id = Guid.NewGuid().ToString(),
@@ -141,12 +143,14 @@ namespace SAM.Applications.LinkChecker
                 }
                 else
                 {
+                    Console.WriteLine("Updating invalid report");
                     report.Stat = newStat.Id;
                     Service.SetReport(report);
                 }
             }
             else
             {
+                Console.WriteLine("Removing invalid report");
                 Service.RemoveReport(link.Id);
             }
         }
@@ -180,16 +184,15 @@ namespace SAM.Applications.LinkChecker
 
             // See if the standard deviation requires a notification to be sent out
             // If the first does not exist, not much we can do! Go ahead and bail out
-            if (first != null)
+            if (first != null && first.ContentType != null && first.ContentType.Contains("text/html"))
             {
                 var screenshotRequest = client.GetAsync(new Uri(ScreenshotUrl + "?url=" + link.Url)).Result;
-                var screenshotExists  = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Screenshot>>(screenshotRequest.Content.ReadAsStringAsync().Result);
-                Console.WriteLine(screenshotExists);
+                var screenshotData    = screenshotRequest.Content.ReadAsStringAsync().Result;
+                var screenshotExists  = Newtonsoft.Json.JsonConvert.DeserializeObject<ExistingScreenshot>(screenshotData);
+                Console.WriteLine($"Existing screenshot? {screenshotData}");
 
                 // Check to see if no screenshots exist
-                if (screenshotExists.Count == 0 &&
-                first.ContentType != null &&
-                first.ContentType.Contains("text/html"))
+                if (screenshotExists == null)
                 {
                     takeScreenshot = true;
                 }
@@ -198,6 +201,7 @@ namespace SAM.Applications.LinkChecker
                 if (first.ContentSize > (mean + (sdRange * standardDeviation)) ||
                     first.ContentSize < (Math.Abs(mean - (sdRange * standardDeviation))))
                 {
+                    Console.WriteLine("Found significant change");
                     takeScreenshot = true;
 
                     // Create new since one doesn't exist
@@ -219,15 +223,16 @@ namespace SAM.Applications.LinkChecker
                 else if (existingLink != null)
                 {
                     // Remove link
+                    Console.WriteLine("Link no longer significantly impacted. Removing from report list");
                     Service.RemoveReport(existingLink);
                 }
             }
 
             // Send screenshot request
-            if (takeScreenshot && first.ContentType.Contains("text/html"))
+            if (takeScreenshot)
             {
                 var ss = client.PostAsync(ScreenshotUrl + "?url=" + link.Url, new StringContent(string.Empty)).Result;
-                Console.WriteLine($"Performed screenshot: {ss}");
+                Console.WriteLine($"Performed screenshot: {ss.Content.ReadAsStringAsync().Result}");
             }
         }
 

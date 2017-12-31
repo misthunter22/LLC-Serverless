@@ -37,7 +37,7 @@ const columns = [
   },
   {
 	title: 'Bucket Locations',
-	data: 'id',
+	data: 'link',
 	sortable: false
   },
   {
