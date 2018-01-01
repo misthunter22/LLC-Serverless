@@ -159,26 +159,28 @@ namespace SAM.Applications.LinkChecker
 
             // Compute stats
             var stats = Service.LinkStats(link);
-            var sum   = stats.Sum(x => x.DownloadTime);
-            var mean  = sum / stats.Count;
-            var sd    = sum / mean;
+            if (stats.Count > 0)
+            {
+                var sum  = stats.Sum(x => x.DownloadTime);
+                var mean = sum / stats.Count;
+                var sd   = mean > 0 ? sum / mean : 0;
 
-            var week  = stats.Where(x => x.DateChecked > DateTime.Now.AddDays(-7)).ToList();
-            var wsum  = week.Sum(x => x.DownloadTime);
-            var wmean = wsum / week.Count;
-            var wsd   = wsum / wmean;
+                var week  = stats.Where(x => x.DateChecked > DateTime.Now.AddDays(-7)).ToList();
+                var wsum  = week.Sum(x => x.DownloadTime);
+                var wmean = week.Count > 0 ? wsum / week.Count : 0;
+                var wsd   = wmean > 0 ? wsum / wmean : 0;
+
+                l.AllTimeMaxDownloadTime = stats.Max(x => x.DownloadTime);
+                l.AllTimeMinDownloadTime = stats.Min(x => x.DownloadTime);
+                l.AllTimeStdDevDownloadTime = sd;
+
+                l.PastWeekMaxDownloadTime = week.Max(x => x.DownloadTime);
+                l.PastWeekMinDownloadTime = week.Min(x => x.DownloadTime);
+                l.PastWeekStdDevDownloadTime = wsd;
+            }
 
             l.DateLastChecked = now;
-            l.DateUpdated     = now;
-
-            l.AllTimeMaxDownloadTime    = stats.Max(x => x.DownloadTime);
-            l.AllTimeMinDownloadTime    = stats.Min(x => x.DownloadTime);
-            l.AllTimeStdDevDownloadTime = sd;
-
-            l.PastWeekMaxDownloadTime    = week.Max(x => x.DownloadTime);
-            l.PastWeekMinDownloadTime    = week.Min(x => x.DownloadTime);
-            l.PastWeekStdDevDownloadTime = wsd;
-
+            l.DateUpdated = now;
             Service.SetLink(l);
         }
 

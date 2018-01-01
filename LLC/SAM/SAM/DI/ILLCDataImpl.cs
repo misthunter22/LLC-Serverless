@@ -26,6 +26,8 @@ namespace SAM.DI
 
         private int _maxQueue = 10;
 
+        private int _maxDequeue = 1;
+
         public RegionEndpoint Region()
         {
             return _region;
@@ -800,7 +802,7 @@ namespace SAM.DI
 
                 var messages = sqsClient.ReceiveMessageAsync(new ReceiveMessageRequest
                 {
-                    MaxNumberOfMessages = _maxQueue,
+                    MaxNumberOfMessages = _maxDequeue,
                     QueueUrl = Environment.GetEnvironmentVariable("Queue")
                 });
 
