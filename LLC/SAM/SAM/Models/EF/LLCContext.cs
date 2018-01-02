@@ -18,7 +18,7 @@ namespace DbCore.Models
 
         public LLCContext()
         {
-            Database.SetCommandTimeout(5 * 60);
+            Database.SetCommandTimeout(3 * 60);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

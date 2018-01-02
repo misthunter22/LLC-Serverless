@@ -10,8 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SAM.Models.Reports;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
 using SAM.Models.EF;
 using SAM.Models.Auth;
 using System.Security.Claims;
@@ -87,6 +85,7 @@ namespace SAM.DI
                     stats.Add(ext);
                 }
 
+                client.Dispose();
                 return stats;
             }
         }
@@ -102,6 +101,7 @@ namespace SAM.DI
                     (x.DateLinksLastExtracted == null || x.DateLinksLastExtracted < x.ContentLastModified) &&
                     x.IsFolder == false).Count();
 
+                client.Dispose();
                 return count;
             }
         }
@@ -110,7 +110,9 @@ namespace SAM.DI
         {
             using (var client = new LLCContext())
             {
-                return client.Objects.FirstOrDefault(x => x.Id == id);
+                var obj = client.Objects.FirstOrDefault(x => x.Id == id);
+                client.Dispose();
+                return obj;
             }
         }
 
@@ -118,7 +120,9 @@ namespace SAM.DI
         {
             using (var client = new LLCContext())
             {
-                return client.Objects.FirstOrDefault(x => x.Key == key);
+                var obj = client.Objects.FirstOrDefault(x => x.Key == key);
+                client.Dispose();
+                return obj;
             }
         }
 
@@ -128,6 +132,7 @@ namespace SAM.DI
             {
                 var update = client.Objects.Update(obj);
                 client.SaveChanges();
+                client.Dispose();
                 return obj;
             }
         }
@@ -161,6 +166,7 @@ namespace SAM.DI
                   })
                   .ToList();
 
+                client.Dispose();
                 return result;
             }
         }
@@ -170,6 +176,7 @@ namespace SAM.DI
             using (var client = new LLCContext())
             {
                 var count = client.Links.Where(x => x.Source == source).Count();
+                client.Dispose();
                 return count;
             }
         }
@@ -178,7 +185,9 @@ namespace SAM.DI
         {
             using (var client = new LLCContext())
             {
-                return client.Links.FirstOrDefault(x => x.Id == id);
+                var obj = client.Links.FirstOrDefault(x => x.Id == id);
+                client.Dispose();
+                return obj;
             }
         }
 
@@ -186,7 +195,9 @@ namespace SAM.DI
         {
             using (var client = new LLCContext())
             {
-                return client.Links.FirstOrDefault(x => x.Url == url);
+                var obj = client.Links.FirstOrDefault(x => x.Url == url);
+                client.Dispose();
+                return obj;
             }
         }
 
@@ -196,6 +207,7 @@ namespace SAM.DI
             {
                 var update = client.Links.Update(link);
                 client.SaveChanges();
+                client.Dispose();
                 return link;
             }
         }
@@ -206,6 +218,7 @@ namespace SAM.DI
             {
                 var update = client.Links.Add(link);
                 client.SaveChanges();
+                client.Dispose();
                 return link;
             }
         }
@@ -216,6 +229,7 @@ namespace SAM.DI
             {
                 var update = client.Stats.Add(stat);
                 client.SaveChanges();
+                client.Dispose();
                 return stat;
             }
         }
@@ -231,6 +245,7 @@ namespace SAM.DI
                      select stat)
                     .ToList();
 
+                client.Dispose();
                 return stats;
             }
         }
@@ -265,6 +280,7 @@ namespace SAM.DI
                     })
                     .ToList();
 
+                client.Dispose();
                 return result;
             }
         }
@@ -295,6 +311,7 @@ namespace SAM.DI
                      })
                      .ToList();
 
+                client.Dispose();
                 return results;
             }
         }
@@ -325,6 +342,7 @@ namespace SAM.DI
                      })
                      .ToList();
 
+                client.Dispose();
                 return results;
             }
         }
@@ -333,7 +351,9 @@ namespace SAM.DI
         {
             using (var client = new LLCContext())
             {
-                return client.Reports.FirstOrDefault(x => x.Link == id);
+                var obj = client.Reports.FirstOrDefault(x => x.Link == id);
+                client.Dispose();
+                return obj;
             }
         }
 
@@ -343,6 +363,7 @@ namespace SAM.DI
             {
                 client.Reports.Add(report);
                 client.SaveChanges();
+                client.Dispose();
             }
         }
 
@@ -352,6 +373,7 @@ namespace SAM.DI
             {
                 client.Reports.Remove(report);
                 client.SaveChanges();
+                client.Dispose();
             }
         }
 
@@ -364,6 +386,7 @@ namespace SAM.DI
                 {
                     client.Reports.Remove(report);
                     client.SaveChanges();
+                    client.Dispose();
                 }
             }
         }
@@ -374,6 +397,7 @@ namespace SAM.DI
             {
                 var update = client.Reports.Update(report);
                 client.SaveChanges();
+                client.Dispose();
                 return report;
             }
         }
@@ -405,7 +429,9 @@ namespace SAM.DI
                     }
                 }
 
-                return sources.OrderBy(x => x.Id).ToList();
+                sources = sources.OrderBy(x => x.Id).ToList();
+                client.Dispose();
+                return sources;
             }
         }
 
@@ -494,11 +520,13 @@ namespace SAM.DI
                 try
                 {
                     client.SaveChanges();
+                    client.Dispose();
                     return new Save { Status = true };
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
+                    client.Dispose();
                     return new Save { Status = false };
                 }
             }
@@ -525,11 +553,13 @@ namespace SAM.DI
                 try
                 {
                     client.SaveChanges();
+                    client.Dispose();
                     return new Save { Status = true };
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
+                    client.Dispose();
                     return new Save { Status = false };
                 }
             }
@@ -552,7 +582,9 @@ namespace SAM.DI
                     })
                     .ToList();
 
-                return settings.OrderBy(x => x.Name).ToList();
+                settings = settings.OrderBy(x => x.Name).ToList();
+                client.Dispose();
+                return settings;
             }
         }
 
@@ -612,11 +644,13 @@ namespace SAM.DI
                 try
                 {
                     client.SaveChanges();
+                    client.Dispose();
                     return new Save { Status = true };
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
+                    client.Dispose();
                     return new Save { Status = false };
                 }
             }
@@ -636,11 +670,13 @@ namespace SAM.DI
                 try
                 {
                     client.SaveChanges();
+                    client.Dispose();
                     return new Save { Status = true };
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
+                    client.Dispose();
                     return new Save { Status = false };
                 }
             }
@@ -669,7 +705,9 @@ namespace SAM.DI
                     })
                     .ToList();
 
-                return packages.ToList();
+
+                client.Dispose();
+                return packages;
             }
         }
 
@@ -678,7 +716,8 @@ namespace SAM.DI
             using (var client = new LLCContext())
             {
                 var package = client.Packages.FirstOrDefault(x => x.Id == id);
-                return  new PackagesExt
+                client.Dispose();
+                return new PackagesExt
                 {
                     DateUploaded = package.DateUploaded,
                     Delete = false,
@@ -724,11 +763,13 @@ namespace SAM.DI
                 try
                 {
                     client.SaveChanges();
+                    client.Dispose();
                     return new Save { Status = true };
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
+                    client.Dispose();
                     return new Save { Status = false };
                 }
             }
@@ -758,6 +799,7 @@ namespace SAM.DI
                     }
                 }
 
+                client.Dispose();
                 return response;
             }
         }
@@ -854,6 +896,7 @@ namespace SAM.DI
             using (var client = new LLCContext())
             {
                 var buckets = client.Buckets.ToList();
+                client.Dispose();
                 return buckets;
             }
         }

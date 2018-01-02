@@ -344,11 +344,28 @@
 		"Type": "AWS::Events::Rule",
 		"Properties": {
 			"Description": "LinkCheckerScheduledRule",
-			"ScheduleExpression": "rate(1 minute)",
+			"ScheduleExpression": "rate(2 minutes)",
 			"State": "ENABLED",
-			"Targets": [{
+			"Targets": [
+			{
 				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
 				"Id": "LinkCheckerV1"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV2"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV3"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV4"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV5"
 			}]
 		}
 	},
@@ -366,7 +383,7 @@
 		"Type": "AWS::Events::Rule",
 		"Properties": {
 			"Description": "LinkCheckerProcessorScheduledRule",
-			"ScheduleExpression": "rate(8 hours)",
+			"ScheduleExpression": "rate(1 hour)",
 			"State": "ENABLED",
 			"Targets": [{
 				"Arn": { "Fn::GetAtt": ["LinkCheckerProcessor", "Arn"] },
@@ -388,11 +405,16 @@
 		"Type": "AWS::Events::Rule",
 		"Properties": {
 			"Description": "LinkExtractorScheduledRule",
-			"ScheduleExpression": "rate(1 minute)",
+			"ScheduleExpression": "rate(2 minutes)",
 			"State": "ENABLED",
-			"Targets": [{
+			"Targets": [
+			{
 				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
 				"Id": "LinkExtractorV1"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
+				"Id": "LinkExtractorV2"
 			}]
 		}
 	},
@@ -410,7 +432,7 @@
 		"Type": "AWS::Events::Rule",
 		"Properties": {
 			"Description": "LinkExtractorProcessorScheduledRule",
-			"ScheduleExpression": "rate(8 hours)",
+			"ScheduleExpression": "rate(1 hour)",
 			"State": "ENABLED",
 			"Targets": [{
 				"Arn": { "Fn::GetAtt": ["LinkExtractorProcessor", "Arn"] },
