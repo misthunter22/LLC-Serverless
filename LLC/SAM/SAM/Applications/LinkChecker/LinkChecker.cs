@@ -5,7 +5,6 @@ using SAM.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 
 namespace SAM.Applications.LinkChecker
@@ -27,15 +26,16 @@ namespace SAM.Applications.LinkChecker
 
             foreach (var obj in objs)
             {
-                AnalyzeLink(obj);
-                ComputeScreenshot(obj, report);
+                var stats = Service.LinkStats(obj);
+                AnalyzeLink(obj, stats);
+                ComputeScreenshot(obj, report, stats);
             }
 
             Service.RemoveObjectsFromQueue(objs);
         }
 
         // Iterate through the list of links and analyze/store their stats
-        public void AnalyzeLink(LinksExt link)
+        public void AnalyzeLink(LinksExt link, List<Stats> stats)
         {
             Stats newStat = null;
             var now       = DateTime.Now;
@@ -47,7 +47,7 @@ namespace SAM.Applications.LinkChecker
                 var url     = link.Url;
                 var request = new HttpClient
                 {
-                    Timeout = TimeSpan.FromMinutes(1)
+                    Timeout = TimeSpan.FromSeconds(30)
                 };
 
                 // Start timing the response
@@ -115,11 +115,8 @@ namespace SAM.Applications.LinkChecker
                 linkValid = false;
             }
 
-            // Save if we have an object
-            if (newStat != null)
-            {
-                Service.AddStat(newStat);
-            }
+            Service.AddStat(newStat);
+            stats.Add(newStat);
 
             var report = Service.Report(link.Id);
             var l      = Service.Link(link.Id);
@@ -157,38 +154,30 @@ namespace SAM.Applications.LinkChecker
                 Service.RemoveReport(link.Id);
             }
 
-            // Compute stats
-            var stats = Service.LinkStats(link);
-            if (stats.Count > 0)
-            {
-                var sum  = stats.Sum(x => x.DownloadTime);
-                var mean = sum / stats.Count;
-                var sd   = mean > 0 ? sum / mean : 0;
+            var sum  = stats.Sum(x => x.DownloadTime);
+            var mean = sum / stats.Count;
+            var sd   = mean > 0 ? sum / mean : 0;
 
-                var week  = stats.Where(x => x.DateChecked > DateTime.Now.AddDays(-7)).ToList();
-                var wsum  = week.Sum(x => x.DownloadTime);
-                var wmean = week.Count > 0 ? wsum / week.Count : 0;
-                var wsd   = wmean > 0 ? wsum / wmean : 0;
+            var week  = stats.Where(x => x.DateChecked > DateTime.Now.AddDays(-7)).ToList();
+            var wsum  = week.Sum(x => x.DownloadTime);
+            var wmean = week.Count > 0 ? wsum / week.Count : 0;
+            var wsd   = wmean > 0 ? wsum / wmean : 0;
 
-                l.AllTimeMaxDownloadTime = stats.Max(x => x.DownloadTime);
-                l.AllTimeMinDownloadTime = stats.Min(x => x.DownloadTime);
-                l.AllTimeStdDevDownloadTime = sd;
+            l.AllTimeMaxDownloadTime = stats.Max(x => x.DownloadTime);
+            l.AllTimeMinDownloadTime = stats.Min(x => x.DownloadTime);
+            l.AllTimeStdDevDownloadTime = sd;
 
-                l.PastWeekMaxDownloadTime = week.Max(x => x.DownloadTime);
-                l.PastWeekMinDownloadTime = week.Min(x => x.DownloadTime);
-                l.PastWeekStdDevDownloadTime = wsd;
-            }
+            l.PastWeekMaxDownloadTime = week.Max(x => x.DownloadTime);
+            l.PastWeekMinDownloadTime = week.Min(x => x.DownloadTime);
+            l.PastWeekStdDevDownloadTime = wsd;
 
             l.DateLastChecked = now;
             l.DateUpdated = now;
             Service.SetLink(l);
         }
 
-        private void ComputeScreenshot(LinksExt link, List<Reports> reports)
+        private void ComputeScreenshot(LinksExt link, List<Reports> reports, List<Stats> newCheck)
         {
-            // Grab all of the link stats for the link
-            var newCheck = Service.LinkStats(link);
-
             // Compute the number of days back to check links for
             var days  = int.Parse(Service.Setting("LinkCheckDays", Models.Admin.SearchType.Name).Value) * -1;
             var t     = DateTime.Today.AddDays(days);
@@ -198,11 +187,14 @@ namespace SAM.Applications.LinkChecker
                 .ToList();
 
             Console.WriteLine($"Processing URL {link.Url}");
+            Console.WriteLine($"Processing Link ID {link.Id}");
             Console.WriteLine($"Found {stats.Count} stats");
 
             // Grab the first (bottom one) to work from
             var first  = stats.FirstOrDefault();
             var client = ScreenshotClient();
+
+            Console.WriteLine($"Content-Type is {first.ContentType}");
 
             // Compute the standard deviation and mean for the links
             var mean              = ComputeMean(stats);
@@ -262,6 +254,17 @@ namespace SAM.Applications.LinkChecker
             {
                 var ss = client.PostAsync(ScreenshotUrl + "?url=" + link.Url, new StringContent(string.Empty)).Result;
                 Console.WriteLine($"Performed screenshot: {ss.Content.ReadAsStringAsync().Result}");
+                try
+                {
+                    var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<NewScreenshot>(ss.Content.ReadAsStringAsync().Result);
+                    if (obj.hash == null)
+                        throw new Exception($"Could not take screenshot of link {link.Id}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"ERROR: {ex.Message}");
+                    throw new Exception($"Could not take screenshot of link {link.Id}");
+                }
             }
         }
 

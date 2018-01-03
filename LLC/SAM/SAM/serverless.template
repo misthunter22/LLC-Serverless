@@ -61,7 +61,7 @@
         "Handler": "SAM::SAM.LambdaEntryPoint::FunctionHandlerAsync",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 1024,
+        "MemorySize": 256,
         "Timeout": 30,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess" ],
@@ -87,7 +87,7 @@
         "Handler": "SAM::SAM.Applications.LinkExtractor.Processor::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 1024,
+        "MemorySize": 256,
         "Timeout": 300,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSNSFullAccess", "AmazonSQSFullAccess" ],
@@ -106,7 +106,7 @@
         "Handler": "SAM::SAM.Applications.LinkExtractor.Queue::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 1024,
+        "MemorySize": 256,
         "Timeout": 300,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
@@ -124,8 +124,8 @@
         "Handler": "SAM::SAM.Applications.LinkExtractor.LinkExtractor::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 1024,
-        "Timeout": 300,
+        "MemorySize": 256,
+        "Timeout": 150,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
@@ -142,8 +142,8 @@
         "Handler": "SAM::SAM.Applications.LinkChecker.Processor::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 1024,
-        "Timeout": 300,
+        "MemorySize": 256,
+        "Timeout": 150,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSNSFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
@@ -161,8 +161,8 @@
         "Handler": "SAM::SAM.Applications.LinkChecker.Queue::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 1024,
-        "Timeout": 300,
+        "MemorySize": 256,
+        "Timeout": 150,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
@@ -179,8 +179,8 @@
         "Handler": "SAM::SAM.Applications.LinkChecker.LinkChecker::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 1024,
-        "Timeout": 300,
+        "MemorySize": 256,
+        "Timeout": 150,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
@@ -199,8 +199,8 @@
         "Handler": "SAM::SAM.Applications.ObjectExtractor::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 1024,
-        "Timeout": 300,
+        "MemorySize": 256,
+        "Timeout": 150,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonS3FullAccess" ],
         "Environment" : {
@@ -340,11 +340,11 @@
          }
       },
 
-	"LinkCheckerScheduledRule": {
+	"LinkCheckerScheduledRuleA": {
 		"Type": "AWS::Events::Rule",
 		"Properties": {
 			"Description": "LinkCheckerScheduledRule",
-			"ScheduleExpression": "rate(2 minutes)",
+			"ScheduleExpression": "rate(1 minute)",
 			"State": "ENABLED",
 			"Targets": [
 			{
@@ -369,13 +369,166 @@
 			}]
 		}
 	},
-	"PermissionForLinkCheckerToInvokeLambda": {
+	"PermissionForLinkCheckerToInvokeLambdaA": {
 		"Type": "AWS::Lambda::Permission",
 		"Properties": {
 			"FunctionName": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
 			"Action": "lambda:InvokeFunction",
 			"Principal": "events.amazonaws.com",
-			"SourceArn": { "Fn::GetAtt": ["LinkCheckerScheduledRule", "Arn"] }
+			"SourceArn": { "Fn::GetAtt": ["LinkCheckerScheduledRuleA", "Arn"] }
+		}
+	},
+	"LinkCheckerScheduledRuleB": {
+		"Type": "AWS::Events::Rule",
+		"Properties": {
+			"Description": "LinkCheckerScheduledRule",
+			"ScheduleExpression": "rate(1 minute)",
+			"State": "ENABLED",
+			"Targets": [
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV1"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV2"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV3"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV4"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV5"
+			}]
+		}
+	},
+	"PermissionForLinkCheckerToInvokeLambdaB": {
+		"Type": "AWS::Lambda::Permission",
+		"Properties": {
+			"FunctionName": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+			"Action": "lambda:InvokeFunction",
+			"Principal": "events.amazonaws.com",
+			"SourceArn": { "Fn::GetAtt": ["LinkCheckerScheduledRuleB", "Arn"] }
+		}
+	},
+	"LinkCheckerScheduledRuleC": {
+		"Type": "AWS::Events::Rule",
+		"Properties": {
+			"Description": "LinkCheckerScheduledRule",
+			"ScheduleExpression": "rate(1 minute)",
+			"State": "ENABLED",
+			"Targets": [
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV1"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV2"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV3"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV4"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV5"
+			}]
+		}
+	},
+	"PermissionForLinkCheckerToInvokeLambdaC": {
+		"Type": "AWS::Lambda::Permission",
+		"Properties": {
+			"FunctionName": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+			"Action": "lambda:InvokeFunction",
+			"Principal": "events.amazonaws.com",
+			"SourceArn": { "Fn::GetAtt": ["LinkCheckerScheduledRuleC", "Arn"] }
+		}
+	},
+	"LinkCheckerScheduledRuleD": {
+		"Type": "AWS::Events::Rule",
+		"Properties": {
+			"Description": "LinkCheckerScheduledRule",
+			"ScheduleExpression": "rate(1 minute)",
+			"State": "ENABLED",
+			"Targets": [
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV1"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV2"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV3"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV4"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+				"Id": "LinkCheckerV5"
+			}]
+		}
+	},
+	"PermissionForLinkCheckerToInvokeLambdaD": {
+		"Type": "AWS::Lambda::Permission",
+		"Properties": {
+			"FunctionName": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
+			"Action": "lambda:InvokeFunction",
+			"Principal": "events.amazonaws.com",
+			"SourceArn": { "Fn::GetAtt": ["LinkCheckerScheduledRuleD", "Arn"] }
+		}
+	},
+
+	"LinkExtractorScheduledRule": {
+		"Type": "AWS::Events::Rule",
+		"Properties": {
+			"Description": "LinkExtractorScheduledRule",
+			"ScheduleExpression": "rate(1 minute)",
+			"State": "ENABLED",
+			"Targets": [
+			{
+				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
+				"Id": "LinkExtractorV1"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
+				"Id": "LinkExtractorV2"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
+				"Id": "LinkExtractorV3"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
+				"Id": "LinkExtractorV4"
+			},
+			{
+				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
+				"Id": "LinkExtractorV5"
+			}]
+		}
+	},
+	"PermissionForLinkExtractorToInvokeLambda": {
+		"Type": "AWS::Lambda::Permission",
+		"Properties": {
+			"FunctionName": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
+			"Action": "lambda:InvokeFunction",
+			"Principal": "events.amazonaws.com",
+			"SourceArn": { "Fn::GetAtt": ["LinkExtractorScheduledRule", "Arn"] }
 		}
 	},
 
@@ -398,33 +551,6 @@
 			"Action": "lambda:InvokeFunction",
 			"Principal": "events.amazonaws.com",
 			"SourceArn": { "Fn::GetAtt": ["LinkCheckerProcessorScheduledRule", "Arn"] }
-		}
-	},
-
-	"LinkExtractorScheduledRule": {
-		"Type": "AWS::Events::Rule",
-		"Properties": {
-			"Description": "LinkExtractorScheduledRule",
-			"ScheduleExpression": "rate(2 minutes)",
-			"State": "ENABLED",
-			"Targets": [
-			{
-				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
-				"Id": "LinkExtractorV1"
-			},
-			{
-				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
-				"Id": "LinkExtractorV2"
-			}]
-		}
-	},
-	"PermissionForLinkExtractorToInvokeLambda": {
-		"Type": "AWS::Lambda::Permission",
-		"Properties": {
-			"FunctionName": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
-			"Action": "lambda:InvokeFunction",
-			"Principal": "events.amazonaws.com",
-			"SourceArn": { "Fn::GetAtt": ["LinkExtractorScheduledRule", "Arn"] }
 		}
 	},
 
