@@ -44,6 +44,7 @@
     <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.3.3.1" />
     <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.3.2.10" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.4.13" />
+    <PackageReference Include="NReco.PhantomJS" Version="1.0.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.0.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.6.13" />
     <PackageReference Include="AWSSDK.CloudWatch" Version="3.3.4.1" />

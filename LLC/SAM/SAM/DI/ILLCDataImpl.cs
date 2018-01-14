@@ -825,18 +825,21 @@ namespace SAM.DI
 
         public void RemoveObjectsFromQueue<T>(List<T> objects) where T : Models.Dynamo.ReceiptBase
         {
-            Console.WriteLine($"Removing list {JsonConvert.SerializeObject(objects)}");
-            using (var sqsClient = new AmazonSQSClient())
+            if (objects != null && objects.Count > 0)
             {
-                var result = sqsClient.DeleteMessageBatchAsync(new DeleteMessageBatchRequest
+                Console.WriteLine($"Removing list {JsonConvert.SerializeObject(objects)}");
+                using (var sqsClient = new AmazonSQSClient())
                 {
-                    Entries = objects.Select(x => new DeleteMessageBatchRequestEntry
+                    var result = sqsClient.DeleteMessageBatchAsync(new DeleteMessageBatchRequest
                     {
-                        Id = Guid.NewGuid().ToString(),
-                        ReceiptHandle = x.ReceiptHandle
-                    }).ToList(),
-                    QueueUrl = Environment.GetEnvironmentVariable("Queue")
-                }).Result.Successful;
+                        Entries = objects.Select(x => new DeleteMessageBatchRequestEntry
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            ReceiptHandle = x.ReceiptHandle
+                        }).ToList(),
+                        QueueUrl = Environment.GetEnvironmentVariable("Queue")
+                    }).Result.Successful;
+                }
             }
         }
 

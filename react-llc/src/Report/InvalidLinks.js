@@ -93,7 +93,7 @@ class InvalidLinks extends Component {
 	  },
 	  {
 		render: function (data, type, row) {
-			return '<a data-src="' + data + '" data-type="link" title="' + data + '" class="btn btn-info bucket-locations" data-toggle="modal" data-target="#myModal">' + data + '</a>';
+			return '<a data-src="' + data + '" data-type="link" title="' + data + '" class="btn btn-info bucket-locations" data-toggle="modal" data-target="#myModal">' + data.slice(0, 8) + "..." + '</a>';
 		},
 		targets: 6
 	  },

@@ -4,6 +4,7 @@ const fs        = require('fs');
 const AWS       = require('aws-sdk');
 const validUrl  = require('valid-url');
 const phantomjs = require('phantomjs-prebuilt');
+const uuidv4    = require('uuid/v4');
 
 // overall constants
 const screenWidth  = 1280;
@@ -21,9 +22,10 @@ module.exports.take_screenshot = (event, context, cb) => {
     return false;
   }
 
+  const uid            = uuidv4();
   const targetBucket   = event.stageVariables.bucketName;
   const targetHash     = crypto.createHash('md5').update(targetUrl).digest('hex');
-  const targetFilename = `${targetHash}/original.png`;
+  const targetFilename = `${targetHash}/1/original.png`;
   console.log(`Snapshotting ${targetUrl} to s3://${targetBucket}/${targetFilename}`);
   
   var program = phantomjs.exec('screenshot.js', targetUrl, `/tmp/${targetHash}.png`, screenWidth, screenHeight, timeout);
@@ -43,30 +45,52 @@ module.exports.take_screenshot = (event, context, cb) => {
     // upload the file
     const s3 = new AWS.S3({apiVersion: '2006-03-01'});
     var params = {
-	  Body: fileBuffer, 
 	  Bucket: targetBucket, 
 	  Key: targetFilename
 	};
-		 
-	s3.putObject(params, function(err, data) {
-	  if (err) {
-	    console.log(err, err.stack); // an error occurred  
+	
+    s3.headObject(params, function (err, metadata) { 
+      var obj = {};
+      if (err && err.code !== 'NotFound') {
+		console.log(err, err.stack); // an error occurred   	
+		cb(err);
+	  }
+	  else if (err && err.code === 'NotFound') {
+	    obj = {
+	      Body: fileBuffer, 
+	      Bucket: targetBucket, 
+	      Key: targetFilename
+	    };
 	  } 
-	  else {
-		var resp = {
-			"hash": `${targetHash}`,
+	  else {  
+        obj = {
+	      Body: fileBuffer, 
+	      Bucket: targetBucket, 
+	      Key: `${targetHash}/${uid}/original.png`
+	    }; 
+      }
+	  
+	  s3.putObject(obj, function(err, data) {
+	    if (err) {
+	      console.log(err, err.stack); // an error occurred  
+		  cb(err);
+	    } 
+	    else {
+		  var resp = {
+		    "hash": `${targetHash}`,
 		    "key": `${targetFilename}`,
             "bucket": targetBucket,
             "url": `${event.stageVariables.endpoint}${targetFilename}`
-		};
+		  };
 		
-		cb(null, 
-		{
-		  "statusCode": 200, 
-		  "body": JSON.stringify(resp)
-		});
-	  }     
-	});
+		  cb(null, 
+		  {
+		    "statusCode": 200, 
+		    "body": JSON.stringify(resp)
+		  });
+	    }     
+	  });
+    });
   })
 };
 
@@ -135,7 +159,8 @@ module.exports.create_thumbnails = (event, context, cb) => {
   }
 
   // get the prefix, and get the hash
-  const prefix = record.s3.object.key.split('/')[0];
+  const folder = record.s3.object.key.split('/')[0];
+  const prefix = record.s3.object.key.split('/')[1];
   const hash   = prefix;
 
   // download the original to disk
@@ -170,7 +195,7 @@ module.exports.create_thumbnails = (event, context, cb) => {
 				   var fileBuffer = fs.readFileSync(`/tmp/${hash}-${size}.png`);
 				   s3.putObject({
 					  ACL: 'public-read',
-					  Key: `${prefix}/${size}.png`,
+					  Key: `${folder}/${prefix}/${size}.png`,
 					  Body: fileBuffer,
 					  Bucket: record.s3.bucket.name,
 					  ContentType: 'image/png'

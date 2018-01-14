@@ -2,7 +2,7 @@ service: lambda-screenshots
 
 custom:
   # change this, so it's unique for your setup
-  bucket_name: lor-screenshots
+  bucket_name: idla-screenshots-${opt:stage, 'dev'}
 
   stageVariables:
     bucketName: ${self:custom.bucket_name}
@@ -14,7 +14,7 @@ provider:
   name: aws
   versionLambda: false
   runtime: nodejs6.10
-  memorySize: 512
+  memorySize: 256
   region: us-west-2
 
   # We need to lockdown the apigateway, so we can control who can use the api
@@ -37,7 +37,7 @@ provider:
 functions:
   takeScreenshot:
     handler: handler.take_screenshot
-    timeout: 30
+    timeout: 60
     events:
       - http:
           path: screenshots
@@ -86,7 +86,6 @@ resources:
       Description: "CloudFront url"
       Value: {"Fn::GetAtt": "CloudFrontEndpoint.DomainName"}
   Resources:
-    # Create an endpoint for the S3 bucket in CloudFront
     CloudFrontEndpoint:
       Type: AWS::CloudFront::Distribution
       Properties:

@@ -20,6 +20,7 @@ namespace SAM.Applications
             var evt    = record["eventName"].ToString();
             var isPut  = evt.StartsWith("ObjectCreated:");
 
+            Console.WriteLine(obj);
             Console.WriteLine(evt);
             Console.WriteLine(k);
 

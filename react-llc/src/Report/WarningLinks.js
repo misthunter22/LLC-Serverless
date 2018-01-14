@@ -29,7 +29,7 @@ const columns = [
   },
   {
 	title: 'SD Range',
-	data: 'sdRange'
+	data: 'sdMaximum'
   },
   {
 	title: 'Link ID',
@@ -37,12 +37,12 @@ const columns = [
   },
   {
 	title: 'Compare Screenshots',
-	data: 'link',
+	data: 'stat',
 	sortable: false
   },
   {
 	title: 'Bucket Locations',
-	data: 'stat',
+	data: 'link',
 	sortable: false
   },
   {
@@ -91,19 +91,19 @@ class WarningLinks extends Component {
       columnDefs: [
       {
         render: function (data, type, row) {
-          return '<a href="' + data + '" title="' + data + '" target="_blank" class="label label-success">' + row["link"] + '</a>';
+          return '<a href="' + data + '" title="' + data + '" target="_blank" class="label label-success">' + row["link"].slice(0, 8) + "..." + '</a>';
         },
         targets: 5
       },
 	  {
 		render: function (data, type, row) {
-		  return '<a data-src="' + data + '" data-type="stat" title="' + data + '" class="btn btn-info bucket-locations" data-toggle="modal" data-target="#myModal">' + data + '</a>';
+		  return '<a data-src="' + data + '" data-type="stat" title="' + data + '" class="btn btn-info bucket-locations" data-toggle="modal" data-target="#myModal">' + data.slice(0, 8) + "..." + '</a>';
 		},
 		targets: 6
 	  },
 	  {
 		render: function (data, type, row) {
-		  return '<a data-src="' + data + '" data-type="stat" title="' + data + '" class="btn btn-info bucket-locations" data-toggle="modal" data-target="#myModal">' + data + '</a>';
+		  return '<a data-src="' + data + '" data-type="stat" title="' + data + '" class="btn btn-info bucket-locations" data-toggle="modal" data-target="#myModal">' + data.slice(0, 8) + "..." + '</a>';
 		},
 		targets: 7
 	  },

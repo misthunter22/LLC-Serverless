@@ -61,7 +61,7 @@
         "Handler": "SAM::SAM.LambdaEntryPoint::FunctionHandlerAsync",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 256,
+        "MemorySize": 512,
         "Timeout": 30,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess" ],
@@ -88,7 +88,7 @@
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 256,
-        "Timeout": 300,
+        "Timeout": 100,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSNSFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
@@ -125,7 +125,7 @@
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 256,
-        "Timeout": 150,
+        "Timeout": 100,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
@@ -142,8 +142,8 @@
         "Handler": "SAM::SAM.Applications.LinkChecker.Processor::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 256,
-        "Timeout": 150,
+        "MemorySize": 128,
+        "Timeout": 100,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSNSFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
@@ -161,8 +161,8 @@
         "Handler": "SAM::SAM.Applications.LinkChecker.Queue::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 256,
-        "Timeout": 150,
+        "MemorySize": 128,
+        "Timeout": 300,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
@@ -180,7 +180,7 @@
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 256,
-        "Timeout": 150,
+        "Timeout": 100,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
         "Environment" : {
@@ -200,7 +200,7 @@
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
         "MemorySize": 256,
-        "Timeout": 150,
+        "Timeout": 100,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonS3FullAccess" ],
         "Environment" : {
@@ -383,7 +383,7 @@
 		"Properties": {
 			"Description": "LinkCheckerScheduledRule",
 			"ScheduleExpression": "rate(1 minute)",
-			"State": "ENABLED",
+			"State": "DISABLED",
 			"Targets": [
 			{
 				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
@@ -421,7 +421,7 @@
 		"Properties": {
 			"Description": "LinkCheckerScheduledRule",
 			"ScheduleExpression": "rate(1 minute)",
-			"State": "ENABLED",
+			"State": "DISABLED",
 			"Targets": [
 			{
 				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
@@ -459,7 +459,7 @@
 		"Properties": {
 			"Description": "LinkCheckerScheduledRule",
 			"ScheduleExpression": "rate(1 minute)",
-			"State": "ENABLED",
+			"State": "DISABLED",
 			"Targets": [
 			{
 				"Arn": { "Fn::GetAtt": ["LinkChecker", "Arn"] },
@@ -536,7 +536,7 @@
 		"Type": "AWS::Events::Rule",
 		"Properties": {
 			"Description": "LinkCheckerProcessorScheduledRule",
-			"ScheduleExpression": "rate(1 hour)",
+			"ScheduleExpression": "rate(5 minutes)",
 			"State": "ENABLED",
 			"Targets": [{
 				"Arn": { "Fn::GetAtt": ["LinkCheckerProcessor", "Arn"] },
@@ -558,7 +558,7 @@
 		"Type": "AWS::Events::Rule",
 		"Properties": {
 			"Description": "LinkExtractorProcessorScheduledRule",
-			"ScheduleExpression": "rate(1 hour)",
+			"ScheduleExpression": "rate(5 minutes)",
 			"State": "ENABLED",
 			"Targets": [{
 				"Arn": { "Fn::GetAtt": ["LinkExtractorProcessor", "Arn"] },
