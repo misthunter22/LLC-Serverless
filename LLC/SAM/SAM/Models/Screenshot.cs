@@ -50,5 +50,7 @@ namespace SAM.Models
         public string s_original { get; set; }
 
         public string key { get; set; }
+
+        public string date { get; set; }
     }
 }

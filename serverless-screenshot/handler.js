@@ -159,6 +159,7 @@ module.exports.list_screenshot = (event, context, cb) => {
 		
         url["s_" + size] = key;
         url["key"]       = pre;
+		url["date"]      = content.LastModified;
 		
 		if (new Date(content.LastModified) > lastDate) {
 		  lastDate     = new Date(content.LastModified);

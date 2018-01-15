@@ -13,6 +13,7 @@ namespace SAM.Applications
         {
             Console.WriteLine(input.GetType());
             JObject obj = (JObject)input;
+            Console.WriteLine(obj);
 
             // Determine the type of event (+/-)
             var record = obj["Records"][0];

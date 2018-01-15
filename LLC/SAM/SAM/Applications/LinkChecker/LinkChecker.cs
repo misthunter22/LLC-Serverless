@@ -24,9 +24,16 @@ namespace SAM.Applications.LinkChecker
 
             foreach (var obj in objs)
             {
-                var stats = Service.LinkStats(obj);
-                AnalyzeLink(obj, stats);
-                ComputeScreenshot(obj, report, stats);
+                try
+                {
+                    var stats = Service.LinkStats(obj);
+                    AnalyzeLink(obj, stats);
+                    ComputeScreenshot(obj, report, stats);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
 
             Service.RemoveObjectsFromQueue(objs);
@@ -211,7 +218,7 @@ namespace SAM.Applications.LinkChecker
                 Console.WriteLine($"Existing screenshot? {screenshotData}");
 
                 // Check to see if no screenshots exist
-                if (screenshotExists.urls != null && screenshotExists.urls.Count > 0)
+                if (screenshotExists.urls != null && screenshotExists.urls.Count == 0)
                 {
                     takeScreenshot = true;
                 }

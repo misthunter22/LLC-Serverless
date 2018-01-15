@@ -14,7 +14,7 @@ provider:
   name: aws
   versionLambda: false
   runtime: nodejs6.10
-  memorySize: 256
+  memorySize: 512
   region: us-west-2
 
   # We need to lockdown the apigateway, so we can control who can use the api
@@ -122,13 +122,18 @@ resources:
             MinTTL: 0
             DefaultTTL: 0
           PriceClass: PriceClass_100
+          HttpVersion: http2
           Origins:
             -
               Id: ScreenshotBucketOrigin
               DomainName: ${self:custom.bucket_name}.s3.amazonaws.com
-              CustomOriginConfig:
-                OriginProtocolPolicy: http-only
-
+              S3OriginConfig:
+                OriginAccessIdentity:
+                  Fn::Join:
+                    - ""
+                    - - "origin-access-identity/cloudfront/"
+                      - Ref: OAI
+                  
 
 plugins:
   - serverless-plugin-stage-variables

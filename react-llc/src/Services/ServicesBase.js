@@ -1,5 +1,5 @@
 import React            from 'react';
-import { PacmanLoader } from 'react-spinners';
+import { ClipLoader }   from 'react-spinners';
 import { idToken }      from '../Auth/Auth';
 
 const $ = require('jquery');
@@ -15,9 +15,7 @@ export default function servicesBase(Component) {
 	spinnerMarkup() {
 	  let spinner = 
 	    <div id="loading_spinner" style={{'marginLeft': '50%'}}>
-	      <PacmanLoader
-	        color={'#0ce3ac'} 
-		  />
+	      <ClipLoader color={'#0ce3ac'} />
 	    </div>;
 		
 	  return spinner;
@@ -559,14 +557,23 @@ export default function servicesBase(Component) {
 			$modalBody.empty();
 
 			that.bucketScreenshots(remote_content, remote_type).then(function(d) {
-			  var str = '<ul>';
+			  var str = '';
 			  $.each( d.urls, function( key, value ) {
-			    str += '<li><img src="' + value.s_original + '"></img></li>';
+				var first = '';
+				if (value.key.endsWith("/1")) {
+				  first = ' (original)';
+				}
+				
+				str += '<p>';
+				str += '<span style="color: #0ce3ac">' + value.date + first + '</span>';
+			    str += '<a target="_blank" href="' + value.s_original + '"><img height="100%" width="100%" src="' + value.s_original + '"></img></a>';
+				str += '</p>';
               });
-			  str += '</ul>';
+			  
 			  if (d.length === 0) {
 			    str = 'No Results';
 		      }
+			  
 			  $modalBody.html(str);
 			});
 		  }).modal();

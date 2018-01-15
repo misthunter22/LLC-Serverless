@@ -26,6 +26,7 @@ class Dashboard extends Component {
     }
   
     render() {
+	  let spin  = this.spinnerMarkup();
 	  let stats = [];
 	  if (this.state.stats.length > 0) {
 	    for (var i = 0; i < this.state.stats.length; i++) {
@@ -111,7 +112,15 @@ class Dashboard extends Component {
 			Roles
 		  </Button>
 	    </div>
-		{stats}
+		{ this.state.stats.length > 0 ?
+		  <div>
+		    {stats}
+		  </div>
+		  :
+		  <div>
+		    {spin}
+		  </div>
+		}
       </div>;
     }
 }
