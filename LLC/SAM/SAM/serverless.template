@@ -43,6 +43,11 @@
 		"Type" : "String",
         "Description" : "The DB Password",
         "MinLength" : "1"
+	},
+	"DbCidr" : {
+		"Type" : "String",
+        "Description" : "The DB access CIDR",
+        "MinLength" : "1"
 	}
   },
 
@@ -337,13 +342,13 @@
     "DBSecurityGroup": {  
          "Type":"AWS::EC2::SecurityGroup",
          "Properties":{  
-            "GroupDescription":"Enable HTTP access via port 80 and SSH access",
+            "GroupDescription":"Enable HTTP access via 1433",
             "SecurityGroupIngress":[  
                {  
                   "IpProtocol":"tcp",
                   "FromPort":"1433",
                   "ToPort":"1433",
-                  "CidrIp":"0.0.0.0/0"
+                  "CidrIp": { "Ref":"DbCidr" }
                }
             ]
          }

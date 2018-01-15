@@ -161,7 +161,7 @@ class CreateSource extends Component {
 		        </div>
 	          </div>
 
-	          <div className="form-group">
+	          {/* <div className="form-group">
 		        <label className="control-label col-md-2">Access Key</label>
 		        <div className="col-md-10">
 				  <input type="text" value={this.state.access} onChange={this.updateAccess} className="form-control text-box single-line" />
@@ -173,7 +173,7 @@ class CreateSource extends Component {
 		        <div className="col-md-10">
 				  <input type="text" value={this.state.secret} onChange={this.updateSecret} className="form-control text-box single-line" />
 		        </div>
-	          </div>
+	          </div> */}
 
 	          <div className="form-group">
 		        <label className="control-label col-md-2">Region</label>

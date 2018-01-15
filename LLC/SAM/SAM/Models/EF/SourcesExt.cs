@@ -34,10 +34,8 @@ namespace DbCore.Models
         [Required]
         public string Region { get; set; }
 
-        [Required]
         public string AccessKey { get; set; }
 
-        [Required]
         public string SecretKey { get; set; }
 
         public bool Delete { get; set; }
