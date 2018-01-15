@@ -57,6 +57,8 @@ namespace SAM.DI
 
         List<LinksExt> LinkChecker(string source, int offset, int maximum);
 
+        Status Reset(string id);
+
         #endregion
 
         #region Reports

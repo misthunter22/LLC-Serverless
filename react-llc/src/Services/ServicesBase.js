@@ -8,6 +8,34 @@ export const AwsConstants = {
   invokeUrl: 'https://j6nbqh9lm5.execute-api.us-west-2.amazonaws.com/Prod',
 };
 
+export function resetLink(id) {
+  return new Promise(function (fulfill, reject) {
+	var pathTemplate = AwsConstants.invokeUrl + '/api/reset/' + id;
+	var method       = 'GET';
+	  
+	var request = new Request(pathTemplate, {
+	  headers: new Headers({
+		'Content-Type'   : 'application/json',
+		'Authorization'  : idToken(),
+		'Accept-Encoding': 'identity'
+	  }),
+	  method: method,
+	});
+	
+	fetch(request)
+	  .then(function(result) {
+		return result.json();
+	  })
+	  .then(function(result) {
+		fulfill(result);
+	  })
+	 .catch(function(result) {
+		console.log(result);
+		reject(result);
+	 });
+  });
+}
+
 export default function servicesBase(Component) {
 
   class ServicesBase extends Component {
@@ -36,8 +64,9 @@ export default function servicesBase(Component) {
 		  
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -78,8 +107,9 @@ export default function servicesBase(Component) {
 		  
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -120,8 +150,9 @@ export default function servicesBase(Component) {
 		  
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(source)
@@ -148,8 +179,9 @@ export default function servicesBase(Component) {
 		  
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -190,8 +222,9 @@ export default function servicesBase(Component) {
 		  
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -224,8 +257,9 @@ export default function servicesBase(Component) {
 		  
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(setting)
@@ -252,8 +286,9 @@ export default function servicesBase(Component) {
 		  
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -304,7 +339,8 @@ export default function servicesBase(Component) {
 
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Authorization': idToken()
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: fd
@@ -340,8 +376,9 @@ export default function servicesBase(Component) {
 		var method = 'POST';
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(body)
@@ -377,8 +414,9 @@ export default function servicesBase(Component) {
 		var method = 'POST';
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(body)
@@ -409,8 +447,9 @@ export default function servicesBase(Component) {
 		var method = 'POST';
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(body)
@@ -441,8 +480,9 @@ export default function servicesBase(Component) {
 		var method = 'POST';
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(body)
@@ -469,8 +509,9 @@ export default function servicesBase(Component) {
 		  
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
-		    'Content-Type' : 'application/json',
-		    'Authorization': idToken()
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -570,7 +611,7 @@ export default function servicesBase(Component) {
 				str += '</p>';
               });
 			  
-			  if (d.length === 0) {
+			  if (d.urls.length === 0) {
 			    str = 'No Results';
 		      }
 			  

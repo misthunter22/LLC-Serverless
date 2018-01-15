@@ -285,6 +285,30 @@ namespace SAM.DI
             }
         }
 
+        public Status Reset(string id)
+        {
+            using (var client = new LLCContext())
+            {
+                var link = client.Links.FirstOrDefault(x => x.Id == id);
+                if (link != null)
+                {
+                    link.ReportNotBeforeDate = DateTime.Today;
+                    link.Valid = true;
+                    client.Links.Update(link);
+                    Console.WriteLine("Updated link");
+                    var report = client.Reports.FirstOrDefault(x => x.Link == id);
+                    if (report != null)
+                    {
+                        client.Reports.Remove(report);
+                        Console.WriteLine("Removed report");
+                    }
+                }
+
+                client.SaveChanges();
+                return new Status {  Success = true };
+            }
+        }
+
         public List<ReportsExt> InvalidLinks()
         {
             using (var client = new LLCContext())

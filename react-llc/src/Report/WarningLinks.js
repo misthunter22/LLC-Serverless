@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import servicesBase         from '../Services/ServicesBase';
+import { resetLink }        from '../Services/ServicesBase';
 import $                    from 'jquery';
 
 window.jQuery = $;
@@ -47,10 +48,22 @@ const columns = [
   },
   {
 	title: 'Reset Link',
-	data: 'id',
+	data: 'link',
 	sortable: false
   }
 ];
+
+window.warning_reset_link = function(id) {
+  var check = window.confirm("Are you sure? A link reset cannot be un-done");
+  if (check === true) {
+    resetLink(id).then(function(data) {
+      window.location.reload();
+    })
+    .catch(function(result) {
+	  console.log(result);
+    });
+  }
+}
 
 class WarningLinks extends Component {
 	
@@ -63,7 +76,7 @@ class WarningLinks extends Component {
   }
   
   componentDidMount() {
-	var that  = this;
+    var that  = this;
 	var table = $(this.refs.main).DataTable({
       columns,
 	  dom: 'lfrtip',
@@ -109,7 +122,7 @@ class WarningLinks extends Component {
 	  },
 	  {
 	    render: function (data, type, row) {
-		  return '<a href="/Report/ResetLink/' + data + '" title="' + data + '" class="btn btn-info glyphicon glyphicon-trash" onclick="return confirm(\'Are you sure? A link reset cannot be un-done\');"></a>';
+		  return '<a onclick="warning_reset_link(\'' + data + '\')" title="' + data + '" class="btn btn-info glyphicon glyphicon-trash"></a>';
 		},
 		targets: 8
 	  }
