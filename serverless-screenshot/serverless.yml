@@ -14,7 +14,7 @@ provider:
   name: aws
   versionLambda: false
   runtime: nodejs6.10
-  memorySize: 512
+  memorySize: 384
   region: us-west-2
 
   # We need to lockdown the apigateway, so we can control who can use the api

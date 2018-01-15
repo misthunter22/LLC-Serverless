@@ -33,6 +33,8 @@ namespace SAM.DI
 
         Objects SetObject(Objects obj);
 
+        Objects AddObject(Objects obj);
+
         List<ObjectsExt> LinkExtractor(string bucket, int offset, int maximum);
 
         #endregion

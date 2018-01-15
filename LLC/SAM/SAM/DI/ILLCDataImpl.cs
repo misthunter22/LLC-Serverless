@@ -136,6 +136,16 @@ namespace SAM.DI
             }
         }
 
+        public Objects AddObject(Objects obj)
+        {
+            using (var client = new LLCContext())
+            {
+                var update = client.Objects.Add(obj);
+                client.SaveChanges();
+                return obj;
+            }
+        }
+
         public List<ObjectsExt> LinkExtractor(string bucket, int offset, int maximum)
         {
             using (var client = new LLCContext())

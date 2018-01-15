@@ -13,7 +13,6 @@ namespace SAM.Applications
         {
             Console.WriteLine(input.GetType());
             JObject obj = (JObject)input;
-            Console.WriteLine(obj);
 
             // Determine the type of event (+/-)
             var record = obj["Records"][0];
@@ -21,7 +20,6 @@ namespace SAM.Applications
             var evt    = record["eventName"].ToString();
             var isPut  = evt.StartsWith("ObjectCreated:");
 
-            Console.WriteLine(obj);
             Console.WriteLine(evt);
             Console.WriteLine(k);
 
@@ -31,8 +29,10 @@ namespace SAM.Applications
             // Only process if it meets the criteria
             if (isPut && !isMobile)
             {
-                var e = record["s3"]["object"]["eTag"].ToString();
+                var t = record["s3"]["object"]["eTag"];
+                var e = t != null ? t.ToString() : string.Empty;
                 var n = record["s3"]["bucket"]["name"].ToString();
+                var o = Service.ObjectGet(n, k);
 
                 var source = Service.Source(n, Models.Admin.SearchType.Name);
                 if (source == null)
@@ -48,10 +48,19 @@ namespace SAM.Applications
                 Console.WriteLine($"Found source {source.Name}");
                 Console.WriteLine($"Source prefix is {source.S3bucketSearchPrefix}");
 
-                if (!k.StartsWith(prefix))
+                if (o.Metadata != null && "exclude".Equals(o.Metadata["x-amz-meta-linkcheck"], StringComparison.CurrentCultureIgnoreCase))
+                {
+                    Console.WriteLine("skipping due to exclude metadata");
                     return;
+                }
 
-                Console.WriteLine("Prefix matches");
+                if (!k.StartsWith(prefix))
+                {
+                    Console.WriteLine("skipping due to incorrect bucket prefix");
+                    return;
+                }
+
+                Console.WriteLine("Prefix matches and linkcheck metadata not exclude");
 
                 // Set the object in the table on 
                 // the create action
@@ -77,19 +86,19 @@ namespace SAM.Applications
                     newRow.Id = newId.ToString();
                     newRow.DateFirstFound = date;
                     Console.WriteLine($"Adding new item with ID: {newRow.Id}");
+                    Service.AddObject(newRow);
                 }
                 else
                 {
                     newRow = Service.Object(existingRow.Id);
                     newRow.ContentLastModified = date;
                     newRow.DateLastFound = date;
-                    newRow.Etag = e;
+                    newRow.Etag = string.IsNullOrEmpty(e) ? newRow.Etag : e;
                     Console.WriteLine($"Using existing ID: {newRow.Id}");
+                    Service.SetObject(newRow);
                 }
 
                 Console.WriteLine($"Object is: {JsonConvert.SerializeObject(newRow)}");
-                var result = Service.SetObject(newRow);
-
                 LinkExtractions(newRow, n, source.Id);
             }
         }

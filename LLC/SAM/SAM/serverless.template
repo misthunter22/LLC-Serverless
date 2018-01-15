@@ -187,7 +187,7 @@
         "Handler": "SAM::SAM.Applications.LinkChecker.LinkChecker::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 256,
+        "MemorySize": 384,
         "Timeout": 100,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
@@ -208,7 +208,7 @@
         "Handler": "SAM::SAM.Applications.ObjectExtractor::Handler",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 256,
+        "MemorySize": 384,
         "Timeout": 100,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess", "AmazonS3FullAccess" ],
@@ -520,14 +520,6 @@
 			{
 				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
 				"Id": "LinkExtractorV3"
-			},
-			{
-				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
-				"Id": "LinkExtractorV4"
-			},
-			{
-				"Arn": { "Fn::GetAtt": ["LinkExtractor", "Arn"] },
-				"Id": "LinkExtractorV5"
 			}]
 		}
 	},
