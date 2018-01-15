@@ -17,6 +17,8 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using System.Net.Http;
 using SAM.Models;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace SAM.DI
 {
@@ -32,6 +34,8 @@ namespace SAM.DI
 
         protected string ScreenshotUrl = Environment.GetEnvironmentVariable("Screenshot") + "screenshots";
 
+        protected string DbConnection = Environment.GetEnvironmentVariable("DbConnection");
+
         public RegionEndpoint Region()
         {
             return _region;
@@ -44,51 +48,34 @@ namespace SAM.DI
 
         public List<StatsExt> Stats()
         {
-            using (var client = new LLCContext())
+            var stats = new List<StatsExt>();
+
+            using (var conn = new SqlConnection(DbConnection))
             {
-                var stats = new List<StatsExt>();
-                var sources = Sources();
-                foreach (var s in sources)
+                using (var command = new SqlCommand("p_Reports_SourceStats", conn)
                 {
-                    if (s.S3bucketId == null)
-                        continue;
-
-                    var html = (from m in client.Objects
-                                where m.Bucket == s.S3bucketId && m.ItemName.Contains(".htm")
-                                select m).Count();
-
-                    var objects = (from m in client.Objects
-                                   where m.Bucket == s.S3bucketId
-                                   select m).Count();
-
-                    var extracted = (from m in client.Objects
-                                     where m.Bucket == s.S3bucketId
-                                     select m).Max(x => x.DateLinksLastExtracted);
-
-                    var invalid = (from m in client.Links
-                                   where m.Source == s.Id && m.Valid == false
-                                   select m).Count();
-
-                    var total = (from m in client.Links
-                                 where m.Source == s.Id
-                                 select m).Count();
-
-                    var chked = (from m in client.Links
-                                 where m.Source == s.Id
-                                 select m).Max(x => x.DateLastChecked);
-
-                    var ext = new StatsExt
+                    CommandType = CommandType.StoredProcedure
+                })
+                {
+                    conn.Open();
+                    using (SqlDataReader rdr = command.ExecuteReader())
                     {
-                        HtmlFiles = html,
-                        InvalidLinks = invalid,
-                        LastChecked = chked,
-                        LastExtracted = extracted,
-                        Objects = objects,
-                        Source = s.Name,
-                        TotalLinks = total
-                    };
+                        while (rdr.Read())
+                        {
+                            var ext = new StatsExt
+                            {
+                                HtmlFiles     = rdr["HTMLCount"]          is DBNull ? 0    : (int)rdr["HTMLCount"],
+                                InvalidLinks  = rdr["InvalidLinkCount"]   is DBNull ? 0    : (int)rdr["InvalidLinkCount"],
+                                LastChecked   = rdr["LinksLastChecked"]   is DBNull ? null : (DateTime?)rdr["LinksLastChecked"],
+                                LastExtracted = rdr["LinksLastExtracted"] is DBNull ? null : (DateTime?)rdr["LinksLastExtracted"],
+                                Objects       = rdr["ObjectCount"]        is DBNull ? 0    : (int)rdr["ObjectCount"],
+                                Source        = rdr["Source"]             is DBNull ? ""   : (string)rdr["Source"],
+                                TotalLinks    = rdr["LinkCount"]          is DBNull ? 0    : (int)rdr["LinkCount"],
+                            };
 
-                    stats.Add(ext);
+                            stats.Add(ext);
+                        }
+                    }
                 }
 
                 return stats;

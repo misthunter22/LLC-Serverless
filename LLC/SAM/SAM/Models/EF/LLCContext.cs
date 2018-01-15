@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DbCore.Models
 {
@@ -16,6 +15,8 @@ namespace DbCore.Models
         public virtual DbSet<Sources> Sources { get; set; }
         public virtual DbSet<Stats> Stats { get; set; }
 
+        private string DbConnection = Environment.GetEnvironmentVariable("DbConnection");
+
         public LLCContext()
         {
             Database.SetCommandTimeout(3 * 60);
@@ -25,8 +26,7 @@ namespace DbCore.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(@"Server=drgk6yf55vn8y4.cbl0vtr35mzo.us-west-2.rds.amazonaws.com;Database=LLC;User Id=llcadmin;Password=77zWm!~-twaWuQUS;MultipleActiveResultSets=true");
+                optionsBuilder.UseSqlServer(DbConnection);
             }
         }
 

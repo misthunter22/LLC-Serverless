@@ -69,7 +69,8 @@
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
 			"Screenshot" : { "Ref" : "ScreenshotServiceUrl" },
-			"ApiKey" : { "Ref" : "ScreenshotApiKey" }
+			"ApiKey" : { "Ref" : "ScreenshotApiKey" },
+			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
         },
         "Events": {
@@ -97,7 +98,8 @@
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
 			"Topic": { "Ref" : "LinkExtractorTopic" },
-			"Queue": { "Ref" : "LinkExtractorQueue" }
+			"Queue": { "Ref" : "LinkExtractorQueue" },
+			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
         }
       }
@@ -115,7 +117,8 @@
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
-			"Queue": { "Ref" : "LinkExtractorQueue" }
+			"Queue": { "Ref" : "LinkExtractorQueue" },
+			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
         }
       }
@@ -133,7 +136,8 @@
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
-			"Queue": { "Ref" : "LinkExtractorQueue" }
+			"Queue": { "Ref" : "LinkExtractorQueue" },
+			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
         }
       }
@@ -152,7 +156,8 @@
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
 			"Topic": { "Ref" : "LinkCheckerTopic" },
-			"Queue": { "Ref" : "LinkCheckerQueue" }
+			"Queue": { "Ref" : "LinkCheckerQueue" },
+			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
         }
       }
@@ -170,7 +175,8 @@
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
-			"Queue": { "Ref" : "LinkCheckerQueue" }
+			"Queue": { "Ref" : "LinkCheckerQueue" },
+			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
         }
       }
@@ -190,7 +196,8 @@
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
 			"Queue": { "Ref" : "LinkCheckerQueue" },
 			"Screenshot" : { "Ref" : "ScreenshotServiceUrl" },
-			"ApiKey" : { "Ref" : "ScreenshotApiKey" }
+			"ApiKey" : { "Ref" : "ScreenshotApiKey" },
+			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
         }
       }
@@ -207,7 +214,7 @@
         "Policies": [ "AWSLambdaFullAccess", "AmazonS3FullAccess" ],
         "Environment" : {
           "Variables" : {
-            
+            "DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
         }
       }

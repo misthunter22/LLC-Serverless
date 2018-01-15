@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Button } from 'react-bootstrap';
-import servicesBase from '../Services/ServicesBase';
+import { Button }           from 'react-bootstrap';
+import servicesBase         from '../Services/ServicesBase';
+import moment               from 'moment';
+
 
 class Dashboard extends Component {
 
@@ -54,7 +56,7 @@ class Dashboard extends Component {
 			
             <div className="label label-default dash-title">Last Extracted: </div>
             <div className="label label-info dash-value">
-              {stat.extracted}
+              {moment(stat.extracted).format("YYYY-MM-DD")}
             </div>
 
             <div className="dash-title-even"></div>
@@ -68,7 +70,7 @@ class Dashboard extends Component {
 			
             <div className="label label-default dash-title">Last Checked: </div>
             <div className="label label-info dash-value">
-              {stat.checked}
+              {moment(stat.checked).format("YYYY-MM-DD")}
             </div>
           </div>;
 		  stats.push(s);  

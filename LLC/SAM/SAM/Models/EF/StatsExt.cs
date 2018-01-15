@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SAM.Models.EF
 {
@@ -14,8 +15,10 @@ namespace SAM.Models.EF
 
         public int HtmlFiles { get; set; }
 
+        [DisplayFormat(DataFormatString = "yyyy-MM-dd")]
         public DateTime? LastExtracted { get; set; }
 
+        [DisplayFormat(DataFormatString = "yyyy-MM-dd")]
         public DateTime? LastChecked { get; set; }
     }
 }
