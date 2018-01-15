@@ -15,6 +15,8 @@ using SAM.Models.Auth;
 using System.Security.Claims;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using System.Net.Http;
+using SAM.Models;
 
 namespace SAM.DI
 {
@@ -25,6 +27,10 @@ namespace SAM.DI
         private int _maxQueue = 10;
 
         private int _maxDequeue = 1;
+
+        protected string ApiKey = Environment.GetEnvironmentVariable("ApiKey");
+
+        protected string ScreenshotUrl = Environment.GetEnvironmentVariable("Screenshot") + "screenshots";
 
         public RegionEndpoint Region()
         {
@@ -87,6 +93,17 @@ namespace SAM.DI
 
                 return stats;
             }
+        }
+
+        public HttpClient ScreenshotClient()
+        {
+            var client = new HttpClient
+            {
+                Timeout = TimeSpan.FromMinutes(1)
+            };
+
+            client.DefaultRequestHeaders.Add("x-api-key", ApiKey);
+            return client;
         }
 
         public int ObjectsCount(string bucket)
@@ -379,6 +396,35 @@ namespace SAM.DI
                 client.SaveChanges();
                 return report;
             }
+        }
+
+        public ExistingScreenshotList Screenshots(BucketLocationsRequest m)
+        {
+            var link              = Link(m.id);
+            var url               = ScreenshotUrl + "?url=" + link.Url;
+            var client            = ScreenshotClient();
+            var screenshotRequest = client.GetAsync(new Uri(url)).Result;
+            var screenshotData    = screenshotRequest.Content.ReadAsStringAsync().Result;
+
+            Console.WriteLine(url);
+            Console.WriteLine(screenshotData);
+
+            var screenshotExists  = JsonConvert.DeserializeObject<ExistingScreenshotList>(screenshotData);
+            var screenshotRet     = new ExistingScreenshotList
+            {
+                urls = new List<ExistingScreenshot>(),
+                last = screenshotExists.last
+            };
+
+            var first = screenshotExists.urls.FirstOrDefault(x => x.key.EndsWith("/1"));
+            if (first != null)
+                screenshotRet.urls.Add(first);
+
+            var last = screenshotExists.urls.FirstOrDefault(x => x.key == screenshotExists.last && !x.key.EndsWith("/1"));
+            if (last != null)
+                screenshotRet.urls.Add(last);
+
+            return screenshotRet;
         }
 
         public List<SourcesExt> Sources()

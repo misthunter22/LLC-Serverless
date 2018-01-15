@@ -3,7 +3,7 @@ var page   = require('webpage').create(),
     url, output, width, height;
 
 page.onResourceReceived = function(response) {
-    valid = [200, 201, 301, 302]
+    valid = [200, 201, 301, 302, 404, 500]
     if(response.id == 1 && valid.indexOf(response.status) == -1 ){
         console.log('Received a non-200 OK response, got: ', response.status);
         phantom.exit(1);

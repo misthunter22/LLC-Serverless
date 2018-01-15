@@ -37,7 +37,7 @@ provider:
 functions:
   takeScreenshot:
     handler: handler.take_screenshot
-    timeout: 60
+    timeout: 30
     events:
       - http:
           path: screenshots
@@ -71,7 +71,7 @@ functions:
 
   createThumbnails:
     handler: handler.create_thumbnails
-    timeout: 120
+    timeout: 30
     events:
       - s3:
           bucket: ${self:custom.bucket_name}
@@ -86,6 +86,28 @@ resources:
       Description: "CloudFront url"
       Value: {"Fn::GetAtt": "CloudFrontEndpoint.DomainName"}
   Resources:
+    OAI:
+      Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: ${self:custom.bucket_name}
+    Policy:
+      Type: "AWS::S3::BucketPolicy"
+      Properties: 
+        Bucket: ${self:custom.bucket_name}
+        PolicyDocument: 
+          Version: "2012-10-17"
+          Statement: 
+            - 
+              Effect: "Allow"
+              Action: 
+                - "s3:GetObject"
+              Principal:
+                CanonicalUser: 
+                  Fn::GetAtt: [ OAI, S3CanonicalUserId ] 
+              Resource: 
+                - "arn:aws:s3:::${self:custom.bucket_name}"
+                - "arn:aws:s3:::${self:custom.bucket_name}/*"
     CloudFrontEndpoint:
       Type: AWS::CloudFront::Distribution
       Properties:
@@ -96,6 +118,10 @@ resources:
             ViewerProtocolPolicy: redirect-to-https
             ForwardedValues:
               QueryString: True
+            MaxTTL: 0
+            MinTTL: 0
+            DefaultTTL: 0
+          PriceClass: PriceClass_100
           Origins:
             -
               Id: ScreenshotBucketOrigin

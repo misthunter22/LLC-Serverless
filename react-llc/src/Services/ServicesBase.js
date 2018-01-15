@@ -2,9 +2,7 @@ import React            from 'react';
 import { PacmanLoader } from 'react-spinners';
 import { idToken }      from '../Auth/Auth';
 
-var AWS    = require('aws-sdk');
-var Client = require('aws-api-gateway-client').default;
-const $    = require('jquery');
+const $ = require('jquery');
 
 export const AwsConstants = {
   invokeUrl: 'https://j6nbqh9lm5.execute-api.us-west-2.amazonaws.com/Prod',
@@ -434,6 +432,38 @@ export default function servicesBase(Component) {
 	  });
 	}
 	
+	bucketScreenshots(data, type) {
+	  return new Promise(function (fulfill, reject) {		
+		var pathTemplate = AwsConstants.invokeUrl + '/api/screenshots';
+		var body         = {
+	      id: data,
+		  type: type
+	    };
+		  
+		var method = 'POST';
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type' : 'application/json',
+		    'Authorization': idToken()
+	      }),
+		  method: method,
+		  body: JSON.stringify(body)
+	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			fulfill(result);
+          })
+		  .catch(function(result) {
+		    console.log(result);
+		    reject(result);
+          });
+	  });
+	}
+	
 	stats() {
 	  return new Promise(function (fulfill, reject) {
 	    var pathTemplate = AwsConstants.invokeUrl + '/api/stats';
@@ -495,45 +525,53 @@ export default function servicesBase(Component) {
 				$(this).addClass("selected");
 			}
 		}
+		
+		var target_modal   = $(e.currentTarget).data('target');
+		var remote_content = $(e.currentTarget).data('src');
+		var remote_type    = $(e.currentTarget).data('type');
+		var $modal         = $(target_modal);
+		var $modalBody     = $(target_modal + ' .modal-body');
 
 		if ($(this).hasClass("bucket-locations")) {
+
+		  $modal.off().on('show.bs.modal', function () {
+			$modalBody.empty();
+
+			that.bucketLocations(remote_content, remote_type).then(function(d) {
+			  var str = '<ul>';
+			  $.each( d, function( key, value ) {
+			    str += '<li><a href="' + value.data + '" target="_blank">' + value.data + '</a></li>';
+              });
+			  str += '</ul>';
+			  if (d.length === 0) {
+			    str = 'No Results';
+		      }
+			  $modalBody.html(str);
+			});
+		  }).modal();
 			
-			// From the clicked element, get the data-target arrtibute
-			// which BS3 uses to determine the target modal
-			var target_modal = $(e.currentTarget).data('target');
-			// also get the remote content's URL
-			var remote_content = $(e.currentTarget).data('src');
-			var remote_type    = $(e.currentTarget).data('type');
+		  return false;
+		}
+		
+		if ($(this).hasClass("bucket-screenshots")) {
 
-			// Find the target modal in the DOM
-			var $modal = $(target_modal);
-			// Find the modal's <div class="modal-body"> so we can populate it
-			var $modalBody = $(target_modal + ' .modal-body');
+		  $modal.off().on('show.bs.modal', function () {
+			$modalBody.empty();
 
-			// Capture BS3's show.bs.modal which is fires
-			// immediately when, you guessed it, the show instance method
-			// for the modal is called
-			$modal.off().on('show.bs.modal', function () {
-				$modalBody.empty();
-
-				// use your remote content URL to load the modal body
-				that.bucketLocations(remote_content, remote_type).then(function(d) {
-				  var str = '<ul>';
-				  $.each( d, function( key, value ) {
-					str += '<li><a href="' + value.data + '" target="_blank">' + value.data + '</a></li>';
-                  });
-				  str += '</ul>';
-				  if (d.length === 0) {
-				    str = 'No Results';
-				  }
-				  $modalBody.html(str);
-				});
-			}).modal();
-			// and show the modal
-
-			// Now return a false (negating the link action) to prevent Bootstrap's JS 3.1.1
-			// from throwing a 'preventDefault' error due to us overriding the anchor usage.
-			return false;
+			that.bucketScreenshots(remote_content, remote_type).then(function(d) {
+			  var str = '<ul>';
+			  $.each( d.urls, function( key, value ) {
+			    str += '<li><img src="' + value.s_original + '"></img></li>';
+              });
+			  str += '</ul>';
+			  if (d.length === 0) {
+			    str = 'No Results';
+		      }
+			  $modalBody.html(str);
+			});
+		  }).modal();
+			
+		  return false;
 		}
 
 		return true;

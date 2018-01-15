@@ -13,8 +13,6 @@ namespace SAM.Applications.LinkChecker
     {
         private string ScreenshotUrl = Environment.GetEnvironmentVariable("Screenshot") + "screenshots";
 
-        private string ApiKey = Environment.GetEnvironmentVariable("ApiKey");
-
         [LambdaSerializer(typeof(JsonSerializer))]
         public void Handler(object input, ILambdaContext context)
         {
@@ -192,7 +190,7 @@ namespace SAM.Applications.LinkChecker
 
             // Grab the first (bottom one) to work from
             var first  = stats.FirstOrDefault();
-            var client = ScreenshotClient();
+            var client = Service.ScreenshotClient();
 
             Console.WriteLine($"Content-Type is {first.ContentType}");
 
@@ -209,11 +207,11 @@ namespace SAM.Applications.LinkChecker
             {
                 var screenshotRequest = client.GetAsync(new Uri(ScreenshotUrl + "?url=" + link.Url)).Result;
                 var screenshotData    = screenshotRequest.Content.ReadAsStringAsync().Result;
-                var screenshotExists  = Newtonsoft.Json.JsonConvert.DeserializeObject<ExistingScreenshot>(screenshotData);
+                var screenshotExists  = Newtonsoft.Json.JsonConvert.DeserializeObject<ExistingScreenshotList>(screenshotData);
                 Console.WriteLine($"Existing screenshot? {screenshotData}");
 
                 // Check to see if no screenshots exist
-                if (screenshotExists.s_original == null)
+                if (screenshotExists.urls != null && screenshotExists.urls.Count > 0)
                 {
                     takeScreenshot = true;
                 }
@@ -266,17 +264,6 @@ namespace SAM.Applications.LinkChecker
                     throw new Exception($"Could not take screenshot of link {link.Id}");
                 }
             }
-        }
-
-        private HttpClient ScreenshotClient()
-        {
-            var client = new HttpClient
-            {
-                Timeout = TimeSpan.FromMinutes(1)
-            };
-
-            client.DefaultRequestHeaders.Add("x-api-key", ApiKey);
-            return client;
         }
 
         private long ComputeMean(List<Stats> stats)

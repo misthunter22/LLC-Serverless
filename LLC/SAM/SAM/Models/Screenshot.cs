@@ -16,6 +16,13 @@ namespace SAM.Models
         public string url { get; set; }
     }
 
+    public class ExistingScreenshotList
+    {
+        public List<ExistingScreenshot> urls { get; set; }
+
+        public string last { get; set; }
+    }
+
     public class ExistingScreenshot
     {
         public string s_100 { get; set; }
@@ -41,5 +48,7 @@ namespace SAM.Models
         public string s_800x600 { get; set; }
 
         public string s_original { get; set; }
+
+        public string key { get; set; }
     }
 }

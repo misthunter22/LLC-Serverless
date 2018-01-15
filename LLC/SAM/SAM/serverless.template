@@ -67,7 +67,9 @@
         "Policies": [ "AWSLambdaFullAccess" ],
         "Environment" : {
           "Variables" : {
-            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
+            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
+			"Screenshot" : { "Ref" : "ScreenshotServiceUrl" },
+			"ApiKey" : { "Ref" : "ScreenshotApiKey" }
           }
         },
         "Events": {

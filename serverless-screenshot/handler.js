@@ -10,6 +10,21 @@ const uuidv4    = require('uuid/v4');
 const screenWidth  = 1280;
 const screenHeight = 1024;
 
+// define all the thumbnails that we want
+const widths = {
+  '320x240': `-crop ${screenWidth}x${screenHeight}+0x0 -thumbnail 320x240`,
+  '640x480': `-crop ${screenWidth}x${screenHeight}+0x0 -thumbnail 640x480`,
+  '800x600': `-crop ${screenWidth}x${screenHeight}+0x0 -thumbnail 800x600`,
+  '1024x768': `-crop ${screenWidth}x${screenHeight}+0x0 -thumbnail 1024x768`,
+  100: '-thumbnail 100x',
+  200: '-thumbnail 200x',
+  320: '-thumbnail 320x',
+  400: '-thumbnail 400x',
+  640: '-thumbnail 640x',
+  800: '-thumbnail 800x',
+  1024: '-thumbnail 1024x',
+};
+
 // screenshot the given url
 module.exports.take_screenshot = (event, context, cb) => {
   console.info('Received event', event);
@@ -25,7 +40,7 @@ module.exports.take_screenshot = (event, context, cb) => {
   const uid            = uuidv4();
   const targetBucket   = event.stageVariables.bucketName;
   const targetHash     = crypto.createHash('md5').update(targetUrl).digest('hex');
-  const targetFilename = `${targetHash}/1/original.png`;
+  var targetFilename   = `${targetHash}/1/original.png`;
   console.log(`Snapshotting ${targetUrl} to s3://${targetBucket}/${targetFilename}`);
   
   var program = phantomjs.exec('screenshot.js', targetUrl, `/tmp/${targetHash}.png`, screenWidth, screenHeight, timeout);
@@ -63,10 +78,11 @@ module.exports.take_screenshot = (event, context, cb) => {
 	    };
 	  } 
 	  else {  
+	    targetFilename = `${targetHash}/${uid}/original.png`;
         obj = {
 	      Body: fileBuffer, 
 	      Bucket: targetBucket, 
-	      Key: `${targetHash}/${uid}/original.png`
+	      Key: targetFilename
 	    }; 
       }
 	  
@@ -117,13 +133,39 @@ module.exports.list_screenshot = (event, context, cb) => {
     if (err) {
       cb(err);
     } else {
-      const urls = {};
+      const urls   = {};
+	  const map    = {};
+	  urls["urls"] = [];
+	  urls["last"] = null;
+	  
+	  var lastDate = new Date(-8640000000000000);
+	  
       // for each key, get the image width and add it to the output object
       data.Contents.forEach((content) => {
-        const parts = content.Key.split('/');
+		const parts = content.Key.split('/');
         const size  = parts.pop().split('.')[0];
-        urls["s_" + size]  = `${event.stageVariables.endpoint}${content.Key}`;
+        const pre   = parts.join('/');
+        const item  = parts.pop();
+		const key   = `${event.stageVariables.endpoint}${content.Key}`;
+		
+		var url = {};
+		if (map[item]) {
+          url = map[item];
+		}
+		else {
+		  map[item] = url;
+		  urls["urls"].push(url);
+		}
+		
+        url["s_" + size] = key;
+        url["key"]       = pre;
+		
+		if (new Date(content.LastModified) > lastDate) {
+		  lastDate     = new Date(content.LastModified);
+		  urls["last"] = pre;
+		}
       });
+	  
       cb(null, {
 		  "statusCode": 200, 
 		  "body": JSON.stringify(urls)
@@ -134,20 +176,6 @@ module.exports.list_screenshot = (event, context, cb) => {
 };
 
 module.exports.create_thumbnails = (event, context, cb) => {
-  // define all the thumbnails that we want
-  const widths = {
-    '320x240': `-crop ${screenWidth}x${screenHeight}+0x0 -thumbnail 320x240`,
-    '640x480': `-crop ${screenWidth}x${screenHeight}+0x0 -thumbnail 640x480`,
-    '800x600': `-crop ${screenWidth}x${screenHeight}+0x0 -thumbnail 800x600`,
-    '1024x768': `-crop ${screenWidth}x${screenHeight}+0x0 -thumbnail 1024x768`,
-    100: '-thumbnail 100x',
-    200: '-thumbnail 200x',
-    320: '-thumbnail 320x',
-    400: '-thumbnail 400x',
-    640: '-thumbnail 640x',
-    800: '-thumbnail 800x',
-    1024: '-thumbnail 1024x',
-  };
   const record = event.Records[0];
   console.info(JSON.stringify(record));
 

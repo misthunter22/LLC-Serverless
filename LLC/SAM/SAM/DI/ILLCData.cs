@@ -8,6 +8,8 @@ using SAM.Models.Reports;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.IO;
+using System.Net.Http;
+using SAM.Models;
 
 namespace SAM.DI
 {
@@ -18,6 +20,8 @@ namespace SAM.DI
         User User(IEnumerable<Claim> claim);
 
         List<StatsExt> Stats();
+
+        HttpClient ScreenshotClient();
 
         #region Objects
 
@@ -68,6 +72,8 @@ namespace SAM.DI
         void RemoveReport(string link);
 
         Reports SetReport(Reports report);
+
+        ExistingScreenshotList Screenshots(BucketLocationsRequest m);
 
         #endregion
 
