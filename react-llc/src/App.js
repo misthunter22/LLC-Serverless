@@ -14,10 +14,6 @@ class App extends Component {
         .innerHTML = '<p>&copy; ' + year + ' - Idaho Digital Learning</p>';
   }
 
-  goTo(route) {
-    this.props.history.replace(`/${route}`)
-  }
-
   login() {
     this.props.auth.login();
   }
@@ -57,28 +53,28 @@ class App extends Component {
               <Button
                 bsStyle="primary"
                 className="btn-margin"
-                onClick={this.goTo.bind(this, 'home')}
+                href='/home'
               >
                 Home
               </Button>
               <Button
                 bsStyle="primary"
                 className="btn-margin"
-                onClick={this.goTo.bind(this, 'report')}
+                href='/report'
               >
                 Reports
               </Button>
 			  <Button
                 bsStyle="primary"
                 className="btn-margin"
-                onClick={this.goTo.bind(this, 'admin')}
+                href='/admin'
               >
                 Admin
               </Button>
 		      <Button
                 bsStyle="primary"
                 className="btn-margin"
-                onClick={this.goTo.bind(this, 'admin/upload')}
+                href='/admin/upload'
               >
                 Upload
               </Button>

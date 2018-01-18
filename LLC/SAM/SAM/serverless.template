@@ -66,16 +66,17 @@
         "Handler": "SAM::SAM.LambdaEntryPoint::FunctionHandlerAsync",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 512,
+        "MemorySize": 384,
         "Timeout": 30,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess" ],
         "Environment" : {
           "Variables" : {
-            "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
-			"Screenshot" : { "Ref" : "ScreenshotServiceUrl" },
-			"ApiKey" : { "Ref" : "ScreenshotApiKey" },
-			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
+            "AppS3Bucket"     : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
+			"PackageS3Bucket" : { "Ref":"PackageBucket" },
+			"Screenshot"      : { "Ref" : "ScreenshotServiceUrl" },
+			"ApiKey"          : { "Ref" : "ScreenshotApiKey" },
+			"DbConnection"    : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
         },
         "Events": {
@@ -232,6 +233,11 @@
             "BucketName" : { "Fn::If" : ["BucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "BucketName" } ] }
         }
     },
+
+	"PackageBucket" : {
+        "Type" : "AWS::S3::Bucket"
+    },
+
 	"ObjectBucket" : {
         "Type" : "AWS::S3::Bucket",
         "Condition" : "CreateS3ObjectBucket",

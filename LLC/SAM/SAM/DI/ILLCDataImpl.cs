@@ -285,7 +285,7 @@ namespace SAM.DI
             }
         }
 
-        public Status Reset(string id)
+        public Save Reset(string id)
         {
             using (var client = new LLCContext())
             {
@@ -305,7 +305,7 @@ namespace SAM.DI
                 }
 
                 client.SaveChanges();
-                return new Status {  Success = true };
+                return new Save {  Status = true };
             }
         }
 

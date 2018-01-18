@@ -12,10 +12,6 @@ class Dashboard extends Component {
 		stats: []
 	  }
     }
-	
-	goTo(route) {
-      this.props.history.replace(`/${route}`)
-    }
 
     componentDidMount() {
       var that = this;
@@ -83,31 +79,31 @@ class Dashboard extends Component {
         <div className="col-md-5 bottom-margin-10">
 		  <Button
 			className="btn btn-lg btn-default btn-mt"
-			onClick={this.goTo.bind(this, 'admin/sources')}
+			href='/admin/sources'
 			>
 			Sources
 		  </Button>
 		  <Button
 			className="btn btn-lg btn-default btn-mt"
-			onClick={this.goTo.bind(this, 'admin/settings')}
+			href='/admin/settings'
 			>
 			Settings
 	  	  </Button>
 		  <Button
 			className="btn btn-lg btn-default btn-mt"
-			onClick={this.goTo.bind(this, 'admin/logs')}
+			href='/admin/logs'
 			>
 			Logs
 		  </Button>
 		  <Button
 			className="btn btn-lg btn-default btn-mt"
-			onClick={this.goTo.bind(this, 'admin/users')}
+			href='/admin/users'
 			>
 			Users
 		  </Button>
 		  <Button
 			className="btn btn-lg btn-default btn-mt"
-			onClick={this.goTo.bind(this, 'admin/roles')}
+			href='/admin/roles'
 			>
 			Roles
 		  </Button>
