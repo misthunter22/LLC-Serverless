@@ -42,7 +42,8 @@ namespace SAM.Controllers
         {
             if (model.Delete && !string.IsNullOrEmpty(model.Id))
             {
-                return Json(_service.DeletePackage(model));
+                //return Json(_service.DeletePackage(model));
+                return null;
             }
             else if (ModelState.IsValid)
             {

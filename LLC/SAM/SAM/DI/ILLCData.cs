@@ -110,9 +110,13 @@ namespace SAM.DI
 
         PackagesExt Package(string id);
 
+        Packages PackageFromKey(string key);
+
+        Save AddPackage(Packages package);
+
         Save SavePackage(Packages package);
 
-        Save DeletePackage(PackagesExt package);
+        Save DeletePackage(string key);
 
         #endregion
 

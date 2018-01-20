@@ -24,10 +24,6 @@ const columns = [
   {
 	title: 'Package Processed',
 	data: 'packageProcessed'
-  },
-  {
-	title: '',
-	data: 'id'
   }
 ];
 
@@ -75,17 +71,6 @@ class Upload extends Component {
                 '<i class="glyphicon glyphicon-info-sign" title="' + row['key'] + '"></i>';
 	        },
 	        "targets": 2
-          },
-		  {
-            "render": function (data, type, row) {
-	          return '<span onclick="return confirm(\'Are you sure you wish to delete this package? There is no undo.\')">' +
-                       '<a href="/admin/upload/delete/' + data + '" title="Remove this package.">' +
-                         '<i class="glyphicon glyphicon-remove" style="color: red;"></i>' +
-                         '<span class="sr-only">Remove</span>' +
-                       '</a>' +
-                     '</span>';
-            },
-            "targets": 5
           }
 	      ]
         });
@@ -127,8 +112,7 @@ class Upload extends Component {
 		    <div className="container body-content">
               <h2 className="bottom-20">Upload</h2>
               <p>
-			  {/*<a href="/admin/upload/manage">Create New</a>*/}
-			    <a id="packageAws" target="_blank">New uploads are sent directly to S3</a>
+			    <a id="packageAws" target="_blank">Uploads are managed directly in S3</a>
               </p>
 			  {spinner}
 			  <table className="table" ref="main" />

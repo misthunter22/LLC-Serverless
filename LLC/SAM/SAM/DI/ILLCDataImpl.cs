@@ -772,7 +772,16 @@ namespace SAM.DI
             }
         }
 
-        public Save SavePackage(Packages package)
+        public Packages PackageFromKey(string key)
+        {
+            using (var client = new LLCContext())
+            {
+                var package = client.Packages.FirstOrDefault(x => x.Key == key);
+                return package;
+            }
+        }
+
+        public Save AddPackage(Packages package)
         {
             var now = DateTime.Now;
             using (var client = new LLCContext())
@@ -793,16 +802,34 @@ namespace SAM.DI
             }
         }
 
-        public Save DeletePackage(PackagesExt package)
+        public Save SavePackage(Packages package)
+        {
+            var now = DateTime.Now;
+            using (var client = new LLCContext())
+            {
+                client.Packages.Update(package);
+                Console.WriteLine("Updating package");
+
+                try
+                {
+                    client.SaveChanges();
+                    return new Save { Status = true };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return new Save { Status = false };
+                }
+            }
+        }
+
+        public Save DeletePackage(string key)
         {
             using (var client = new LLCContext())
             {
-                Console.WriteLine(JsonConvert.SerializeObject(package));
-
-                client.Packages.Remove(new Packages
-                {
-                    Id = package.Id
-                });
+                var package = PackageFromKey(key);
+                client.Packages.Remove(package);
+                Console.WriteLine("Removing package");
 
                 try
                 {
