@@ -12,7 +12,7 @@ class DeleteSource extends Component {
   componentDidMount() {
 	if (this.props.match.params.id) {
 	  var that = this;
-	  this.changeSource(
+	  this.change('/api/sources',
 	  {
 		Id: this.props.match.params.id,
 		Delete: true

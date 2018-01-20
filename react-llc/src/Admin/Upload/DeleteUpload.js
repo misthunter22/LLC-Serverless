@@ -12,11 +12,10 @@ class DeleteUpload extends Component {
   componentDidMount() {
 	if (this.props.match.params.id) {
 	  var that = this;
-	  this.changePackage(
-	  {
-		Id: this.props.match.params.id,
-		Delete: true
-      })
+	  var fd   = new FormData();
+	  fd.append('id',     this.props.match.params.id);
+	  fd.append('delete', true);
+	  this.change('/api/uploads', fd)
 	  .then(function(result) {
 		if (result.status) {
 	      window.location = "/admin/upload";

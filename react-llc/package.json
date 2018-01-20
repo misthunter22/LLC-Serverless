@@ -22,6 +22,7 @@
     "react": "^15.5.4",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.5.4",
+    "react-file-base64": "^1.0.3",
     "react-redux": "^5.0.6",
     "react-redux-form": "^1.14.0",
     "react-router": "^4.1.1",

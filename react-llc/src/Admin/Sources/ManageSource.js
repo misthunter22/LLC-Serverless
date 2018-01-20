@@ -105,7 +105,7 @@ class CreateSource extends Component {
 	  SecretKey:            this.state.secret
 	};
 	
-	this.changeSource(formData)
+	this.change('/api/sources', formData)
 	  .then(function(result) {
 		if (result.status === true) {
 	      window.location = "/admin/sources"

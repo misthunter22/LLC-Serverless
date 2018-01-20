@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
+﻿using System;
 
 namespace DbCore.Models
 {
@@ -32,13 +30,12 @@ namespace DbCore.Models
 
         public bool Delete { get; set; }
 
-        [BindNever]
-        public IFormFile File { get; set; }
+        public string FileContents { get; set; }
 
         public bool CanCreate()
         {
             return !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Description) &&
-                !string.IsNullOrEmpty(FileName);
+                !string.IsNullOrEmpty(FileName) && !string.IsNullOrEmpty(FileContents);
         }
     }
 }

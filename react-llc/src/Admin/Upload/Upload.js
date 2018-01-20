@@ -18,10 +18,6 @@ const columns = [
 	data: 'fileName'
   },
   {
-	title: 'Uploaded By',
-	data: 'uploadedBy'
-  },
-  {
 	title: 'Date Uploaded',
 	data: 'dateUploaded'
   },
@@ -40,8 +36,9 @@ class Upload extends Component {
   constructor(props) {
     super(props);
 	this.state = {
-      pckgs: [],
-      loading: true
+	  url     : "",
+      pckgs   : [],
+      loading : true
 	}
   }
   
@@ -88,11 +85,15 @@ class Upload extends Component {
                        '</a>' +
                      '</span>';
             },
-            "targets": 6
+            "targets": 5
           }
 	      ]
         });
 	  });
+	  
+	this.packageUrl().then(function(url) {
+	  $("#packageAws").attr("href", url.value)
+	});
   }
   
   componentWillUnmount(){
@@ -126,7 +127,8 @@ class Upload extends Component {
 		    <div className="container body-content">
               <h2 className="bottom-20">Upload</h2>
               <p>
-                <a href="/admin/upload/manage">Create New</a>
+			  {/*<a href="/admin/upload/manage">Create New</a>*/}
+			    <a id="packageAws" target="_blank">New uploads are sent directly to S3</a>
               </p>
 			  {spinner}
 			  <table className="table" ref="main" />

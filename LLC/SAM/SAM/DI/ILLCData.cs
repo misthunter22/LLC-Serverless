@@ -7,7 +7,6 @@ using SAM.Models.EF;
 using SAM.Models.Reports;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.IO;
 using System.Net.Http;
 using SAM.Models;
 
@@ -111,9 +110,9 @@ namespace SAM.DI
 
         PackagesExt Package(string id);
 
-        Save SavePackage(PackagesExt package, User user);
+        Save SavePackage(Packages package);
 
-        Save DeletePackage(PackagesExt setting);
+        Save DeletePackage(PackagesExt package);
 
         #endregion
 
@@ -139,7 +138,7 @@ namespace SAM.DI
 
         PutObjectResponse ObjectPut<T>(string bucket, string key, T obj);
 
-        PutObjectResponse FilePut(string bucket, string key, Stream stream);
+        PutObjectResponse FilePut(string bucket, PackagesExt packages);
 
         #endregion
     }

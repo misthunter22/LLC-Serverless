@@ -9,6 +9,7 @@ namespace DbCore.Models
         public virtual DbSet<Links> Links { get; set; }
         public virtual DbSet<ObjectLinks> ObjectLinks { get; set; }
         public virtual DbSet<Objects> Objects { get; set; }
+        public virtual DbSet<PackageFiles> PackageFiles { get; set; }
         public virtual DbSet<Packages> Packages { get; set; }
         public virtual DbSet<Reports> Reports { get; set; }
         public virtual DbSet<Settings> Settings { get; set; }
@@ -138,6 +139,27 @@ namespace DbCore.Models
 
                 entity.Property(e => e.Key)
                     .HasMaxLength(1024);
+            });
+
+            modelBuilder.Entity<PackageFiles>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .HasMaxLength(256)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.CourseLocation);
+
+                entity.Property(e => e.Link)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Protocol);
+
+                entity.Property(e => e.LinkName);
+
+                entity.Property(e => e.ParentFolder);
+
+                entity.Property(e => e.PackageId)
+                    .HasMaxLength(256);
             });
 
             modelBuilder.Entity<Packages>(entity =>

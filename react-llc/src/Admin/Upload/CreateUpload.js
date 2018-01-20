@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import FileBase64           from 'react-file-base64';
 import servicesBase         from '../../Services/ServicesBase';
 
 class CreateUpload extends Component {
@@ -8,7 +9,7 @@ class CreateUpload extends Component {
 	this.state = {
 	  name         : "",
 	  fileName     : "",
-	  fileContents : null,
+	  fileContents : "",
 	  description  : ""
 	}
 	
@@ -26,10 +27,8 @@ class CreateUpload extends Component {
     this.setState({description: event.target.value})
   }
   
-  updateFile(event) {
-	var caller = event.target || event.srcElement;
-	var file   = caller.files[0];
-	this.setState({ fileName: file.name, fileContents: file });
+  updateFile(file) {
+	this.setState({ fileName: file.name, fileContents: file.base64 });
   }
   
   handleSubmit(e) {
@@ -79,7 +78,7 @@ class CreateUpload extends Component {
               <div className="form-group">
 		        <label className="control-label col-md-2">File</label>
 		        <div className="col-md-10">
-				  <input type="file" onChange={this.updateFile} />
+				  <FileBase64 multiple={false} onDone={this.updateFile.bind(this)} />
 		        </div>
 	          </div>
 

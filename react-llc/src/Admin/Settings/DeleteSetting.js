@@ -12,7 +12,7 @@ class DeleteSetting extends Component {
   componentDidMount() {
 	if (this.props.match.params.id) {
 	  var that = this;
-	  this.changeSetting(
+	  this.change('/api/settings',
 	    {
 		  Id: this.props.match.params.id,
 		  Delete: true

@@ -56,6 +56,49 @@ export default function servicesBase(Component) {
 	  else
 		$('#loading_spinner').hide();
 	}
+	
+	change(endpoint, obj) {
+	  return new Promise(function (fulfill, reject) {
+	    var pathTemplate = AwsConstants.invokeUrl + endpoint;
+		var method       = 'POST';
+		
+		var body   = null;
+		var header = null;
+		if (obj instanceof FormData) {
+		  body   = obj;
+		  header = new Headers({
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
+	      });
+		}
+		else {
+		  body   = JSON.stringify(obj);
+		  header = new Headers({
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
+	      });
+		}
+		  
+		var request = new Request(pathTemplate, {
+		  headers: header,
+		  method : method,
+		  body   : body
+	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			fulfill(result);
+          })
+		 .catch(function(result) {
+		    console.log(result);
+			reject(result);
+         });
+	  });
+	}
 		
 	sources() {
 	  return new Promise(function (fulfill, reject) {
@@ -143,35 +186,6 @@ export default function servicesBase(Component) {
 	  });
 	}
 	
-	changeSource(source) {
-	  return new Promise(function (fulfill, reject) {
-	    var pathTemplate = AwsConstants.invokeUrl + '/api/sources';
-		var method       = 'POST';
-		  
-		var request = new Request(pathTemplate, {
-	      headers: new Headers({
-		    'Content-Type'   : 'application/json',
-		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
-	      }),
-		  method: method,
-		  body: JSON.stringify(source)
-	    });
-		
-		fetch(request)
-		  .then(function(result) {
-			return result.json();
-		  })
-		  .then(function(result) {
-			fulfill(result);
-          })
-		 .catch(function(result) {
-		    console.log(result);
-			reject(result);
-         });
-	  });
-	}
-	
 	settings() {	  
 	  return new Promise(function (fulfill, reject) {
 	    var pathTemplate = AwsConstants.invokeUrl + '/api/settings';
@@ -250,35 +264,6 @@ export default function servicesBase(Component) {
 	  });
 	}
 	
-	changeSetting(setting) {
-	  return new Promise(function (fulfill, reject) {
-	    var pathTemplate = AwsConstants.invokeUrl + '/api/settings';
-		var method       = 'POST';
-		  
-		var request = new Request(pathTemplate, {
-	      headers: new Headers({
-		    'Content-Type'   : 'application/json',
-		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
-	      }),
-		  method: method,
-		  body: JSON.stringify(setting)
-	    });
-		
-		fetch(request)
-		  .then(function(result) {
-			return result.json();
-		  })
-		  .then(function(result) {
-			fulfill(result);
-          })
-		 .catch(function(result) {
-		    console.log(result);
-			reject(result);
-         });
-	  });
-	}
-	
 	packages() {
 	  return new Promise(function (fulfill, reject) {
 	    var pathTemplate = AwsConstants.invokeUrl + '/api/uploads';
@@ -331,19 +316,42 @@ export default function servicesBase(Component) {
 	    var pathTemplate = AwsConstants.invokeUrl + '/api/uploads';
 		var method       = 'POST';
 		
-		var fd = new FormData();
-		fd.append('name', pckg.Name);
-		fd.append('fileName', pckg.FileName);
-		fd.append('file', pckg.FileContents);
-		fd.append('description', pckg.Description);
-
 		var request = new Request(pathTemplate, {
 	      headers: new Headers({
+			'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
 			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
-		  body: fd
+		  body: JSON.stringify(pckg)
+	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			fulfill(result);
+          })
+		 .catch(function(result) {
+		    console.log(result);
+			reject(result);
+         });
+	  });
+	}
+	
+	packageUrl() {
+	  return new Promise(function (fulfill, reject) {
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/package';
+		var method       = 'GET';
+		
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+			'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
+	      }),
+		  method: method
 	    });
 		
 		fetch(request)
