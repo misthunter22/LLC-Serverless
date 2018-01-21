@@ -108,7 +108,7 @@ namespace SAM.DI
 
         List<PackagesExt> Packages();
 
-        List<PackageFiles> PackageFiles(string id);
+        List<PackageFilesExt> PackageFiles(string id);
 
         PackagesExt Package(string id);
 

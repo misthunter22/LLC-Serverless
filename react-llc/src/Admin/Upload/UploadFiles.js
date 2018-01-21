@@ -74,6 +74,12 @@ class UploadFiles extends Component {
               return '<span class="hyphenate dont-break-out">' + data + '</span>';
             },
             targets: 1
+          },
+		  {
+            render: function (data, type, row) {
+              return '<a href="' + data + '" title="' + data + '" target="_blank" class="label label-success">' + data.slice(0, 8) + '...</a>';
+            },
+            targets: 2
           }
 	      ]
         });

@@ -749,13 +749,26 @@ namespace SAM.DI
             }
         }
 
-        public List<PackageFiles> PackageFiles(string package)
+        public List<PackageFilesExt> PackageFiles(string package)
         {
             using (var client = new LLCContext())
             {
-                return client.PackageFiles.Where(x => x.PackageId == package)
-                    .Select(x => x)
+                var files =
+                    (from p in client.PackageFiles
+                     join l in client.Links on p.Link equals l.Id
+                     where p.PackageId == package
+                     select new PackageFilesExt
+                     {
+                         CourseLocation = p.CourseLocation,
+                         Id = p.Id,
+                         LinkName = p.LinkName,
+                         ParentFolder = p.ParentFolder,
+                         Protocol = p.Protocol,
+                         Link = l.Url
+                     })
                     .ToList();
+
+                return files;
             }
         }
 
