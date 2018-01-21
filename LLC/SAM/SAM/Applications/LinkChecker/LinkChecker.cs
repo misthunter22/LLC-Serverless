@@ -16,27 +16,28 @@ namespace SAM.Applications.LinkChecker
         [LambdaSerializer(typeof(JsonSerializer))]
         public void Handler(object input, ILambdaContext context)
         {
-            var objs   = Service.DequeueObjects<LinksExt>();
-            var report = new List<Reports>();
-
-            if (objs == null)
-                return;
-
-            foreach (var obj in objs)
+            try
             {
-                try
+                var objs = Service.DequeueObjects<LinksExt>();
+                var report = new List<Reports>();
+
+                if (objs == null)
+                    return;
+
+                foreach (var obj in objs)
                 {
                     var stats = Service.LinkStats(obj);
                     AnalyzeLink(obj, stats);
                     ComputeScreenshot(obj, report, stats);
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
 
-            Service.RemoveObjectsFromQueue(objs);
+                Service.RemoveObjectsFromQueue(objs);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failure, not going to allow retry");
+                Console.WriteLine(ex);
+            }
         }
 
         // Iterate through the list of links and analyze/store their stats

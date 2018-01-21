@@ -473,7 +473,6 @@ namespace SAM.DI
                         var bucket = client.Buckets.FirstOrDefault(x => x.Id == m.S3bucketId);
                         m.S3bucketName = bucket.Name;
                         m.S3bucketSearchPrefix = bucket.SearchPrefix;
-                        Console.WriteLine($"S3 object name is {m.S3bucketName}");
                     }
                 }
 
@@ -491,6 +490,8 @@ namespace SAM.DI
                     return results.FirstOrDefault(x => x.Id.Equals(id));
                 case SearchType.Name:
                     return results.FirstOrDefault(x => id.Equals(x.S3bucketName, StringComparison.CurrentCultureIgnoreCase));
+                case SearchType.SourceName:
+                    return results.FirstOrDefault(x => id.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase));
                 default:
                     return null;
             }
@@ -802,6 +803,26 @@ namespace SAM.DI
             }
         }
 
+        public Save AddPackageFile(PackageFiles file)
+        {
+            using (var client = new LLCContext())
+            {
+                Console.WriteLine("Adding package file");
+                client.PackageFiles.Add(file);
+
+                try
+                {
+                    client.SaveChanges();
+                    return new Save { Status = true };
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return new Save { Status = false };
+                }
+            }
+        }
+
         public Save SavePackage(Packages package)
         {
             var now = DateTime.Now;
@@ -829,7 +850,11 @@ namespace SAM.DI
             {
                 var package = PackageFromKey(key);
                 client.Packages.Remove(package);
-                Console.WriteLine("Removing package");
+
+                var files = client.PackageFiles.Where(x => x.PackageId == package.Id);
+                client.PackageFiles.RemoveRange(files);
+
+                Console.WriteLine("Removing package and files");
 
                 try
                 {

@@ -8,6 +8,7 @@ namespace SAM.Models.Admin
     public enum SearchType
     {
         Id,
-        Name
+        Name,
+        SourceName
     }
 }

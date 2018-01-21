@@ -114,6 +114,8 @@ namespace SAM.DI
 
         Save AddPackage(Packages package);
 
+        Save AddPackageFile(PackageFiles file);
+
         Save SavePackage(Packages package);
 
         Save DeletePackage(string key);
