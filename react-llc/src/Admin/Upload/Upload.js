@@ -53,7 +53,7 @@ class Upload extends Component {
           columnDefs: [
           {
             "render": function (data, type, row) {
-	          return '<a target="_blank" href="/admin/upload/file/' + data + '" title="' + data + '"><span class="badge truncate">' + data + '</span></a>';
+	          return '<a href="/admin/upload/files/' + data + '" title="' + data + '"><span class="badge truncate">' + data + '</span></a>';
             },
 		    "width": "100px",
             "targets": 0

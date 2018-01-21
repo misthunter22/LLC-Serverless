@@ -248,14 +248,7 @@ export default function servicesBase(Component) {
 			return result.json();
 		  })
 		  .then(function(result) {
-			var s = result;
-			var obj  = {};
-			obj['id']          = s.id;
-			obj['name']        = s.name;
-			obj['value']       = s.value;
-			obj['description'] = s.description;
-			
-			fulfill(obj);
+			fulfill(result);
           })
 		 .catch(function(result) {
 		    console.log(result);
@@ -283,26 +276,36 @@ export default function servicesBase(Component) {
 			return result.json();
 		  })
 		  .then(function(result) {
-            var push = [];
-		  	for (var i = 0; i < result.length; i++) {
-			  var s = result[i];
-			  var obj  = {};
-			  obj['id']               = s.id;
-			  obj['name']             = s.name;
-			  obj['description']      = s.description;
-			  obj['uploadedBy']       = s.uploadedBy;
-			  obj['dateUploaded']     = s.dateUploaded;
-			  obj['key']              = s.key; 
-			  obj['packageProcessed'] = s.packageProcessed;
-			  obj['fileName']         = s.fileName;
-			  obj['imsSchema']        = s.imsSchema;
-			  obj['imsSchemaVersion'] = s.imsSchemaVersion;
-			  obj['imsTitle']         = s.imsTitle;
-				  
-			  push.push(obj);
-			}
-			
-			fulfill(push);
+			fulfill(result);
+          })
+		 .catch(function(result) {
+		    console.log(result);
+			reject(result);
+         });
+	  });
+	}
+	
+	packageFiles(id) {
+	  return new Promise(function (fulfill, reject) {
+	    var pathTemplate = AwsConstants.invokeUrl + '/api/package';
+		var method       = 'POST';
+		  
+		var request = new Request(pathTemplate, {
+	      headers: new Headers({
+		    'Content-Type'   : 'application/json',
+		    'Authorization'  : idToken(),
+			'Accept-Encoding': 'identity'
+	      }),
+		  body: JSON.stringify({ Id: id }),
+		  method: method
+	    });
+		
+		fetch(request)
+		  .then(function(result) {
+			return result.json();
+		  })
+		  .then(function(result) {
+			fulfill(result);
           })
 		 .catch(function(result) {
 		    console.log(result);

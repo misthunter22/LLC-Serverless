@@ -749,6 +749,16 @@ namespace SAM.DI
             }
         }
 
+        public List<PackageFiles> PackageFiles(string package)
+        {
+            using (var client = new LLCContext())
+            {
+                return client.PackageFiles.Where(x => x.PackageId == package)
+                    .Select(x => x)
+                    .ToList();
+            }
+        }
+
         public PackagesExt Package(string id)
         {
             using (var client = new LLCContext())

@@ -66,7 +66,7 @@
         "Handler": "SAM::SAM.LambdaEntryPoint::FunctionHandlerAsync",
         "Runtime": "dotnetcore1.0",
         "CodeUri": "",
-        "MemorySize": 384,
+        "MemorySize": 512,
         "Timeout": 30,
         "Role": null,
         "Policies": [ "AWSLambdaFullAccess" ],

@@ -16,6 +16,7 @@ import Logs              from './Admin/Logs';
 import Users             from './Admin/Users';
 import Roles             from './Admin/Roles';
 import Upload            from './Admin/Upload/Upload';
+import UploadFiles       from './Admin/Upload/UploadFiles';
 import DeleteUpload      from './Admin/Upload/DeleteUpload';
 import CreateUpload      from './Admin/Upload/CreateUpload';
 import Callback          from './Callback/Callback';
@@ -53,6 +54,7 @@ export const makeMainRoutes = () => {
 		  <Route exact path="/admin/roles"               render={(props) => <Roles         auth={auth} {...props} />} />
 		  <Route exact path="/admin/upload"              render={(props) => <Upload        auth={auth} {...props} />} />
 		  <Route exact path="/admin/upload/delete/:id"   render={(props) => <DeleteUpload  auth={auth} {...props} />} />
+		  <Route exact path="/admin/upload/files/:id"    render={(props) => <UploadFiles   auth={auth} {...props} />} />
 		  <Route exact path="/admin/upload/manage"       render={(props) => <CreateUpload  auth={auth} {...props} />} />
           <Route exact path="/callback"                  render={(props) => {
             handleAuthentication(props);
