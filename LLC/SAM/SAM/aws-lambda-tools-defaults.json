@@ -6,13 +6,13 @@
         "dotnet lambda help",
         "All the command line options for the Lambda command can be specified in this file."
     ],
-    "profile"     : "testidla",
+    "profile"     : "default",
     "region"      : "us-west-2",
     "configuration" : "Release",
     "framework"     : "netcoreapp1.0",
     "s3-prefix"     : "SAM/",
     "template"      : "serverless.template",
-    "template-parameters" : "\"ShouldCreateBucket\"=\"true\";\"BucketName\"=\"\"",
+    "template-parameters" : "\"ShouldCreateBucket\"=\"true\";\"ShouldCreateObjectBucket\"=\"true\";\"BucketName\"=\"\";\"ObjectBucketName\"=\"\";\"ScreenshotServiceUrl\"=\"https://3pzaq6lsei.execute-api.us-west-2.amazonaws.com/dev/\";\"ScreenshotApiKey\"=\"6KiTM8nv3z9wCxW7vIGhO3UhhwIJyV9a6Op3CP0h\";\"DbSnapshot\"=\"\";\"DbUsername\"=\"llcadmin\";\"DbPassword\"=\"77zWm!~-twaWuQUS\";\"DbCidr\"=\"0.0.0.0/0\"",
     "s3-bucket"           : "llc-serverless",
     "stack-name"          : "DeleteMe-LLCServerless",
     "stack-wait"          : false

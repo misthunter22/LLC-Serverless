@@ -34,6 +34,11 @@
         "Description" : "API Key of the screenshot service to use",
         "MinLength" : "1"
 	},
+	"DbSnapshot" : {
+		"Type" : "String",
+        "Description" : "The DB snapshot (arn) to use. Leave blank to build a new DB.",
+        "MinLength" : "0"
+	},
 	"DbUsername" : {
 		"Type" : "String",
         "Description" : "The DB Username",
@@ -248,8 +253,45 @@
         "Condition" : "CreateS3Bucket",
         "Properties" : {
             "BucketName" : { "Fn::If" : ["BucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "BucketName" } ] }
-        }
+        },
+		"DeletionPolicy": "Delete"
     },
+	"OAI": {
+		"Type" : "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+		"Properties" : {
+			"CloudFrontOriginAccessIdentityConfig" : {
+				"Comment": "OAI for website artifacts"
+			}
+		}
+	},
+	"Distribution": {
+		"Type" : "AWS::CloudFront::Distribution",
+		"Properties" : {
+			"DistributionConfig" : {
+                "Origins" : [ {
+                    "DomainName" : { "Fn::GetAtt": [ "Bucket", "DomainName" ] },
+                    "Id" : "siteOrigin",
+                    "S3OriginConfig" : {
+						"OriginAccessIdentity" : { "Fn::Join" : [ "", [ "origin-access-identity/cloudfront/", { "Ref" : "OAI" } ] ] }
+                    }
+                }],
+				"Comment" : "Distribution for LLC application",
+                "Enabled" : "true",
+                "DefaultRootObject" : "index.html",
+                "DefaultCacheBehavior" : {
+                    "AllowedMethods" : [ "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT" ],  
+                    "TargetOriginId" : "siteOrigin",
+                    "ForwardedValues" : {
+                        "QueryString" : "false",
+                        "Cookies" : { "Forward" : "none" }
+                    },
+                    "ViewerProtocolPolicy" : "allow-all"
+                },
+                "PriceClass" : "PriceClass_100",
+                "ViewerCertificate" : { "CloudFrontDefaultCertificate" : "true" }
+			}
+		}
+	},
 
 	"PackageBucket" : {
         "Type" : "AWS::S3::Bucket",
@@ -376,6 +418,7 @@
             "Engine":"sqlserver-ex",
             "MasterUsername": { "Ref":"DbUsername" },
             "MasterUserPassword": { "Ref":"DbPassword" },
+			"DBSnapshotIdentifier": { "Ref" : "DbSnapshot" },
             "VPCSecurityGroups": 
 			[ 
 				{ "Fn::GetAtt": [ "DBSecurityGroup", "GroupId" ] }
