@@ -44,7 +44,7 @@ class CreateUpload extends Component {
 	this.createPackage(formData)
 	  .then(function(result) {
 		if (result.status === true) {
-	      window.location = "/admin/upload"
+	      window.location = "/#/admin/upload"
 		}
 	  })
 	  .catch(function(result) {

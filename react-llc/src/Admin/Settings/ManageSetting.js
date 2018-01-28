@@ -57,7 +57,7 @@ class ManageSetting extends Component {
 	this.change('/api/settings', formData)
 	  .then(function(result) {
 		if (result.status === true) {
-	      window.location = "/admin/settings"
+	      window.location = "/#/admin/settings"
 		}
 	  })
 	  .catch(function(result) {

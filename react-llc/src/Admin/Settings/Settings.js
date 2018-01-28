@@ -67,7 +67,7 @@ class Settings extends Component {
           },
           {
             "render": function (data, type, row) {
-              return '<a href="/admin/settings/manage/' + data +'" title="Edit this setting.">' +
+              return '<a href="/#/admin/settings/manage/' + data +'" title="Edit this setting.">' +
                        '<i class="glyphicon glyphicon-pencil"></i>' +
                          '<span class="sr-only">Edit</span>' +
                      '</a>';
@@ -77,7 +77,7 @@ class Settings extends Component {
           {
 	        "render": function (data, type, row) {
 	          return '<span onclick="return confirm(\'Are you sure you wish to delete this setting? There is no undo.\')">' +
-				       '<a href="/admin/settings/delete/' + data + '" title="Remove this setting.">' +
+				       '<a href="/#/admin/settings/delete/' + data + '" title="Remove this setting.">' +
 				         '<i class="glyphicon glyphicon-remove" style="color: red;"></i>' +
 				         '<span class="sr-only">Remove</span>' +
 				       '</a>' +
@@ -121,12 +121,12 @@ class Settings extends Component {
 		    <div className="container body-content">
               <h2 className="bottom-20">Settings</h2>
               <p>
-                <a href="/admin/settings/manage">Create New</a>
+                <a href="/#/admin/settings/manage">Create New</a>
               </p>
 			  {spinner}
 			  <table className="table" ref="main" />
               <div className="bottom-20">
-                <a href="/admin">Back to Dashboard</a>
+                <a href="/#/admin">Back to Dashboard</a>
               </div>
             </div>));
   }

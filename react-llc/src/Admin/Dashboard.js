@@ -79,31 +79,31 @@ class Dashboard extends Component {
         <div className="col-md-5 bottom-margin-10">
 		  <Button
 			className="btn btn-lg btn-default btn-mt"
-			href='/admin/sources'
+			href='/#/admin/sources'
 			>
 			Sources
 		  </Button>
 		  <Button
 			className="btn btn-lg btn-default btn-mt"
-			href='/admin/settings'
+			href='/#/admin/settings'
 			>
 			Settings
 	  	  </Button>
 		  <Button
 			className="btn btn-lg btn-default btn-mt"
-			href='/admin/logs'
+			href='/#/admin/logs'
 			>
 			Logs
 		  </Button>
 		  <Button
 			className="btn btn-lg btn-default btn-mt"
-			href='/admin/users'
+			href='/#/admin/users'
 			>
 			Users
 		  </Button>
 		  <Button
 			className="btn btn-lg btn-default btn-mt"
-			href='/admin/roles'
+			href='/#/admin/roles'
 			>
 			Roles
 		  </Button>

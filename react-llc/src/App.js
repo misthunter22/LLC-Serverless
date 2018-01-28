@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { Navbar, Button } from 'react-bootstrap';
-import Content from './Home/Content';
-import NoAuth  from './Auth/NoAuth';
+import { Navbar, Button }   from 'react-bootstrap';
+import Content              from './Home/Content';
+import NoAuth               from './Auth/NoAuth';
+import Auth                 from './Auth/Auth';
 import './App.css';
+
+const auth = new Auth();
 
 class App extends Component {
 
@@ -12,14 +15,18 @@ class App extends Component {
     var year = new Date().getFullYear();
     document.getElementsByTagName('footer')[0]
         .innerHTML = '<p>&copy; ' + year + ' - Idaho Digital Learning</p>';
+		
+	if (/access_token|id_token|error/.test(window.location.hash)) {
+		auth.handleAuthentication();
+	}
   }
 
   login() {
-    this.props.auth.login();
+    auth.login();
   }
 
   logout() {
-    this.props.auth.logout();
+    auth.logout();
   }
 
   render() {
@@ -53,28 +60,28 @@ class App extends Component {
               <Button
                 bsStyle="primary"
                 className="btn-margin"
-                href='/home'
+                href='/#/home'
               >
                 Home
               </Button>
               <Button
                 bsStyle="primary"
                 className="btn-margin"
-                href='/report'
+                href='/#/report'
               >
                 Reports
               </Button>
 			  <Button
                 bsStyle="primary"
                 className="btn-margin"
-                href='/admin'
+                href='/#/admin'
               >
                 Admin
               </Button>
 		      <Button
                 bsStyle="primary"
                 className="btn-margin"
-                href='/admin/upload'
+                href='/#/admin/upload'
               >
                 Upload
               </Button>

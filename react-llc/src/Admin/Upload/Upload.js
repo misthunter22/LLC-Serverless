@@ -53,7 +53,7 @@ class Upload extends Component {
           columnDefs: [
           {
             "render": function (data, type, row) {
-	          return '<a href="/admin/upload/files/' + data + '" title="' + data + '"><span class="badge truncate">' + data + '</span></a>';
+	          return '<a href="/#/admin/upload/files/' + data + '" title="' + data + '"><span class="badge truncate">' + data + '</span></a>';
             },
 		    "width": "100px",
             "targets": 0
@@ -117,7 +117,7 @@ class Upload extends Component {
 			  {spinner}
 			  <table className="table" ref="main" />
               <div className="bottom-20">
-                <a href="/admin">Back to Dashboard</a>
+                <a href="/#/admin">Back to Dashboard</a>
               </div>
             </div>));
   }

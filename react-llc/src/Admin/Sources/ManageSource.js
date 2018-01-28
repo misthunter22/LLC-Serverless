@@ -108,7 +108,7 @@ class CreateSource extends Component {
 	this.change('/api/sources', formData)
 	  .then(function(result) {
 		if (result.status === true) {
-	      window.location = "/admin/sources"
+	      window.location = "/#/admin/sources"
 		}
 	  })
 	  .catch(function(result) {

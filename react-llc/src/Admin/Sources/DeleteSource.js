@@ -19,7 +19,7 @@ class DeleteSource extends Component {
       })
 	  .then(function(result) {
 		if (result.status) {
-	      window.location = "/admin/sources"
+	      window.location = "/#/admin/sources"
 		}
 		else {
 		  that.setState({message: "Delete Source Error!"});

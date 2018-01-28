@@ -167,7 +167,7 @@ class WarningLinks extends Component {
 			  <table width="100%" className="table table-striped table-bordered" ref="main" cellSpacing="0">
 			  </table>
               <div className="bottom-20">
-                <a href="/report">Back to Dashboard</a>
+                <a href="/#/report">Back to Dashboard</a>
               </div>
             </div>));
   }

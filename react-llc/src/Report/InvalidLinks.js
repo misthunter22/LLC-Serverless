@@ -99,7 +99,7 @@ class InvalidLinks extends Component {
 	  },
 	  {
 		render: function (data, type, row) {
-			return '<a href="/Report/ResetLink/' + data + '" title="' + data + '" class="btn btn-info glyphicon glyphicon-trash" onclick="return confirm(\'Are you sure? A link reset cannot be un-done\');"></a>';
+			return '<a href="/#/report/resetlink/' + data + '" title="' + data + '" class="btn btn-info glyphicon glyphicon-trash" onclick="return confirm(\'Are you sure? A link reset cannot be un-done\');"></a>';
 		},
 		targets: 7
 	  }
@@ -144,7 +144,7 @@ class InvalidLinks extends Component {
 			  <table width="100%" className="table table-striped table-bordered" ref="main" cellSpacing="0">
 			  </table>
               <div className="bottom-20">
-                <a href="/report">Back to Dashboard</a>
+                <a href="/#/report">Back to Dashboard</a>
               </div>
             </div>));
   }

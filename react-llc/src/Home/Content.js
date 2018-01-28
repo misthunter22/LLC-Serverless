@@ -19,7 +19,7 @@ class Content extends Component {
 			 <div className="height-50">
 				View and/or export reports on monitored links.
 			 </div>
-			 <p><a className="btn btn-info" href="report">View &raquo;</a>
+			 <p><a className="btn btn-info" href="/#/report">View &raquo;</a>
 			 </p>
 		  </div>
 		  <div className="col-md-4">
@@ -27,7 +27,7 @@ class Content extends Component {
 			 <div className="height-70">
 				Upload Blackboard and Brainhoney course packages to extract all Urls for future monitoring.
 			 </div>
-			 <p><a className="btn btn-info" href="admin/upload">Upload &raquo;</a>
+			 <p><a className="btn btn-info" href="/#/admin/upload">Upload &raquo;</a>
 			 </p>
 		  </div>
 		  <div className="col-md-4">
@@ -35,7 +35,7 @@ class Content extends Component {
 			 <div className="height-50">
 				Manage LLC settings and users. View Logs.
 			 </div>
-			 <p><a className="btn btn-info" href="admin">Admin &raquo;</a>
+			 <p><a className="btn btn-info" href="/#/admin">Admin &raquo;</a>
 			 </p>
 		  </div>
 	   </div>

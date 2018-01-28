@@ -19,7 +19,7 @@ class DeleteSetting extends Component {
 		})
 	    .then(function(result) {
 		  if (result.status) {
-	        window.location = "/admin/settings"
+	        window.location = "/#/admin/settings"
 		  }
 		  else {
 			that.setState({message: "Delete Settings Error!"});

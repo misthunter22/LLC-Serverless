@@ -252,10 +252,34 @@
         "Type" : "AWS::S3::Bucket",
         "Condition" : "CreateS3Bucket",
         "Properties" : {
-            "BucketName" : { "Fn::If" : ["BucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "BucketName" } ] }
+            "BucketName" : { "Fn::If" : ["BucketNameGenerated", {"Ref" : "AWS::NoValue" }, { "Ref" : "BucketName" } ] },
+			"AccessControl" : "PublicRead",
+			"WebsiteConfiguration" : {
+				"IndexDocument" : "index.html",
+				"ErrorDocument" : "error.html",
+				"RoutingRules": [{
+					"RedirectRule": {
+						"ReplaceKeyPrefixWith" : "#/"
+					}
+				}]
+			}
         },
 		"DeletionPolicy": "Delete"
     },
+	"SampleBucketPolicy" : {
+		"Type" : "AWS::S3::BucketPolicy",
+		"Properties" : {
+			"Bucket" : {"Ref" : "Bucket"},
+			"PolicyDocument": {
+				"Statement": [{
+					"Action":["s3:GetObject"],
+					"Effect":"Allow",
+					"Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "Bucket" } , "/*" ]]},
+					"Principal": "*"
+				}]
+			}
+		}
+	},
 	"OAI": {
 		"Type" : "AWS::CloudFront::CloudFrontOriginAccessIdentity",
 		"Properties" : {

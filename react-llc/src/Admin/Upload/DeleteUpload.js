@@ -18,7 +18,7 @@ class DeleteUpload extends Component {
 	  this.change('/api/uploads', fd)
 	  .then(function(result) {
 		if (result.status) {
-	      window.location = "/admin/upload";
+	      window.location = "/#/admin/upload";
 		}
 		else {
 		  that.setState({message: "Delete Package Error!"});
