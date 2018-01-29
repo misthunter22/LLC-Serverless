@@ -6,6 +6,9 @@ class ManageSetting extends Component {
   constructor(props) {
     super(props);
 	this.state = {
+	  nameValid   : true,
+	  valueValid  : true,
+	  descrValid  : true,
       setting     : null,
 	  id          : "",
 	  name        : "",
@@ -33,40 +36,96 @@ class ManageSetting extends Component {
   }
   
   updateName(event) {
-    this.setState({name: event.target.value})
+    this.setState({name: event.target.value}, function() {
+	  this.isValid();
+	});
   }
   
   updateDescription(event) {
-    this.setState({description: event.target.value})
+    this.setState({description: event.target.value}, function() {
+	  this.isValid();
+	});
   }
   
   updateValue(event) {
-    this.setState({value: event.target.value})
+    this.setState({value: event.target.value}, function() {
+	  this.isValid();
+	});
+  }
+  
+  isValid() {
+	if (!this.state.name) {
+	  this.setState({nameValid: false});
+	}
+	else {
+	  this.setState({nameValid: true});
+	}
+	
+	if (!this.state.value) {
+	  this.setState({valueValid: false});
+	}
+	else {
+	  this.setState({valueValid: true});
+	}
+	
+	if (!this.state.description) {
+	  this.setState({descrValid: false});
+	}
+	else {
+	  this.setState({descrValid: true});
+	}
+  }
+  
+  validate() {
+	this.isValid();
+	
+	return this.state.name &&
+	       this.state.value &&
+		   this.state.description;
   }
   
   handleSubmit(e) {
 	e.preventDefault();
 	
-    const formData = {
-	  Id:          this.state.id,
-	  Name:        this.state.name,
-	  Value:       this.state.value,
-	  Description: this.state.description
-	};
+	if (this.validate()) {
+      const formData = {
+	    Id:          this.state.id,
+	    Name:        this.state.name,
+	    Value:       this.state.value,
+	    Description: this.state.description
+	  };
 	
-	this.change('/api/settings', formData)
-	  .then(function(result) {
-		if (result.status === true) {
-	      window.location = "/#/admin/settings"
-		}
-	  })
-	  .catch(function(result) {
-		console.log(JSON.stringify(result));  
-	  });
+	  this.change('/api/settings', formData)
+	    .then(function(result) {
+		  if (result.status === true) {
+	        window.location = "/#/admin/settings"
+		  }
+	    })
+	    .catch(function(result) {
+		  console.log(JSON.stringify(result));  
+	    });
+	}
   }
   
   render() {
     const { isAuthenticated } = this.props.auth;
+	let error  = "form-control text-box single-line";
+	let name   = error;
+	let descr  = error;
+	let value  = error;
+	
+	if (!this.state.nameValid) {
+	  name += " input-error";
+	}
+	
+	if (!this.state.descrValid) {
+	  descr += " input-error";
+	}
+	
+	if (!this.state.valueValid) {
+	  value += " input-error";
+	}
+	
     return (
       <div className="container body-content">
         {
@@ -77,21 +136,21 @@ class ManageSetting extends Component {
 	          <div className="form-group">
 		        <label className="control-label col-md-2">Name</label>
 		        <div className="col-md-10">
-				  <input type="text" value={this.state.name} onChange={this.updateName} className="form-control text-box single-line" />
+				  <input type="text" value={this.state.name} onChange={this.updateName} className={name} />
 		        </div>
 	          </div>
 			  
 			  <div className="form-group">
 		        <label className="control-label col-md-2">Value</label>
 		        <div className="col-md-10">
-				  <input type="text" value={this.state.value} onChange={this.updateValue} className="form-control text-box single-line" />
+				  <input type="text" value={this.state.value} onChange={this.updateValue} className={value} />
 		        </div>
 	          </div>
 
 	          <div className="form-group">
 		        <label className="control-label col-md-2">Description</label>
 		        <div className="col-md-10">
-				  <input type="text" value={this.state.description} onChange={this.updateDescription} className="form-control text-box single-line" />
+				  <input type="text" value={this.state.description} onChange={this.updateDescription} className={descr} />
 		        </div>
 	          </div>
 

@@ -26,12 +26,19 @@ namespace SAM.Applications.LinkChecker
 
                 foreach (var obj in objs)
                 {
-                    var stats = Service.LinkStats(obj);
-                    AnalyzeLink(obj, stats);
-                    ComputeScreenshot(obj, report, stats);
-                }
+                    try
+                    {
+                        var stats = Service.LinkStats(obj);
+                        AnalyzeLink(obj, stats);
+                        ComputeScreenshot(obj, report, stats);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
 
-                Service.RemoveObjectsFromQueue(objs);
+                    Service.RemoveObjectsFromQueue(new List<LinksExt> { obj });
+                }
             }
             catch (Exception ex)
             {

@@ -317,7 +317,8 @@ namespace SAM.DI
             {
                 var results =
                     (from reports in client.Reports
-                     join link in client.Links on reports.Link equals link.Id
+                     join link    in client.Links   on reports.Link equals link.Id
+                     join source  in client.Sources on link.Source  equals source.Id
                      where reports.ReportType == "Invalid"
                      select new ReportsExt
                      {
@@ -330,7 +331,7 @@ namespace SAM.DI
                         Mean = reports.Mean,
                         ReportType = reports.ReportType,
                         SdMaximum = reports.SdMaximum,
-                        Source = link.Source,
+                        Source = source.Name,
                         StandardDeviation = reports.StandardDeviation,
                         Stat = reports.Stat,
                         Url = link.Url
@@ -347,7 +348,8 @@ namespace SAM.DI
             {
                 var results =
                     (from reports in client.Reports
-                     join link in client.Links on reports.Link equals link.Id
+                     join link    in client.Links   on reports.Link equals link.Id
+                     join source  in client.Sources on link.Source  equals source.Id
                      where reports.ReportType == "Warning"
                      select new ReportsExt
                      {
@@ -360,7 +362,7 @@ namespace SAM.DI
                          Mean = reports.Mean,
                          ReportType = reports.ReportType,
                          SdMaximum = reports.SdMaximum,
-                         Source = link.Source,
+                         Source = source.Name,
                          StandardDeviation = reports.StandardDeviation,
                          Stat = reports.Stat,
                          Url = link.Url

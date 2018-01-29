@@ -2,6 +2,7 @@
 using Amazon.Lambda.Serialization.Json;
 using DbCore.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SAM.Applications.LinkExtractor
@@ -22,14 +23,21 @@ namespace SAM.Applications.LinkExtractor
 
                 foreach (var obj in objs)
                 {
-                    // Get the object's file contents
-                    var bucket = buckets.FirstOrDefault(x => x.Id == obj.Bucket);
-                    var source = sources.FirstOrDefault(x => x.S3bucketId == bucket.Id);
+                    try
+                    {
+                        // Get the object's file contents
+                        var bucket = buckets.FirstOrDefault(x => x.Id == obj.Bucket);
+                        var source = sources.FirstOrDefault(x => x.S3bucketId == bucket.Id);
 
-                    LinkExtractions(obj.ToObject(), bucket.Name, source.Id);
+                        LinkExtractions(obj.ToObject(), bucket.Name, source.Id);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+
+                    Service.RemoveObjectsFromQueue(new List<ObjectsExt> { obj });
                 }
-
-                Service.RemoveObjectsFromQueue(objs);
             }
             catch (Exception ex)
             {

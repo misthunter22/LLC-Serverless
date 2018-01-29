@@ -149,8 +149,12 @@ table.dataTable.display tbody tr.odd.selected {
   hyphens: auto;
 }
 
+.input-error {
+  border:2px solid red;
+}
+
 .errors {
-	color: red;
+  color: red;
 }
 
 .truncate {
