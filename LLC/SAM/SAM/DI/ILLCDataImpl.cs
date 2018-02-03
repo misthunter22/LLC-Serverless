@@ -19,6 +19,9 @@ using System.Net.Http;
 using SAM.Models;
 using System.Data.SqlClient;
 using System.Data;
+using Amazon.SimpleNotificationService;
+using MimeKit;
+using MailKit.Net.Smtp;
 
 namespace SAM.DI
 {
@@ -93,6 +96,140 @@ namespace SAM.DI
 
             client.DefaultRequestHeaders.Add("x-api-key", ApiKey);
             return client;
+        }
+
+        public void SendImpactEmail(string id)
+        {
+            // Send to SNS
+            using (var sns = new AmazonSimpleNotificationServiceClient())
+            {
+                var html = 
+                  @"<style type='text/css'>
+                        .header {
+                            background: #8a8a8a;
+                        }
+                        .header.columns {
+                            padding - bottom: 0;
+                        }
+                        .header p {
+                            color: #fff;
+                            padding - top: 15px;
+                        }
+                        .header.wrapper - inner {
+                            padding: 20px;
+                        }
+                        .header.container {
+                            background: transparent;
+                        }
+                        table.button.a table td {
+                            background: #3B5998 !important;
+                            border - color: #3B5998;
+                        }
+                        table.button.b table td {
+                            background: #1daced !important;
+                            border - color: #1daced;
+                        }
+                        table.button.c table td {
+                            background: #DB4A39 !important;
+                            border - color: #DB4A39;
+                        }
+                        .wrapper.secondary {
+                            background: #f3f3f3;
+                        }
+                        a.button {
+                            -webkit - appearance: button;
+                            -moz - appearance: button;
+                            appearance: button;
+                            text - decoration: none;
+                            color: initial;
+                        }
+                </style >
+                <wrapper class='header'>
+                    <container>
+                        <row class='collapse'>
+                            <columns small = '6'>
+                                <img src='https://idiglearning.net/App_Themes/DEFAULT/SchoolLogo.png'>
+                            </columns>
+                        </row>
+                    </container>
+                </wrapper>
+                <container>
+                    <spacer size = '16'></spacer>
+                    <row>
+                        <columns small='12'>
+                            <h1>Greetings, IDLA!</h1>
+                            <p class='lead'>Time for the report from the LinkChecker!</p>
+                            <p>Number of Records: {{Email.Count}}</p>
+                            <callout class='primary'>
+                                <p>{{Email.Body}}</p>
+                            </callout>
+                        </columns>
+                    </row>
+                    <wrapper class='secondary'>
+                        <spacer size = '16' ></spacer>
+                        <row>
+                            <columns large='6'>
+                                <h5>Links:</h5>
+                                <a class='a expand button' href='{{Email.LogsLink}}'>Logs</a>
+                                <a class='b expand button' href='{{Email.InvalidLinksLink}}'>Invalid Links</a>
+                                <a class='c expand button' href='{{Email.WarningLinksLink}}'>Warning Links</a>
+                            </columns>    
+                        </row>
+                    </wrapper>
+                </container>";
+
+                html = html.Replace("{{Email.Count}}", "1");
+                html = html.Replace("{{Email.LogsLink}}",         Setting("Email.LogsLink",         SearchType.Name).Value);
+                html = html.Replace("{{Email.InvalidLinksLink}}", Setting("Email.InvalidLinksLink", SearchType.Name).Value);
+                html = html.Replace("{{Email.WarningLinksLink}}", Setting("Email.WarningLinksLink", SearchType.Name).Value);
+
+                var ss = Screenshots(new BucketLocationsRequest { id = id });
+                if (ss != null && ss.urls != null && ss.urls.Count > 0)
+                {
+                    var b = new StringBuilder();
+                    b.Append("<p>");
+                    b.Append($"<img src='{ss.urls[0].s_original}'></img>");
+                    b.Append("</p>");
+                    if (ss.urls.Count > 1)
+                    {
+                        b.Append("<p>");
+                        b.Append($"<img src='{ss.urls[1].s_original}'></img>");
+                        b.Append("</p>");
+                    }
+
+                    html = html.Replace("{{Email.Body}}", b.ToString());
+                }
+                else
+                {
+                    html = html.Replace("{{Email.Body}}", "Image Error");
+                }
+
+                // Publish to SNS - SNS does not support HTML email, so going to use GMail for now
+
+                var emailMessage = new MimeMessage();
+
+                emailMessage.From.Add(new MailboxAddress("LOR Link Checker", "lor-do-not-reply@idla.k12.id.us"));
+                emailMessage.To.Add(new MailboxAddress("", Setting("Email.NotificationEmail", SearchType.Name).Value));
+                emailMessage.Subject = $"Link {id} impacted";
+                emailMessage.Body = new TextPart("html") { Text = html };
+
+                using (var client = new SmtpClient())
+                {
+                    client.Connect("smtp.gmail.com", 587);
+
+                    // Note: since we don't have an OAuth2 token, disable
+                    // the XOAUTH2 authentication mechanism.
+                    client.AuthenticationMechanisms.Remove("XOAUTH2");
+
+                    // Note: user/pass
+                    client.Authenticate(
+                        Setting("Email.User", SearchType.Name).Value,
+                        Setting("Email.Pass", SearchType.Name).Value);
+
+                    client.Send(emailMessage);
+                    client.Disconnect(true);
+                }
+            }
         }
 
         public int ObjectsCount(string bucket)

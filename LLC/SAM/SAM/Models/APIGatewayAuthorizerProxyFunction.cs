@@ -1,15 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.IO.Compression;
-using System.Net.Http;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.AspNetCoreServer;
 using Amazon.Lambda.AspNetCoreServer.Internal;
 using Amazon.Lambda.Core;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -39,49 +34,7 @@ namespace SAM.Models
             context.HttpContext.Items["APIGATEWAY_REQUEST"] = request;
 
             var response = await ProcessRequest(lambdaContext, context, features);
-            var useGzip = false;
-            if (request.Headers != null && request.Headers.TryGetValue("accept-encoding", out var headerValue))
-            {
-                useGzip = headerValue.Contains("gzip");
-            }
-
-            if (useGzip && context.HttpContext.Request.Method != HttpMethod.Options.Method)
-            {
-                var buffer = Zip(response.Body);
-                response.Body = Convert.ToBase64String(buffer);
-                response.Headers.Add(HeaderNames.ContentEncoding, "gzip");
-            }
-
             return response;
         }
-
-        public static void CopyTo(Stream src, Stream dest)
-        {
-            byte[] bytes = new byte[4096];
-
-            int cnt;
-
-            while ((cnt = src.Read(bytes, 0, bytes.Length)) != 0)
-            {
-                dest.Write(bytes, 0, cnt);
-            }
-        }
-
-        public static byte[] Zip(string str)
-        {
-            var bytes = Encoding.UTF8.GetBytes(str);
-
-            using (var msi = new MemoryStream(bytes))
-            using (var mso = new MemoryStream())
-            {
-                using (var gs = new GZipStream(mso, CompressionMode.Compress))
-                {
-                    CopyTo(msi, gs);
-                }
-
-                return mso.ToArray();
-            }
-        }
-
     }
 }

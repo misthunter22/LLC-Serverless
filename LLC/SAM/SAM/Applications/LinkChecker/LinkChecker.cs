@@ -253,6 +253,7 @@ namespace SAM.Applications.LinkChecker
                     existingLink.ReportType        = "Warning";
 
                     Service.AddReport(existingLink);
+                    Service.SendImpactEmail(existingLink.Id);
                 }
                 else if (existingLink != null)
                 {

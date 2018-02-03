@@ -1,12 +1,9 @@
 import React            from 'react';
 import { ClipLoader }   from 'react-spinners';
 import { idToken }      from '../Auth/Auth';
+import { AwsConstants } from '../Auth/auth0-variables';
 
 const $ = require('jquery');
-
-export const AwsConstants = {
-  invokeUrl: 'https://j6nbqh9lm5.execute-api.us-west-2.amazonaws.com/Prod',
-};
 
 export function resetLink(id) {
   return new Promise(function (fulfill, reject) {
@@ -17,7 +14,6 @@ export function resetLink(id) {
 	  headers: new Headers({
 		'Content-Type'   : 'application/json',
 		'Authorization'  : idToken(),
-		'Accept-Encoding': 'identity'
 	  }),
 	  method: method,
 	});
@@ -68,7 +64,6 @@ export default function servicesBase(Component) {
 		  body   = obj;
 		  header = new Headers({
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      });
 		}
 		else {
@@ -76,7 +71,6 @@ export default function servicesBase(Component) {
 		  header = new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      });
 		}
 		  
@@ -109,7 +103,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -152,7 +145,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -195,7 +187,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -238,7 +229,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -266,7 +256,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -294,7 +283,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  body: JSON.stringify({ Id: id }),
 		  method: method
@@ -323,7 +311,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 			'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(pckg)
@@ -352,7 +339,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 			'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });
@@ -389,7 +375,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(body)
@@ -427,7 +412,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(body)
@@ -460,7 +444,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(body)
@@ -493,7 +476,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method,
 		  body: JSON.stringify(body)
@@ -522,7 +504,6 @@ export default function servicesBase(Component) {
 	      headers: new Headers({
 		    'Content-Type'   : 'application/json',
 		    'Authorization'  : idToken(),
-			'Accept-Encoding': 'identity'
 	      }),
 		  method: method
 	    });

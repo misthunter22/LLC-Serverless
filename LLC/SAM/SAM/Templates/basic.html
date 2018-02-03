@@ -1,0 +1,74 @@
+<style type='text/css'>
+  .header {
+    background: #8a8a8a;
+  }
+  .header .columns {
+    padding-bottom: 0;
+  }
+  .header p {
+    color: #fff;
+    padding-top: 15px;
+  }
+  .header .wrapper-inner {
+    padding: 20px;
+  }
+  .header .container {
+    background: transparent;
+  }
+  table.button.a table td {
+    background: #3B5998 !important;
+    border-color: #3B5998;
+  }
+  table.button.b table td {
+    background: #1daced !important;
+    border-color: #1daced;
+  }
+  table.button.c table td {
+    background: #DB4A39 !important;
+    border-color: #DB4A39;
+  }
+  .wrapper.secondary {
+    background: #f3f3f3;
+  }
+
+  a.button {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+    text-decoration: none;
+    color: initial;
+  }
+</style>
+<wrapper class='header'>
+  <container>
+    <row class='collapse'>
+      <columns small='6'>
+        <img src='https://idiglearning.net/App_Themes/DEFAULT/SchoolLogo.png'>
+      </columns>
+    </row>
+  </container>
+</wrapper>
+<container>
+  <spacer size='16'></spacer>
+  <row>
+    <columns small='12'>
+      <h1>Greetings, IDLA!</h1>
+      <p class='lead'>Time for the report from the LinkChecker!</p>
+      <p>Number of Records: {{Email.Count}}</p>
+      <callout class='primary'>
+        <p>{{Email.Body}}</p>
+      </callout>
+    </columns>
+  </row>
+  <wrapper class='secondary'>
+    <spacer size='16'></spacer>
+    <row>
+      <columns large='6'>
+        <h5>Links:</h5>
+        <a class='a expand button' href='{{Email.LogsLink}}'>Logs</a>
+        <a class='b expand button' href='{{Email.InvalidLinksLink}}'>Invalid Links</a>
+        <a class='c expand button' href='{{Email.WarningLinksLink}}'>Warning Links</a>
+      </columns>
+    </row>
+  </wrapper>
+</container>

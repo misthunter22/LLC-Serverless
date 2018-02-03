@@ -247,6 +247,25 @@
         }
       }
     },
+	"Email" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "SAM::SAM.Applications.Email::Handler",
+        "Runtime": "dotnetcore1.0",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [ "AWSLambdaFullAccess" ],
+        "Environment" : {
+          "Variables" : {
+            "Screenshot" : { "Ref" : "ScreenshotServiceUrl" },
+			"ApiKey" : { "Ref" : "ScreenshotApiKey" },
+			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
+          }
+        }
+      }
+    },
 
     "Bucket" : {
         "Type" : "AWS::S3::Bucket",

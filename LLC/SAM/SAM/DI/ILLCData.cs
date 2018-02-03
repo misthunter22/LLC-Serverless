@@ -22,6 +22,8 @@ namespace SAM.DI
 
         HttpClient ScreenshotClient();
 
+        void SendImpactEmail(string id);
+
         #region Objects
 
         int ObjectsCount(string bucket);
