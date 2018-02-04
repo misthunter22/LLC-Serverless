@@ -28,7 +28,7 @@ const widths = {
 // screenshot the given url
 module.exports.take_screenshot = (event, context, cb) => {
   console.info('Received event', event);
-  const targetUrl = event.queryStringParameters.url.toLowerCase();
+  const targetUrl = encodeURI(event.queryStringParameters.url).toLowerCase();
   const timeout   = event.stageVariables.screenshotTimeout;
 
   // check if the given url is valid
@@ -115,7 +115,7 @@ module.exports.take_screenshot = (event, context, cb) => {
 
 // gives a list of urls for the given snapshotted url
 module.exports.list_screenshot = (event, context, cb) => {
-  const targetUrl = event.queryStringParameters.url.toLowerCase();
+  const targetUrl = encodeURI(event.queryStringParameters.url).toLowerCase();
 
   // check if the given url is valid
   if (!validUrl.isUri(targetUrl)) {
