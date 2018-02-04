@@ -186,14 +186,17 @@ namespace SAM.DI
                 var ss = Screenshots(new BucketLocationsRequest { id = id });
                 if (ss != null && ss.urls != null && ss.urls.Count > 0)
                 {
-                    var b = new StringBuilder();
+                    var link = Link(id);
+                    var b    = new StringBuilder();
                     b.Append("<p>");
-                    b.Append($"<img src='{ss.urls[0].s_original}'></img>");
+                    b.Append("<b>Original:</b><br>");
+                    b.Append($"<a href='{link.Url}' target='_blank'><img src='{ss.urls[0].s_original}'></img></a>");
                     b.Append("</p>");
                     if (ss.urls.Count > 1)
                     {
                         b.Append("<p>");
-                        b.Append($"<img src='{ss.urls[1].s_original}'></img>");
+                        b.Append("<b>Most recent</b><br>");
+                        b.Append($"<a href='{link.Url}' target='_blank'><img src='{ss.urls[1].s_original}'></img></a>");
                         b.Append("</p>");
                     }
 

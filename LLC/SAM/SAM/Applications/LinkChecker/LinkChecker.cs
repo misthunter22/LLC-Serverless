@@ -215,6 +215,7 @@ namespace SAM.Applications.LinkChecker
             var sdRange           = int.Parse(Service.Setting("LinkCheckStandardDeviations", Models.Admin.SearchType.Name).Value);
             var existingLink      = Service.Report(link.Id);
             var takeScreenshot    = false;
+            var sendEmail         = false;
 
             // See if the standard deviation requires a notification to be sent out
             // If the first does not exist, not much we can do! Go ahead and bail out
@@ -256,7 +257,7 @@ namespace SAM.Applications.LinkChecker
                     existingLink.ReportType        = "Warning";
 
                     Service.AddReport(existingLink);
-                    Service.SendImpactEmail(first.Link);
+                    sendEmail = true;
                 }
                 else if (existingLink != null)
                 {
@@ -282,6 +283,12 @@ namespace SAM.Applications.LinkChecker
                     Console.WriteLine($"ERROR: {ex.Message}");
                     throw new Exception($"Could not take screenshot of link {link.Id}");
                 }
+            }
+
+            // Send impact email if necessary
+            if (sendEmail)
+            {
+                Service.SendImpactEmail(first.Link);
             }
         }
 
