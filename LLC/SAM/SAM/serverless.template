@@ -328,7 +328,7 @@
                         "QueryString" : "false",
                         "Cookies" : { "Forward" : "none" }
                     },
-                    "ViewerProtocolPolicy" : "allow-all"
+                    "ViewerProtocolPolicy" : "redirect-to-https"
                 },
                 "PriceClass" : "PriceClass_100",
                 "ViewerCertificate" : { "CloudFrontDefaultCertificate" : "true" }
