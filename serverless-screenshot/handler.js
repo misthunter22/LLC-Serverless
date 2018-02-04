@@ -55,7 +55,10 @@ module.exports.take_screenshot = (event, context, cb) => {
 	  
     // snapshotting succeeded, let's upload to S3
     // read the file into buffer (perhaps make this async?)
-    const fileBuffer = fs.readFileSync(`/tmp/${targetHash}.png`);
+	const path       = `/tmp/${targetHash}.png`;
+	const exists     = fs.existsSync(path);
+	console.log('file exists? ' + exists);
+    const fileBuffer = fs.readFileSync(path);
 
     // upload the file
     const s3 = new AWS.S3({apiVersion: '2006-03-01'});
@@ -123,6 +126,9 @@ module.exports.list_screenshot = (event, context, cb) => {
   const targetHash   = crypto.createHash('md5').update(targetUrl).digest('hex');
   const targetBucket = event.stageVariables.bucketName;
   const targetPath   = `${targetHash}/`;
+  
+  console.log(targetUrl);
+  console.log(targetHash);
 
   const s3 = new AWS.S3({apiVersion: '2006-03-01'});
   s3.listObjects({
@@ -142,6 +148,7 @@ module.exports.list_screenshot = (event, context, cb) => {
 	  
       // for each key, get the image width and add it to the output object
       data.Contents.forEach((content) => {
+		console.log(content.Key);
 		const parts = content.Key.split('/');
         const size  = parts.pop().split('.')[0];
         const pre   = parts.join('/');
@@ -166,6 +173,8 @@ module.exports.list_screenshot = (event, context, cb) => {
 		  urls["last"] = pre;
 		}
       });
+	  
+	  console.log(JSON.stringify(urls));
 	  
       cb(null, {
 		  "statusCode": 200, 
