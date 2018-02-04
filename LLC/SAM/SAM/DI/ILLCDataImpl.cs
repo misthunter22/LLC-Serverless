@@ -1038,14 +1038,24 @@ namespace SAM.DI
                 var buckets  = Buckets();
                 var response = new List<BucketLocationsModel>();
                 var links    = client.ObjectLinks.Where(x => x.Link == m.id);
+                var dist     = new List<string>();
                 if (links != null)
                 {
                     foreach (var link in links)
                     {
                         var obj = client.Objects.FirstOrDefault(x => x.Id == link.Object);
+                        var url = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == obj.Bucket).Name, obj.Key);
+                        if (!dist.Contains(url))
+                        {
+                            dist.Add(url);
+                        }
+                    }
+
+                    foreach (var d in dist)
+                    {
                         response.Add(new BucketLocationsModel
                         {
-                            data = string.Format("https://{0}.s3.amazonaws.com/{1}", buckets.FirstOrDefault(x => x.Id == obj.Bucket).Name, obj.Key)
+                            data = d
                         });
                     }
                 }

@@ -22,6 +22,17 @@ console.log("Screenshotting: ", address, ", to: ", output);
 page.viewportSize = { width: parseInt(width), height: parseInt(height) };
 console.log("Viewport: ", JSON.stringify(page.viewportSize));
 
+phantom.onError = function(msg, trace) {
+  var msgStack = ['PHANTOM ERROR: ' + msg];
+  if (trace && trace.length) {
+    msgStack.push('TRACE:');
+    trace.forEach(function(t) {
+      msgStack.push(' -> ' + (t.file || t.sourceURL) + ': ' + t.line + (t.function ? ' (in function ' + t.function +')' : ''));
+    });
+  }
+  console.log(msgStack.join('\n'));
+};
+
 page.open(address, function (status) {
   if (status !== 'success') {
     console.log('Unable to load the address!');

@@ -241,7 +241,10 @@ namespace SAM.Applications.LinkChecker
                     // Create new since one doesn't exist
                     if (existingLink == null)
                     {
-                        existingLink = new Reports();
+                        existingLink = new Reports
+                        {
+                            Id = Guid.NewGuid().ToString()
+                        };
                     }
 
                     existingLink.ContentSize       = first.ContentSize;
@@ -253,7 +256,7 @@ namespace SAM.Applications.LinkChecker
                     existingLink.ReportType        = "Warning";
 
                     Service.AddReport(existingLink);
-                    Service.SendImpactEmail(existingLink.Id);
+                    Service.SendImpactEmail(first.Link);
                 }
                 else if (existingLink != null)
                 {
