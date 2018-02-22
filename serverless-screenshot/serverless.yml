@@ -18,8 +18,9 @@ provider:
   region: us-west-2
 
   # We need to lockdown the apigateway, so we can control who can use the api
-  apiKeys:
-    - app-api-key
+  #apiKeys:
+  # Commenting out API Key - Need to manually create usage plan
+  #  - app-api-key
 
   # We need to give the lambda functions access to list and write to our bucket, it needs:
   # - to be able to 'list' the bucket

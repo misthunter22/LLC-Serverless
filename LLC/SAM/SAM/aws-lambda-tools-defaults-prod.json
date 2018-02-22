@@ -1,0 +1,19 @@
+
+{
+    "Information" : [
+        "This file provides default values for the deployment wizard inside Visual Studio and the AWS Lambda commands added to the .NET Core CLI.",
+        "To learn more about the Lambda commands with the .NET Core CLI execute the following command at the command line in the project root directory.",
+        "dotnet lambda help",
+        "All the command line options for the Lambda command can be specified in this file."
+    ],
+    "profile"     : "IDLA-Prod",
+    "region"      : "us-west-2",
+    "configuration" : "Release",
+    "framework"     : "netcoreapp1.0",
+    "s3-prefix"     : "SAM/",
+    "template"      : "serverless.template",
+    "template-parameters" : "\"ShouldCreateBucket\"=\"true\";\"ShouldCreateObjectBucket\"=\"false\";\"BucketName\"=\"\";\"ObjectBucketName\"=\"slor\";\"ScreenshotServiceUrl\"=\"https://bqvgby4dz9.execute-api.us-west-2.amazonaws.com/production/\";\"ScreenshotApiKey\"=\"rD1UJnMVM01ecpn6hb9lB6NQvC1mGosb9NObyCEW\";\"DbSnapshot\"=\"arn:aws:rds:us-west-2:014797709008:snapshot:llc-base-snapshot\";\"DbUsername\"=\"llcadmin\";\"DbPassword\"=\"+D(sk$M'cz5]g#s=\";\"DbCidr\"=\"10.0.0.0/8\";\"Vpc\"=\"vpc-99c020fe\";\"SubnetA\"=\"subnet-aa24bdf2\";\"SubnetB\"=\"subnet-dcc027bb\"",
+    "s3-bucket"           : "idla-screenshots-production",
+    "stack-name"          : "Production-LLCServerless-CF",
+    "stack-wait"          : false
+}

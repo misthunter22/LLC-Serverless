@@ -53,6 +53,21 @@
 		"Type" : "String",
         "Description" : "The DB access CIDR",
         "MinLength" : "1"
+	},
+	"Vpc" : {
+		"Type" : "String",
+        "Description" : "VPC ID to deploy to",
+        "MinLength" : "1"
+	},
+	"SubnetA" : {
+		"Type" : "String",
+        "Description" : "Subnet for zone a",
+        "MinLength" : "1"
+	},
+	"SubnetB" : {
+		"Type" : "String",
+        "Description" : "Subnet for zone b",
+        "MinLength" : "1"
 	}
   },
 
@@ -74,7 +89,7 @@
         "MemorySize": 512,
         "Timeout": 30,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", { "Ref" : "LambdaPolicy" } ],
         "Environment" : {
           "Variables" : {
             "AppS3Bucket"     : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
@@ -92,7 +107,14 @@
               "Method": "ANY"
             }
           }
-        }
+        },
+		"VpcConfig": {
+			"SecurityGroupIds": [ { "Ref" : "DBSecurityGroup" } ],
+			"SubnetIds": [
+				{ "Ref" : "SubnetA" }, 
+				{ "Ref" : "SubnetB" }
+			]
+		}
       }
     },
 	"LinkExtractorProcessor" : {
@@ -104,7 +126,7 @@
         "MemorySize": 256,
         "Timeout": 100,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess", "AmazonSNSFullAccess", "AmazonSQSFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSNSFullAccess", "AmazonSQSFullAccess", { "Ref" : "LambdaPolicy" } ],
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
@@ -112,7 +134,14 @@
 			"Queue": { "Ref" : "LinkExtractorQueue" },
 			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
-        }
+        },
+		"VpcConfig": {
+			"SecurityGroupIds": [ { "Ref" : "DBSecurityGroup" } ],
+			"SubnetIds": [
+				{ "Ref" : "SubnetA" }, 
+				{ "Ref" : "SubnetB" }
+			]
+		}
       }
     },
 	"LinkExtractorFunction" : {
@@ -124,14 +153,21 @@
         "MemorySize": 256,
         "Timeout": 300,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess", { "Ref" : "LambdaPolicy" } ],
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
 			"Queue": { "Ref" : "LinkExtractorQueue" },
 			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
-        }
+        },
+		"VpcConfig": {
+			"SecurityGroupIds": [ { "Ref" : "DBSecurityGroup" } ],
+			"SubnetIds": [
+				{ "Ref" : "SubnetA" }, 
+				{ "Ref" : "SubnetB" }
+			]
+		}
       }
     },
 	"LinkExtractor" : {
@@ -143,14 +179,21 @@
         "MemorySize": 256,
         "Timeout": 100,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess", { "Ref" : "LambdaPolicy" } ],
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
 			"Queue": { "Ref" : "LinkExtractorQueue" },
 			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
-        }
+        },
+		"VpcConfig": {
+			"SecurityGroupIds": [ { "Ref" : "DBSecurityGroup" } ],
+			"SubnetIds": [
+				{ "Ref" : "SubnetA" }, 
+				{ "Ref" : "SubnetB" }
+			]
+		}
       }
     },
 	"LinkCheckerProcessor" : {
@@ -162,7 +205,7 @@
         "MemorySize": 128,
         "Timeout": 100,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess", "AmazonSNSFullAccess", "AmazonSQSFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSNSFullAccess", "AmazonSQSFullAccess", { "Ref" : "LambdaPolicy" } ],
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
@@ -170,7 +213,14 @@
 			"Queue": { "Ref" : "LinkCheckerQueue" },
 			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
-        }
+        },
+		"VpcConfig": {
+			"SecurityGroupIds": [ { "Ref" : "DBSecurityGroup" } ],
+			"SubnetIds": [
+				{ "Ref" : "SubnetA" }, 
+				{ "Ref" : "SubnetB" }
+			]
+		}
       }
     },
 	"LinkCheckerFunction" : {
@@ -182,14 +232,21 @@
         "MemorySize": 128,
         "Timeout": 300,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess", { "Ref" : "LambdaPolicy" } ],
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
 			"Queue": { "Ref" : "LinkCheckerQueue" },
 			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
-        }
+        },
+		"VpcConfig": {
+			"SecurityGroupIds": [ { "Ref" : "DBSecurityGroup" } ],
+			"SubnetIds": [
+				{ "Ref" : "SubnetA" }, 
+				{ "Ref" : "SubnetB" }
+			]
+		}
       }
     },
 	"LinkChecker" : {
@@ -201,7 +258,7 @@
         "MemorySize": 384,
         "Timeout": 100,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonSQSFullAccess", { "Ref" : "LambdaPolicy" } ],
         "Environment" : {
           "Variables" : {
             "AppS3Bucket" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] },
@@ -210,7 +267,14 @@
 			"ApiKey" : { "Ref" : "ScreenshotApiKey" },
 			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
-        }
+        },
+		"VpcConfig": {
+			"SecurityGroupIds": [ { "Ref" : "DBSecurityGroup" } ],
+			"SubnetIds": [
+				{ "Ref" : "SubnetA" }, 
+				{ "Ref" : "SubnetB" }
+			]
+		}
       }
     },
 	"ObjectExtractor" : {
@@ -222,12 +286,19 @@
         "MemorySize": 384,
         "Timeout": 100,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess", "AmazonS3FullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonS3FullAccess", { "Ref" : "LambdaPolicy" } ],
         "Environment" : {
           "Variables" : {
             "DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
-        }
+        },
+		"VpcConfig": {
+			"SecurityGroupIds": [ { "Ref" : "DBSecurityGroup" } ],
+			"SubnetIds": [
+				{ "Ref" : "SubnetA" }, 
+				{ "Ref" : "SubnetB" }
+			]
+		}
       }
     },
 	"Packages" : {
@@ -239,12 +310,19 @@
         "MemorySize": 1024,
         "Timeout": 300,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess", "AmazonS3FullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", "AmazonS3FullAccess", { "Ref" : "LambdaPolicy" } ],
         "Environment" : {
           "Variables" : {
             "DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
-        }
+        },
+		"VpcConfig": {
+			"SecurityGroupIds": [ { "Ref" : "DBSecurityGroup" } ],
+			"SubnetIds": [
+				{ "Ref" : "SubnetA" }, 
+				{ "Ref" : "SubnetB" }
+			]
+		}
       }
     },
 	"Email" : {
@@ -256,16 +334,42 @@
         "MemorySize": 256,
         "Timeout": 30,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess" ],
+        "Policies": [ "AWSLambdaFullAccess", { "Ref" : "LambdaPolicy" } ],
         "Environment" : {
           "Variables" : {
             "Screenshot" : { "Ref" : "ScreenshotServiceUrl" },
 			"ApiKey" : { "Ref" : "ScreenshotApiKey" },
 			"DbConnection" : { "Fn::Join" : [ "", [ "Server=", { "Fn::GetAtt" : [ "RDS", "Endpoint.Address" ] }, ";Database=LLC;User Id=", { "Ref" : "DbUsername" }, ";Password=", { "Ref" : "DbPassword" }, ";MultipleActiveResultSets=true" ] ] }
           }
-        }
+        },
+		"VpcConfig": {
+			"SecurityGroupIds": [ { "Ref" : "DBSecurityGroup" } ],
+			"SubnetIds": [
+				{ "Ref" : "SubnetA" }, 
+				{ "Ref" : "SubnetB" }
+			]
+		}
       }
     },
+
+	"LambdaPolicy" : {
+		"Type" : "AWS::IAM::ManagedPolicy",
+		"Properties" : {
+			"ManagedPolicyName" : "LLC-LambdaPolicy",
+			"PolicyDocument" : {
+				"Version" : "2012-10-17",
+				"Statement": [ {
+					"Effect"   : "Allow",
+					"Action"   : [
+						"ec2:DescribeNetworkInterfaces",
+						"ec2:CreateNetworkInterface",
+						"ec2:DeleteNetworkInterface"
+					],
+					"Resource" : "*"
+				} ]
+			}
+		}
+	},
 
     "Bucket" : {
         "Type" : "AWS::S3::Bucket",
@@ -454,35 +558,46 @@
 	},
 
 	"RDS": {  
-         "Type":"AWS::RDS::DBInstance",
-         "Properties":{  
-            "AllocatedStorage":"200",
-            "DBInstanceClass":"db.t2.medium",
-            "Engine":"sqlserver-ex",
-            "MasterUsername": { "Ref":"DbUsername" },
-            "MasterUserPassword": { "Ref":"DbPassword" },
-			"DBSnapshotIdentifier": { "Ref" : "DbSnapshot" },
-            "VPCSecurityGroups": 
-			[ 
-				{ "Fn::GetAtt": [ "DBSecurityGroup", "GroupId" ] }
-            ]
-         },
-         "DeletionPolicy":"Snapshot"
-      },
+       "Type":"AWS::RDS::DBInstance",
+       "Properties":{  
+          "AllocatedStorage":"200",
+          "DBInstanceClass":"db.t2.medium",
+          "Engine":"sqlserver-ex",
+          "MasterUsername": { "Ref":"DbUsername" },
+          "MasterUserPassword": { "Ref":"DbPassword" },
+	      "DBSnapshotIdentifier": { "Ref" : "DbSnapshot" },
+		  "StorageType": "gp2",
+          "VPCSecurityGroups": 
+		  [ 
+			  { "Ref" : "DBSecurityGroup" }
+          ],
+		  "DBSubnetGroupName" : { "Ref" : "DBSubnetGroup" }
+       },
+       "DeletionPolicy":"Snapshot"
+    },
     "DBSecurityGroup": {  
-         "Type":"AWS::EC2::SecurityGroup",
-         "Properties":{  
-            "GroupDescription":"Enable HTTP access via 1433",
-            "SecurityGroupIngress":[  
-               {  
-                  "IpProtocol":"tcp",
-                  "FromPort":"1433",
-                  "ToPort":"1433",
-                  "CidrIp": { "Ref":"DbCidr" }
-               }
-            ]
-         }
-      },
+       "Type":"AWS::EC2::SecurityGroup",
+       "Properties":{  
+		  "VpcId" : { "Ref" : "Vpc" },
+          "GroupDescription":"Enable HTTP access via 1433",
+          "SecurityGroupIngress":
+		  [  
+            {  
+              "IpProtocol":"tcp",
+              "FromPort":"1433",
+              "ToPort":"1433",
+              "CidrIp": { "Ref":"DbCidr" }
+            }
+          ]
+       }
+    },
+	"DBSubnetGroup" : {
+      "Type" : "AWS::RDS::DBSubnetGroup",
+      "Properties" : {
+        "DBSubnetGroupDescription" : "Subnets available for the RDS DB Instance",
+        "SubnetIds" : [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" } ]
+      }
+    },
 
 	"LinkCheckerScheduledRuleA": {
 		"Type": "AWS::Events::Rule",
@@ -718,7 +833,7 @@
         "Value" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"Bucket"}, { "Ref" : "BucketName" } ] }
     },
 	"S3ObjectBucket" : {
-        "Value" : { "Fn::If" : ["CreateS3Bucket", {"Ref":"ObjectBucket"}, { "Ref" : "ObjectBucketName" } ] }
+        "Value" : { "Fn::If" : ["CreateS3ObjectBucket", {"Ref":"ObjectBucket"}, { "Ref" : "ObjectBucketName" } ] }
     }
   }
 }

@@ -5,5 +5,5 @@ export const AUTH_CONFIG = {
 }
 
 export const AwsConstants = {
-  invokeUrl: 'https://<prod>.execute-api.us-west-2.amazonaws.com/Prod',
+  invokeUrl: 'https://tn4ll9rlql.execute-api.us-west-2.amazonaws.com/Prod',
 };
